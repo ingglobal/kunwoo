@@ -1,0 +1,74 @@
+@charset "utf-8";
+
+/* 아웃로그인 스킨 */
+.ol {position:relative}
+.ol h2 {margin:0;padding:0;text-align:center;padding-bottom:10px;position:absolute;top:-150px;left:0;width:100%;}
+.ol h2 img{width:230px;height:auto;}
+.ol h2 p{color:#ddd;padding-top:10px;}
+.ol a.btn_admin {display:inline-block;padding:0 10px;height:25px;background:#d13f4a;color:#fff;text-decoration:none;line-height:25px;vertical-align:middle} /* 관리자 전용 버튼 */
+.ol a.btn_admin:focus, .ol a.btn_admin:hover {text-decoration:none}
+
+#ol_before {width:100%;max-width:400px;background:rgba(0,0,0,0.9);padding:20px;border-radius:5px;}
+#ol_before fieldset {position:relative}
+#ol_id {display:block;width:100%;margin:5px 0 10px;background:#444;border:1px solid #333;color:#999;font-size:1.4em;}
+.ol_idlabel {color:#999}
+#ol_pw {display:block;width:100%;margin:5px 0;background:#444;border:1px solid #333;color:#999;font-size:1.4em;}
+.ol_pwlabel {color:#999}
+#auto_login {}
+#auto_login_label {letter-spacing:-0.1em}
+#ol_submit {width:100%;height:40px;border:0;border-radius:3px;color:#fff;font-weight:bold;margin-top:5px;}
+#ol_before a {letter-spacing:-0.15em}
+#ol_svc {text-align:center;margin:10px 0 0;color:#999;}
+#ol_svc a {display:inline-block;color:#999;margin:0 5px}
+#ol_auto {position:relative;margin:5px 0;font-size:0.92em;color:#999}
+#ol_auto label {letter-spacing:-0.1em}
+#ol_auto input {width:13px;height:13px;vertical-align:bottom} 
+
+
+.btn_member_mn {min-width:150px;padding:5px 0;border:0;background:transparent;color:#fff;text-align:center}
+.btn_member_mn .profile_img {display:inline-block;margin-right:5px}
+.btn_member_mn .profile_img img {border-radius:50%}
+.btn_member_mn .profile_name {display:inline-block;max-width:70px;line-height:34px;vertical-align: bottom;text-overflow:ellipsis;overflow:hidden;white-space:nowrap}
+.btn_member_mn i {display:inline-block;margin-left:5px;font-size:1.2em;font-weight:bold}
+.btn_member_mn_on {background:#fff;color:#000;border:1px solid #d0d0d0;border-bottom:0}
+.member_mn {display:none;position:absolute;left:0;width:150px;background:#fff;z-index:99;border:1px solid #d0d0d0;border-top:0}
+
+#ol_after {width:100%;max-width:400px;background:rgba(0,0,0,0.7);border-radius:5px;color:#efefef;text-align:center;padding:20px;font-size:1.3em;line-height:1.8em;}
+#ol_after h2 {margin:0;padding:0;text-align:center;padding-bottom:10px;position:absolute;top:-178px;left:0;width:100%;}
+#ol_after h2 img{width:323px;height:auto;}
+#ol_after h2 p{color:#ddd;padding-top:2px;font-size:0.85em;line-height:1.4em;}
+#ol_after p{}
+#ol_after p strong{color:#938be0;}
+#ol_after #ol_after_ft{}
+#ol_after #ol_after_ft #ol_after_logout{display:inline-block;padding:5px 10px;background:#b80808;color:#fff;border-radius:4px;margin-top:20px;}
+
+
+/*회원가입*/
+.register{position:fixed;left:0;top:0;z-index:3000;display:flex;width:100vw;height:100vh;align-items:center;justify-content:center;display:none;}
+.register.focus{display:flex;}
+.register h2{display:none;}
+.register input[type="text"],.register input[type="password"],.register input[type="url"]{background:#444;border:1px solid #333;color:#999;}
+.register .register_bg{position:absolute;left:0;top:0;width:100%;height:100%;z-index:0;background:rgba(0,0,0,0.4);}
+.register .register_ttl{text-align:center;color:#eee;font-size:1.4em;padding-bottom:20px;}
+.register .frm_box{position:relative;z-index:1;width:100%;max-width:400px;height:100%;max-height:500px;overflow-y:auto;padding:20px;background:rgba(0,0,0,1);border-radius:5px;}
+.register .frm_box #fregisterform{}
+.register .frm_box #fregisterform .register_form_inner{background:rgba(0,0,0,0);color:#aaa;}
+.register .frm_box #fregisterform .btn_confirm{display:flex;align-content:center;justify-content:center;}
+.register .frm_box #fregisterform .btn_confirm .btn_close{display:inline-block;height:40px;line-height:40px;padding:0 20px;background:#555;border:1px solid  #444;color:#eee;}
+.register .frm_box #fregisterform .btn_confirm .btn_submit{display:inline-block;height:40px;line-height:40px;padding:0 20px;margin-left:10px;}
+
+/*정보찾기*/
+#find_info{position:fixed;left:0;top:0;z-index:3000;display:flex;width:100vw;height:100vh;align-items:center;justify-content:center;display:none;}
+#find_info.focus{display:flex;}
+#find_info .find_info_bg{position:absolute;left:0;top:0;width:100%;height:100%;z-index:0;background:rgba(0,0,0,0.4);}
+#find_info .find_info{position:relative;z-index:1;width:100%;max-width:400px;padding:25px;background:rgba(0,0,0,1);border-radius:5px;color:#efefef;}
+#find_info .find_info .find_info_title{text-align:center;color:#eee;font-size:1.4em;padding-bottom:20px;}
+#find_info .find_info form{}
+#find_info .find_info form .info_fs{padding-bottom:10px;}
+#find_info .find_info form .info_fs p{line-height:1.7em;}
+#find_info .find_info form .info_fs #mb_email{background:#444;border:1px solid #333;color:#999;margin-top:10px;}
+#find_info .find_info form .info_fs .is_captcha_use{}
+#find_info .find_info form .find_info_btn{display:flex;align-content:center;justify-content:center;margin-top:20px;}
+#find_info .find_info form .find_info_btn button{display:inline-block;height:40px;line-height:40px;padding:0 20px;}
+#find_info .find_info form .find_info_btn .btn_close{background:#555;border:1px solid  #444;color:#eee;}
+#find_info .find_info form .find_info_btn .btn_submit{margin-left:10px;}

@@ -1,0 +1,117 @@
+@charset "utf-8";
+
+/* 레이아웃 */
+body {padding:20px;background:#fff;}
+
+
+.tbl_head01 table {border-bottom: 1px solid #d3d3d3;}
+a.btn_b03, .btn_b03 {border: 1px solid #b9bdd3;}
+a.btn_b02, .btn_b02 {display: inline-block;background: #828ce8;padding: 0 10px;color: #fff;text-decoration: none;border: 0;vertical-align: middle;}
+a.btn_b01, .btn_b01 {display: inline-block;background: #4c4f6f;color: #fff;text-decoration: none;vertical-align: middle;}
+a.btn_admin, .btn_admin {display: inline-block;background: #d13f4a;color: #fff;text-decoration: none;vertical-align: middle;padding: 0 10px;}
+a.btn_cancel {display: inline-block;padding: 0 10px;border: 1px solid #ccc;background: #fafafa;color: #000;text-decoration: none;vertical-align: middle;}
+.full_input, .frm_address {width: 100%;}
+.frm_input {height: 40px;}
+#bo_list .tbl_head01 td {padding-top:8px;padding-bottom:8px;}
+
+
+/* 환경설정 폼 */
+.config_caution {margin: 10px 0 25px;padding: 10px 25px;border: 1px solid #ddd;background: #f9f9f9;}
+.config_caution ol {}
+
+.config_form h2{margin:0 0 10px;font-size:1.25em}
+.config_form li{margin:10px 0}
+.config_form li:after {display:block;visibility:hidden;clear:both;content:""}
+.config_form li .right_input{float:right}
+.config_form textarea{height:100px;width:100%}
+.config_form .frm_label{display:inline-block;width:130px}
+.config_form .form_left{float:left;width:49.5%}
+.config_form .form_right{float:right;width:49.5%}
+.config_form .frm_info {display: block;color: #3497d9;font-size: 0.92em;}
+.config_form .tbl_wrap {margin-bottom:55px;}
+.config_form .tbl_wrap h2 {font-weight:bold;}
+.config_form .frm_info {margin:5px 0 10px 132px;font-size:0.9em;}
+.config_form .check_radio {margin-right:12px;}
+.config_form input[type="checkbox"]
+,.config_form input[type="radio"] {margin-right:5px;}
+#bo_config .set_policy_content {margin-left:132px;width:60% !important;height:200px !important;padding:10px !important;}
+#bo_config .btn_confirm {margin-top:30px !important;}
+#bo_config .write_div > div {display:block;margin-bottom:10px;}
+#bo_config .write_div > div:after {display:block;visibility:hidden;clear:both;content:'';}
+#bo_config .write_div label {position: inherit;font-size: 0.9em;color:#818181;line-height: inherit;overflow: hidden !important;}
+#bo_config .write_div label.sound_only strong{display:none;}
+
+/*글쓰기*/
+.bo_user:after {display:block;visibility:hidden;clear:both;content:'';}
+.bo_user .frm_input {float:left;width:24.6%;margin-right:0.5%;}
+.bo_user .frm_input:last-child {margin-right:0;}
+
+/* 팝업(이동,복사) */
+.new_win {}
+.new_win h1 {font-size:1.17em;padding:15px 20px;background:#fff;border-bottom:1px solid #ddd}
+.new_win h2 {margin:0 20px 10px}
+.new_win_ul {margin:-20px 0 20px 0;padding:0 0 0 20px;border-bottom:1px solid #515151;background:#484848;list-style:none;zoom:1}
+.new_win_ul:after {display:block;visibility:hidden;clear:both;content:""}
+.new_win_ul li {float:left;margin-left:-1px}
+.new_win_ul a {display:block;padding:10px 10px 8px;border-right:1px solid #595959;border-left:1px solid #595959;color:#fff;font-family:dotum;font-weight:bold;text-decoration:none}
+.new_win_desc {margin:0 }
+.new_win .anchor {margin:0 0 5px}
+.new_win .win_btn {clear:both;padding:10px;text-align:center} /* 새창용 */
+.new_win .win_btn button {display:inline-block;padding:0 10px;height:30px;border:0;line-height:2em;cursor:pointer}
+.new_win .win_btn input {padding:0 10px;height:30px;line-height:2em}
+.new_win .win_btn a {display:inline-block;padding:0 10px;height:30px;background:#4b545e;color:#fff;vertical-align:middle;line-height:2.4em}
+.new_win .win_btn a:focus, .new_win .win_btn a:hover {text-decoration:none}
+.new_win .local_sch, .new_win .local_cmd, .new_win .local_desc01, .new_win .local_desc02, .new_win .local_ov {margin:10px}
+.new_win_con{margin: 10px; background:#fff;padding:20px}
+.new_win_con .table_form table th{width:120px}
+.new_win .local_desc01 {margin: 10px 0 10px;padding: 10px 20px;border: 1px solid #f2f2f2;background: #f9f9f9;}
+.new_win form {margin: 10px;background: #fff;padding: 20px;}
+
+/* 리스트 검색 */
+#bo_sch {float:left;border:none;margin-bottom:10px;}
+#bo_sch:after {display:block;visibility:hidden;clear:both;content:""}
+#bo_sch .bo_sch_date {margin-bottom:5px;}
+#bo_sch .bo_sch_date input {width:75px;height:25px;line-height:25px;padding-left:5px;}
+#bo_sch .bo_sch_group {border:1px solid #ccc;background:#fff;border-radius:3px;margin-bottom:5px;}
+#bo_sch .bo_sch_group:after {display:block;visibility:hidden;clear:both;content:""}
+#bo_sch legend {position:absolute;margin:0;padding:0;font-size:0;line-height:0;text-indent:-9999em;overflow:hidden}
+#bo_sch select{border:0;margin:9px 5px ;height:20px;float:left;border-right:1px solid #ddd;}
+#bo_sch .sch_input{height:38px;border:0;padding:0;background-color:transparent;float:left}
+#bo_sch .sch_btn{height:38px;float:left;background:none;border:0;width:40px;font-size:15px}
+
+/* 작업상태 색상 */
+.cart_status_workable {}
+.cart_status_no_work {color:red;}
+
+/* 리스트 */
+#bo_list .tbl_head01 .bo_tit {text-align: left;}
+#bo_list .td_subject {text-align:left;}
+#bo_list .bo_cate_link {color: #969696;}
+#bo_list .bo_cate_link:before {content:'[';}
+#bo_list .bo_cate_link:after {content:']';}
+#bo_list .item_info {color:#818181;display:inline-block;}
+#bo_list .item_info .item_status {margin-left:10px;}
+#bo_list .company_info {color:#818181;}
+#bo_list .company_info span {margin-right:10px;}
+#bo_list .td_work_level {font-size:1.7em;}
+#bo_list .schedule_date {font-family:tahoma;font-size:0.8em;color:#818181;}
+#bo_list .status_reject td.td_status{color:red;}
+#bo_list .status_reject_partial td.td_status{color:red;}
+
+/* 글보기 */
+#bo_v {padding: 0;}
+#bo_control {border:solid 1px #ccc;border-bottom:none;padding:10px;background:#eee;}
+#bo_control:after {display:block;visibility:hidden;clear:both;content:""}
+#bo_item {position:relative;border:solid 1px #ccc;border-bottom:none;padding:10px;background:#eee;}
+#bo_item > span {margin-right:20px;}
+#bo_company {position:relative;border:solid 1px #ccc;padding:10px;background:#eee;}
+#bo_company > span {margin-right:10px;}
+#bo_company .com_idx {font-size:0.6em;}
+
+/* 댓글 */
+.bo_comment_file {margin-top:5px;}
+.comment_file {padding:5px;background:#efefef;border:1px solid #e8e8e8;}
+
+
+/* 상단 업체정보 */
+.title_com_name {font-size:1.1em;background:#f2f2f2;padding:10px;border:solid 1px #ddd;}

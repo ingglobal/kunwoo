@@ -1,0 +1,61 @@
+@charset "utf-8";
+
+.check_btns {position:relative;}
+ 
+.is_community .all_chk {
+    padding-bottom:0;
+}
+
+/* 리스트에서 컨트롤 버튼들 */
+.check_btns .btn_top {
+    position:absolute;
+    top:-5px;
+    right:2px;
+    display:inline-block;
+    height: auto;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    padding: 6px 0;
+}
+.check_btns .btn_top > li {
+    margin:0 0 0 5px;
+    padding:0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+/* 보기에서 컨트롤 버튼들 */
+#container .btn_top {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+/* 레이어버튼 */
+.more_opt li button, .more_opt li a {
+    white-space: nowrap;
+}
+.more_opt:before {
+    right: 10px;
+}
+.more_opt:after {
+    right: 10px;
+}
+
+.filebox .btn_file {
+    width: auto;
+    padding:0 5px;
+    white-space: nowrap;
+}
+
+#bo_w a.btn_cancel {
+    padding: 0px 7px;
+}
+
+#bo_v_date_place {
+    margin: 5px 0;
+    font-size: 1.2em;
+    color: #087dff;
+}

@@ -1,0 +1,7 @@
+@charset "utf-8";
+/*게시판관리 마지막 여분필드*/
+#lst_tr{}
+#lst_tr .td_extra{}
+#lst_tr .td_extra label{display:block;}
+#lst_tr .td_extra #lb_val{margin-top:10px;}
+#lst_tr .td_extra input,#lst_tr .td_extra textarea{width:97%;}

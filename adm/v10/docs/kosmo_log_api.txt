@@ -1,0 +1,7 @@
+user.03.default.php
+----------------------
+adm/v10안에 _kosmolog.php 파일 필요
+u_tail_sub()안에
+// 후킹 추가
+@include_once($g5['hook_file_path'].'/'.$g5['file_name'].'.tail.php'); //밑에 아래소스 추가
+@include_once(G5_USER_ADMIN_PATH.'/_kosmolog.php');

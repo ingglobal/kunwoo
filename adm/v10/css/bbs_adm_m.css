@@ -1,0 +1,41 @@
+@charset "utf-8";
+/*  인트라 게시판(관리자단 내부) 설정을 위한 css */
+/*  /adm/v10/bbs_common_head.php 에서 선언된 파일입니다.   */
+
+/*################## 공통 #######################*/
+#tnb{right:0;}
+.btn_fixed_top{right:17px;}
+.all_chk.chk_box input[type="checkbox"] + label span{top:20px;left:0px;}
+/*################## 목록페이지 #######################*/
+#bo_list{padding:10px;}
+#bo_list .all_chk{padding:15px 0;}
+
+
+/*################## 보기페이지 #######################*/
+.btn_bo_user .more_opt{width:86px;}
+
+
+/*################## 쓰기페이지 #######################*/
+#bo_w .btn_cancel{width:30px;height:30px;line-height:25px;padding:0;text-align:center;border:1px solid #ddd;background:#ddd;border-radius:0;}
+#bo_w .btn_submit{width:30px;height:30px;line-height:30px;padding:0;border:1px solid #03c75a;}
+#bo_w .bo_v_option{padding:15px 0;}
+#bo_w .bo_v_option li{margin-right:10px;}
+#bo_w .chk_box input[type="checkbox"] + label span{top:3px;}
+#bo_w .bo_w_tit{padding-bottom:10px;}
+#bo_w .bo_w_link{position:relative;}
+#bo_w .bo_w_link label{top:-3px;}
+#bo_w .bo_w_flie .lb_icon{top:3px;}
+
+
+/*멀티파일관련*/
+#bo_w .multifile input[type="file"]{position:relative;width:250px;height:80px;border-radius:10px;overflow:hidden;cursor:pointer;}
+#bo_w .multifile input[type="file"]::before{display:block;content:'';position:absolute;left:0;top:0;width:100%;height:100%;background:#ddd;opacity:1;z-index:3;}
+#bo_w .multifile input[type="file"]::after{display:block;content:'파일선택\A(드래그앤드롭 가능)';position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;}
+#bo_w .multifile .MultiFile-wrap ~ ul{margin-top:10px;}
+#bo_w .multifile .MultiFile-wrap ~ ul > li{margin-top:10px;}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list{}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label{position:relative;padding-left:25px;margin-top:10px;}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label .MultiFile-remove{position:absolute;top:0;left:0;font-size:0;}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label .MultiFile-remove::after{content:'×';display:block;position:absolute;left:0;top:0;width:20px;height:20px;border:1px solid #ccc;border-radius:50%;font-size:14px;line-height:20px;text-align:center;}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label > span{}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label > span span.MultiFile-label{font-size:14px;border:1px solid #ccc;background:#eee;padding:2px 5px;border-radius:3px;line-height:1.2em;}

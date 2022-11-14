@@ -1,0 +1,25 @@
+@charset "utf-8";
+/*  팝업창을 위한 별도 설정입니다.  */
+
+body {background: #fff;}
+.new_win {padding-bottom:40px;}
+.new_win .btn_fixed_top {position:absolute;top: 11px;}
+.new_win .local_ov{margin-left:0;}
+.new_win .local_sch {margin-left: 0;}
+.new_win .tbl_head01 thead th{background:#f1f1f1;}
+.new_win .tbl_head01 tbody th,
+.new_win .tbl_head01 tbody td{vertical-align:middle;}
+.new_win .td_empty{padding:50px 0 !important;text-align:center !important;}
+
+#mms_view .view01 {margin:10px;}
+#mms_view table[class^="table"] td{border:solid 1px #ccc;vertical-align: top;padding:5px;}
+#mms_view .td_image{background: #bbb;}
+#mms_view .table01 tr td:first-child{background: #ddd;width:75px;}
+#mms_view tr[class^="tr_title"] td{position:relative;background: #555;color:white;}
+#mms_view tr[class^="tr_title"] td .btn_more{position:absolute;color:#bbb;top:5px;right:10px;font-size:0.8em;}
+#mms_view tr[class^="item_title"] td{background: #aaa;color:white;}
+
+#mms_view .table02 .td_item{background: #ddd;width:75px;}
+.new_win .empty_table {padding: 30px 0 !important;color:#888;}
+
+.new_win .btn_close{width:30px;height:30px;line-height:28px;text-align:center;padding:0;border:0;}

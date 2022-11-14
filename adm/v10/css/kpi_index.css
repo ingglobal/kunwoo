@@ -1,0 +1,29 @@
+@charset "utf-8";
+/* KPI report index */
+
+
+/* kpi report uppder area */
+.title01 {padding:10px;font-size: 1.5em;color: #0889a5;}
+.title01 .text01 {margin-left:20px;font-size:0.8em;}
+.form01 {border:1px solid #142546;border-radius: 0px;background-color: #060D1B;padding:15px;}
+.form01 .frm_input
+,.form01 .text01
+,.form01 .text02
+,.form01 .btn_submit {vertical-align:top;}
+.form01 .text01 {height:42px;line-height:42px;margin-left:-5px;}
+.form01 .text02 {padding:0 5px;height:42px;line-height:42px;margin-left:-5px;border:solid 1px #151149;border-radius:0px;background:#080623;cursor:pointer;}
+.form01 .frm_input {width:100px;text-align:center;height:42px;line-height:42px;border:solid 1px #151149;border-radius:0px;font-size:1.1em;margin-right:5px;}
+.form01:after {display:block;visibility:hidden;clear:both;content:'';}
+.form01 > div {display:inline-block;margin-right:5px;}
+.form01 .btn_submit {border:none;border-radius:0px;background:#0891D1;padding:11px 30px 12px;}
+.tab_wrapper .content_wrapper{margin-top:-4px;}
+
+
+/* iframe area */
+.tab_content {min-height:400px;}
+.tab_content iframe {width:100%;}
+
+/*nite-select 오버라이드*/
+.nice-select{background-color:#1e2531 !important;border-radius:0 !important;border:1px solid #434343 !important;}
+.nice-select.open .list{background-color:#1e2531 !important;border-radius:0 !important;border:1px solid #434343 !important;}
+.nice-select .option:hover, .nice-select .option.focus, .nice-select .option.selected.focus{background-color:#0a0d13 !important;}

@@ -1,0 +1,146 @@
+@charset "utf-8";
+
+/*색상/투명도 설정*/
+.color_ul{display:inline-block;position:relative;top:3px;}
+.color_ul:after{display:block;visibility:hidden;clear:both;content:"";}
+.color_ul .color_li{float:left;}
+.color_ul .color_li1{}
+.color_ul .color_li1 input[type="color"]{width:50px;height:23px;}
+.color_ul .color_li2{}
+.color_ul .color_li2:after{display:block;visibility:hidden;clear:both;content:"";}
+.color_ul .color_li2 span{display:block;float:left;}
+.color_ul .color_li2 span.color_alpha_ttl{padding:0 5px;}
+.color_ul .color_li3{width:30px;}
+.color_ul .color_li3 .color_result_bg{height:23px;width:100%;border:1px solid #dddddd;overflow:hidden;background:url(../img/transparent.gif);}
+.color_ul .color_li3 .color_result_bg .color_result{width:100%;height:100%;}
+
+/*범위 range*/
+
+/*------------------------------공통---------------------------------*/
+.range_span{display:block;position:relative;}
+.range_span input{position:relative;top:-1px;}
+.range_span .output_span{position:absolute;top:0px;right:0px;}
+.range_span .output_span:after{display:block;visibility:hidden;clear:both;content:"";}
+.range_span .output_span output{float:left;padding-left:5px;}
+.range_span .output_span .unit_span{float:left;padding-left:5px;}
+input[type=range]{
+	-webkit-appearance:none;/*chrom,safari,opera*/
+    border: 1px solid white;/* white fix for FF unable to apply focus style bug  */ 
+    width: 100%;/*required for proper track sizing in FF*/
+}
+
+/*----------------------chrom,safari,opera---------------------------*/
+input[type=range]::-webkit-slider-runnable-track {
+	width:100%;height:5px;background:#ddd;border:none;border-radius:3px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none;border:none;height:16px;width:16px;margin-top:-6px;border-radius:50%;background:#3f51b5;
+}
+
+input[type=range]:focus {outline:none;}
+
+input[type=range]:focus::-webkit-slider-runnable-track{background:#ccc;}
+
+/*--------------------------firfox------------------------------------*/
+
+input[type=range]::-moz-range-track {
+    width:100%;height:5px;background:#ddd;border:none;border-radius:3px;
+}
+
+input[type=range]::-moz-range-thumb {
+    border:none;height:16px;width:16px;border-radius:50%;background:#3f51b5;
+}
+
+/*hide the outline behind the border*/
+input[type=range]:-moz-focusring{
+    outline:1px solid white;outline-offset:-1px;
+}
+
+input[type=range]:focus::-moz-range-track {background:#ccc;}
+
+/*-------------------------------ie10+-------------------------------*/
+input[type=range]::-ms-track {
+    width: 100%;
+    height: 5px;
+    /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
+    background: transparent;
+    /*leave room for the larger thumb to overflow with a transparent border */
+    border-color: transparent;
+    border-width: 6px 0;
+    /*remove default tick marks*/
+    color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+    background: #777;border-radius: 10px;
+}
+input[type=range]::-ms-fill-upper {
+    background: #ddd;border-radius: 10px;
+}
+input[type=range]::-ms-thumb {
+    border:none;height:16px;width:16px;border-radius:50%;background:#3f51b5;
+}
+input[type=range]:focus::-ms-fill-lower {
+    background: #888;
+}
+input[type=range]:focus::-ms-fill-upper {
+    background: #ccc;
+}
+
+/*#########################################################*/
+
+input[type="button"]{cursor:pointer;}
+input[type="text"],input[type="password"],input[type="url"],input[type="number"]{
+	display:inline-block;height:26px;line-height:26px;position:relative;border:1px solid #e1e1e1;padding:0 3px;border-radius:3px;
+}
+textarea{border:1px solid #e1e1e1;border-radius:3px;width:100%;}
+select:focus,input[type="text"]:focus,input[type="password"]:focus,input[type="url"]:focus,textarea:focus{border:1px solid skyblue;}
+/*선택박스*/
+select{height:26px;line-height:26px;border-radius:3px;}
+/*button{position:relative;top:-1px;background:none;border:0;}*/
+button span{position:relative;top:2px;margin-left:3px;color:#888;}
+/*라디오박스*/
+/*
+<label for="bwgs_status_pending" class="label_radio bwgs_status">
+	<input type="radio" id="bwgs_status_pending" name="bwgs_status" value="pending" checked="checked">
+	<strong></strong>
+	<span>대기</span>
+</label>
+*/
+.label_radio{display:inline-block;cursor:pointer;margin-left:7px;position:relative;top:-2px;}
+.label_radio.first_child{margin-left:0 !important;}
+.label_radio:after{display:block;visibility:hidden;clear:both;content:"";}
+.label_radio input{display:none;}
+.label_radio strong{display:block;width:16px;height:16px;background:url(../img/r_off.png) no-repeat center center;background-size:100% 100%;float:left;}
+.label_radio input:checked + strong{width:16px;height:16px;background:url(../img/r_on.png) no-repeat center center;background-size:100% 100%;}
+.label_radio span{display:block;float:right;height:16px;line-height:16px;padding-left:3px;font-size:1.1em;color:#777;}
+.label_radio input:checked + strong + span{color:#000;}
+
+/*체크박스*/
+/*
+<label for="bwgs_use" class="label_checkbox bwgs_use">
+	<input type="checkbox" id="bwgs_use" name="bwgs_use" value="0" checked="checked">
+	<strong></strong>
+	<span>체크사용</span>
+</label>
+*/
+.label_checkbox{display:inline-block;cursor:pointer;margin-left:7px;position:relative;top:-2px;}
+.label_checkbox.first_child{margin-left:0;}
+.label_checkbox:after{display:block;visibility:hidden;clear:both;content:"";}
+.label_checkbox input{display:none;}
+.label_checkbox strong{display:block;width:16px;height:16px;background:url(../img/c_off.png) no-repeat center center;background-size:100% 100%;float:left;}
+.label_checkbox input:checked + strong{width:16px;height:16px;background:url(../img/c_on.png) no-repeat center center;background-size:100% 100%;}
+.label_checkbox span{display:block;float:right;height:16px;line-height:16px;padding-left:3px;font-size:1.1em;color:#777;}
+.label_checkbox input:checked + strong + span{color:#000;}
+
+/*입력박스관련 정보문장*/
+/*
+<div class="bwg_info_box">
+	<p class="bwg_info (iup | idown) bwgs_cd_info">해당입력란 관련 설명</p>
+</div>
+*/
+.wgf_help .bwg_info_box{position:relative;display:none;}
+.wgf_help:hover .bwg_info_box{display:block;}
+.wgf_help .bwg_info_box .bwg_info{position:absolute;left:0px;border:1px solid #dddddd;border-radius:3px;overflow:hidden;padding:5px;line-height:1.2em;}
+.wgf_help .bwg_info_box .bwg_info.iup{bottom:0px;box-shadow:3px -3px 6px #eeeeee;}
+.wgf_help .bwg_info_box .bwg_info.idown{top:0px;box-shadow:3px 3px 6px #eeeeee;}

@@ -1,0 +1,85 @@
+<?php
+$sub_menu = "955400";
+include_once('./_common.php');
+include_once(G5_USER_ADMIN_PATH.'/lib/latest10.lib.php');
+$page_key = ($sub_page) ? 'kpi_'.$sub_page : 'kpi';
+foreach($menu as $mk => $mv){
+    foreach($mv as $mv_k => $mv_v){
+        if(in_array($page_key,$mv_v)) {
+            $sub_menu = $mv_v[0];
+            break;
+        }
+    }
+}
+
+auth_check($auth[$sub_menu],"r");
+
+$head_page_path = (G5_IS_MOBILE) ?  G5_USER_ADMIN_MOBILE_PATH.'/kpi.head.php' : G5_USER_ADMIN_PATH.'/kpi.head.php';
+
+//$sub_page변수가 잘못 넘어왔을때
+if($sub_page && !is_file(G5_USER_ADMIN_PATH.'/kpi.'.$sub_page.'.php')) {
+    alert('존재하지 않는 페이지 입니다.');
+} else if($sub_page && is_file(G5_USER_ADMIN_PATH.'/kpi.'.$sub_page.'.php')) {
+    $sub_page_path = (G5_IS_MOBILE) ?  G5_USER_ADMIN_MOBILE_PATH.'/kpi.'.$sub_page.'.php' : G5_USER_ADMIN_PATH.'/kpi.'.$sub_page.'.php';
+} else {
+    $sub_page_path = (G5_IS_MOBILE) ?  G5_USER_ADMIN_MOBILE_PATH.'/kpi.main.php' : G5_USER_ADMIN_PATH.'/kpi.main.php';
+}
+//$sub_page변수값이 없으면 기본 output
+$sub_page = ($sub_page) ? $sub_page : 'output';
+
+$ttl_arr = array('main'=>'종합','output'=>'생산','alarm'=>'알람','offwork'=>'비가동','predict'=>'예지','quality'=>'품질','maintain'=>'정비및재고');
+$g5['title'] = 'KPI '.$ttl_arr[$sub_page].' 보고서';
+
+
+// echo $g5['container_sub_title'];
+
+// 당월, 당일
+$st_ymd = date("Y-m-01",G5_SERVER_TIME);
+$ym_days = date("t",G5_SERVER_TIME);
+$en_ymd = date("Y-m-".$ym_days,G5_SERVER_TIME);
+$today = date("Y-m-d",G5_SERVER_TIME);
+$yesterday = date("Y-m-d",G5_SERVER_TIME-86400);
+$tomorrow = date("Y-m-d",G5_SERVER_TIME+86400);
+//echo $today.'<br>';
+
+// st_date, en_date
+$st_date = $st_date ?: date($st_ymd);
+$en_date = $en_date ?: date("Y-m-d");
+$en_date2 = ($st_date==$en_date) ? '' : ' ~ '.$en_date; // wave(~) mark before en_date.
+
+$member['com_idx'] = $_SESSION['ss_com_idx'] ?: $member['com_idx'];
+$com = get_table_meta('company','com_idx',$member['com_idx']);
+$com_idx = $com['com_idx'];
+// print_r2($com);
+
+add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/jquery-nice-select-1.1.0/js/jquery.nice-select.min.js"></script>', 1);
+add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/jquery-nice-select-1.1.0/css/nice-select.css">', 1);
+add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/multipurpose_tabcontent/css/style.css">', 1);
+add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/multipurpose_tabcontent/js/jquery.multipurpose_tabcontent.js"></script>', 1);
+add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/function.date.js"></script>', 1);
+
+
+// com_idx 디폴트
+$member['com_idx'] = $_SESSION['ss_com_idx'] ?: $member['com_idx'];
+$com = get_table_meta('company','com_idx',$member['com_idx']);
+$com_idx = $com['com_idx'];
+include_once('./_head.php');
+
+
+include_once($head_page_path);
+
+//공통 헤더영역 인쿠르드
+/*
+//해당 서브페이지 인크루드
+if(G5_IS_MOBILE) {
+    if(is_file($sub_page_path)) {
+        include_once($sub_page_path);
+        return;
+    }
+}
+include_once($sub_page_path);
+*/
+?>
+
+<?php
+include_once ('./_tail.php');

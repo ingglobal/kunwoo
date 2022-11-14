@@ -1,0 +1,51 @@
+@charset "utf-8";
+
+input[type="text"],
+input[type="password"],
+input[type="url"]{padding-left:10px;padding-right:5px;}
+/*영업관리 sales10*/
+input[name$="_date"] {width:90px !important;}
+#bo_list2 .td_com_name {white-space: nowrap;}
+#bo_list2 .td_sales_grade {}
+#bo_list2 .span_wr_datetime {margin-left:15px;font-size:0.8em;}
+#bo_list2 .span_next_duedate {margin-left:15px;font-size:0.8em;}
+#bo_list2 .tbl_head01 td div[class^="td_"]{line-height:1.5em;}
+
+#container{margin-top:0px;}
+#container_title{padding-left:10px;}
+.container_wr{padding-top:0px;overflow-x:auto !important;min-height:800px;}
+.container_wr .calendar{min-width:1000px;}
+.calendar_title .btn_write{right:auto;left:10px;}
+.bo_sch_group select{height:38px;margin:0 0;}
+#bo_list2{}
+#bo_list2 .btn_modify{position:absolute;bottom:5px;right:10px;font-size:1.4em;color:#348c5b;}
+.td_sales_grade{max-width:none;}
+.bo_tit{font-size:1em;}
+.tr_even{background:#f6f6f6 !important;}
+
+/*영업관리 write.skin*/
+.customer_info {font-size:1.2em;}
+.customer_info span{display:block;font-size:0.8em;}
+#container{margin-top:0px;}
+#container_title{padding-left:10px;}
+.container_wr{padding-top:0px;overflow-x:auto !important;min-height:1000px;}
+
+
+#bo_v{padding:0;}
+.btn_bo_user > li{position:relative;}
+
+#bo_cate{background:#f1f1f1;overflow:hidden;box-sizing:border-box;-ms-box-sizing:border-box;-o-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;}
+#bo_cate *{box-sizing:border-box;-ms-box-sizing:border-box;-o-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;}
+#bo_cate #bo_cate_ul{display:inline-block;overflow:hidden;}
+#bo_cate #bo_cate_ul:after{display:block;visibility:hidden;clear:both;content:'';}
+#bo_cate #bo_cate_ul >div{float:left;display:block;text-align:center;}
+#bo_cate #bo_cate_ul >div a{line-height:28px;}
+
+
+#bo_sch select{margin-left:0;}
+#bo_sch .sch_input{margin-left:0;}
+
+
+#bo_w .div_icons{font-size:1.5em;}
+#bo_w .bo_w_link{margin-top:5px;}
+#bo_w .bo_w_flie{margin-top:5px;}

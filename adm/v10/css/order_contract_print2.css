@@ -1,0 +1,46 @@
+@charset "utf-8";
+h1, h2, h3, h4, h5, dl, dt, dd, ul, li, ol, th, td, p, blockquote, form, fieldset, legend, div,body {
+	-webkit-print-color-adjust:exact;
+	color-adjust: exact;
+}
+ul{list-style:none;margin:0px;padding:0px;}
+
+
+
+
+.slip_box{padding:10px;}
+.slip_box h1{font-size:1.6em;color:#888888;margin-top:0px;padding-top:12px;font-family:"NanumGothicBold";text-align:center;}
+
+.slip_box section{margin-top:-1px;}
+.slip_box section .td_h2{
+	font-size:1.2em;padding-top:20px;padding-bottom:6px;font-weight:bold;padding-left:10px;font-family:"NanumGothicBold";
+	border:0;
+}
+
+
+.slip_box table{
+	display:table;border-collapse:collapse;border-spacing:0px;width:100%;
+}
+.slip_box table th{background:#dddddd;width:18%;}
+.slip_box table th,
+.slip_box table td{border:1px solid #666666;padding:4px 4px 3px 4px;}
+.slip_box table td{width:32%;}
+
+/* 결제정보테이블 */ 
+.table_payinfo .tr_title{background-color:#dddddd;}
+.table_payinfo tbody td{width:14%;}
+
+.slip_text {text-align:center;margin-top:15px;}
+
+
+
+
+.btn_confirm{text-align:center;padding-top:20px;padding-bottom:20px;}
+.btn_confirm a{color:#ffffff;padding:10px;border-radius:5px;text-decoration:none;display:inline-block;}
+.btn_confirm a.btn_print{background:#18547c;margin-right:15px;}
+.btn_confirm a.btn_close{background:gray;padding: 8px 9px;border-radius: 0;}
+
+@media print{
+	.slip_box table th{background:#dddddd;}
+}
+section {padding: 0 0;}

@@ -1,0 +1,55 @@
+@charset "utf-8";
+/*  인트라 게시판(관리자단 내부) 설정을 위한 css */
+/*  /adm/v10/bbs_common_head.php 에서 선언된 파일입니다.   */
+
+/*################## 공통 #######################*/
+.btn_bo_user > li > a{background:#3E4B64;width:33.28px;}
+.btn_bo_user > li > button{width:33.28px;background:#3E4B64;color:#bbb;}
+.bo_vl_opt > .btn_cm_opt{width:33.28px;}
+/*################## 목록페이지 #######################*/
+#bo_list tbody td{border-left:0;border-right:0;}
+#bo_list tbody td.td_subject{text-align:left;}
+
+
+/*################## 보기페이지 #######################*/
+.btn_confirm{text-align:center;position:relative;}
+.btn_confirm .secret_cm{float:none;position:absolute;top:0;left:0;}
+.btn_confirm .btn_submit{}
+
+
+/*################## 쓰기페이지 #######################*/
+#bo_w .bo_w_tit #btn_autosave{top:3px;}
+#bo_w .bo_w_flie .frm_file{margin-top:-3px;}
+
+/*멀티파일관련*/
+#bo_w .multifile input[type="file"]{position:relative;width:250px;height:80px;border-radius:10px;overflow:hidden;cursor:pointer;}
+#bo_w .multifile input[type="file"]::before{display:block;content:'';position:absolute;left:0;top:0;width:100%;height:100%;background:#ddd;opacity:1;z-index:3;}
+#bo_w .multifile input[type="file"]::after{display:block;content:'파일선택\A(드래그앤드롭 가능)';position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;}
+#bo_w .multifile .MultiFile-wrap ~ ul{margin-top:10px;}
+#bo_w .multifile .MultiFile-wrap ~ ul > li{margin-top:10px;}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list{}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label{position:relative;padding-left:25px;margin-top:10px;}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label .MultiFile-remove{position:absolute;top:0;left:0;font-size:0;}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label .MultiFile-remove::after{content:'×';display:block;position:absolute;left:0;top:0;width:20px;height:20px;border:1px solid #ccc;border-radius:50%;font-size:14px;line-height:20px;text-align:center;}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label > span{}
+#bo_w .multifile .MultiFile-wrap .MultiFile-list > .MultiFile-label > span span.MultiFile-label{font-size:14px;border:1px solid #ccc;background:#eee;padding:2px 5px;border-radius:3px;line-height:1.2em;}
+
+/*################## 필드속성 테이블 #######################*/
+#field_prop_open{position:fixed;left:5px;bottom:5px;z-index:2990;border:0;color:orange;background:none;font-size:0.7em;}
+#field_prop_box{display:none;}
+#field_prop_box.focus{display:flex;position:fixed;left:0;top:0;width:100vw;height:100vh;align-items:center;justify-content:center;z-index:3000;}
+#field_prop_box #field_prop_box_bg{position:absolute;z-index:0;width:100%;height:100%;background:rgba(0,0,0,0.5);}
+#field_prop_box #field_prop_box_in{position:relative;z-index:1;width:100%;max-width:640px;}
+#field_prop_box #field_prop_box_in #field_prop_close{display:block;position:absolute;right:-40px;top:-45px;color:#fff;background:none;border:0;font-size:30px;}
+#field_prop_box #field_prop_box_in #field_prop_close i{}
+#field_prop_box #field_prop_box_in #field_wrap{height:100%;max-height:500px;overflow-y:auto;}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop{width:100%;display:table;border-collapse:collapse;border-spacing:0px;background:#080623;}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop tr.odd{background:#242F4B;}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop th{background:#0B1838;}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop th,
+#field_prop_box #field_prop_box_in #field_wrap #field_prop td{border-top:1px solid #333;border-bottom:1px solid #333;}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop td{}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop td.f_num{width:50px;text-align:center;}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop td.f_name{width:200px;}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop td.f_type{width:240px;}
+#field_prop_box #field_prop_box_in #field_wrap #field_prop td.f_coment{}

@@ -1,0 +1,218 @@
+<?php
+$sub_menu = "955410";
+include_once('./_common.php');
+//$sub_page변수가 잘못 넘어왔을때
+if($sub_page && !is_file(G5_USER_ADMIN_PATH.'/kpi.'.$sub_page.'.php')) alert('존재하지 않는 페이지 입니다.');
+//$sub_page변수값이 없으면 기본 product
+if(!$sub_page) $sub_page = 'product'; 
+$ttl_arr = array('output'=>'생산','alarm'=>'알람','offwork'=>'비가동','predict'=>'예지','quality'=>'품질','maintain'=>'정비및재고');
+$g5['title'] = 'KPI '.$ttl_arr[$sub_page].' 보고서';
+
+include_once('./_head.php');
+
+
+// 당월, 당일
+$st_ymd = date("Y-m-01",G5_SERVER_TIME);
+$ym_days = date("t",G5_SERVER_TIME);
+$en_ymd = date("Y-m-".$ym_days,G5_SERVER_TIME);
+$today = date("Y-m-d",G5_SERVER_TIME);
+$yesterday = date("Y-m-d",G5_SERVER_TIME-86400);
+$tomorrow = date("Y-m-d",G5_SERVER_TIME+86400);
+//echo $today.'<br>';
+
+// st_date, en_date
+$st_date = $st_date ?: date($st_ymd);
+$en_date = $en_date ?: date("Y-m-d");
+$en_date2 = ($st_date==$en_date) ? '' : ' ~ '.$en_date; // wave(~) mark before en_date.
+
+$member['com_idx'] = $_SESSION['ss_com_idx'] ?: $member['com_idx'];
+$com = get_table_meta('company','com_idx',$member['com_idx']);
+$com_idx = $com['com_idx'];
+// print_r2($com);
+
+
+add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/jquery-nice-select-1.1.0/js/jquery.nice-select.min.js"></script>', 0);
+add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/jquery-nice-select-1.1.0/css/nice-select.css">', 0);
+add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/multipurpose_tabcontent/css/style.css">', 0);
+add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/multipurpose_tabcontent/js/jquery.multipurpose_tabcontent.js"></script>', 0);
+add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/function.date.js"></script>', 0);
+
+if(G5_IS_MOBILE){
+    $mo_file_path = G5_USER_ADMIN_MOBILE_PATH.'/'.$g5['file_name'].'.php';
+    if(is_file($mo_file_path)){
+        @include_once($mo_file_path);
+        return;
+    }
+}
+?>
+<style>
+</style>
+
+<div class="kpi_wrapper">
+
+    <div class="title01">
+        <?=$com['com_name']?>
+        <span class="title_breadcrumb"></span><!-- > 제1공장 > 1라인 -->
+        <span class="text01 title_date"><?=$st_date?><?=$en_date2?></span>
+    </div>
+
+    <!-- selections -->
+    <form id="form01" name="form01" class="form01" method="get">
+        <input type="hidden" name="com_idx" value="<?=$com['com_idx']?>" class="frm_input">
+        <input type="text" name="st_date" id="st_date" value="<?=$st_date?>" class="frm_input">
+        <span class="text01">~</span>
+        <input type="text" name="en_date" id="en_date" value="<?=$en_date?>" class="frm_input">
+        <div class="text02 prev_month"><i class="fa fa-chevron-left"></i></div>
+        <div class="text02 this_month" s_ymd="<?=$st_ymd?>" e_ymd="<?=$en_ymd?>">이번달</div>
+        <div class="text02 next_month"><i class="fa fa-chevron-right"></i></div>
+        <div class="text02 prev_day"><i class="fa fa-chevron-left"></i></div>
+        <div class="text02 this_day" s_ymd="<?=$today?>" e_ymd="<?=$today?>">오늘</div>
+        <div class="text02 next_day"><i class="fa fa-chevron-right"></i></div>
+        <div>
+            <select name="mmg0" id="mmg0">
+                <option value="">전체</option>
+            </select>
+        </div>
+        <input type="submit" class="btn_submit" value="확인">
+    </form>
+    <script>
+    $(function(e){
+        $('select[name^=mmg]').niceSelect();
+    });
+    </script>
+
+</div> <!-- .kpi_wrapper -->
+<script>
+$(function(e){
+	// group select change
+	$(document).on('change','select[name^=mmg]',function(e) {
+		// console.log( $(this).attr('id') );
+		var mmg_depth = $(this).attr('id').replace('mmg','');
+		var mmg_idx = $(this).val();
+		// console.log( 'select tag count: '+$('select[name^=mmg]').length );
+		var mmg_select_count = $('select[name^=mmg]').length;
+
+		// 선택 select 그 다음에 있는 select는 일단 전부 제거, 앞쪽에 있는 Select를 선택할 수도 있으므로 뒤쪽 Select all remove.
+		$('select[name^=mmg]').each(function(i,v){
+			var this_depth = $(this).attr('id').replace('mmg','');
+			if(this_depth > mmg_depth ) {
+				$(this).closest('div').remove();
+			}
+		});
+
+		// 선택항목이 있는 경우
+		if(mmg_idx) {
+
+			// In case of mms(설비), do not load select
+			if( /-/.test( mmg_idx ) ) {
+				// alert( 'mms related.' );
+			}
+			// Only if it is mmg group.
+			else {
+
+				group_loading(<?=$com_idx?>, mmg_idx);
+
+				// 이제 바로 하위 div select 초기화 
+				var create_depth = parseInt(mmg_depth)+1;
+				var create_dom = '<div>'
+									+'<select name="mmg'+create_depth+'" id="mmg'+create_depth+'">'
+									+	'<option value="">전체</option>'
+									+'</select>'
+								+'</div>';
+				$('#mmg'+mmg_depth).closest('div').after(create_dom);
+				$('select[name=mmg'+create_depth+']').niceSelect();
+
+			}
+
+		}
+
+	});
+	// default group loading.
+	group_loading(<?=$com_idx?>, 0);
+
+	// prev Month
+	$(document).on('click','.prev_month',function(e) {
+		// console.log( $('#st_date').val() );
+		this_day = $('#st_date').val();
+		$('#st_date').val( getPrevMonthFirst( this_day ) );
+		$('#en_date').val( getPrevMonthLast( this_day ) );
+	});
+	// next Month
+	$(document).on('click','.next_month',function(e) {
+		this_day = $('#st_date').val();
+		$('#st_date').val( getNextMonthFirst( this_day ) );
+		$('#en_date').val( getNextMonthLast( this_day ) );
+	});
+	// prev Day
+	$(document).on('click','.prev_day',function(e) {
+		this_day = $('#st_date').val();
+		$('#st_date').val( getNthPrevDay( this_day, 1 ) );
+		$('#en_date').val( getNthPrevDay( this_day, 1 ) );
+	});
+	// prev Day
+	$(document).on('click','.next_day',function(e) {
+		this_day = $('#st_date').val();
+		$('#st_date').val( getNthNextDay( this_day, 1 ) );
+		$('#en_date').val( getNthNextDay( this_day, 1 ) );
+	});
+
+	// this month, this day click
+	$(document).on('click','div[s_ymd]',function(e) {
+		$('#st_date').val( $(this).attr('s_ymd') );
+		$('#en_date').val( $(this).attr('e_ymd') );
+	});
+
+	// form submit click
+	$(document).on('click','.btn_submit',function(e) {
+		e.preventDefault();
+
+		// title breadcrumb change.
+		var title_breadcrumb = '';
+		$('select[name^=mmg]').each(function(i,v){
+			// console.log( $(this).attr('name') );
+			// console.log( $(this).find('option:selected').val() );
+			// console.log( $(this).find('option:selected').text() );
+			if( $(this).find('option:selected').val() != '' ) {
+				// console.log( $(this).find('option:selected').text() );
+				// $('.title_breadcrumb').append('<span> > '+$(this).find('option:selected').text()+'</span>');
+				title_breadcrumb += ' > '+$(this).find('option:selected').text();
+			}
+		});
+		$('.title_breadcrumb').text(title_breadcrumb);
+
+		// date text update
+		if( $('#st_date').val()==$('#en_date').val() ) {
+			$('.title_date').text( $('#st_date').val() );
+		}
+		else {
+			$('.title_date').text( $('#st_date').val() +' ~ '+ $('#en_date').val() );
+		}
+
+		// console.log( $('.tab_list li').index( $('.tab_list li.active') ) );
+		idx = $('.tab_list li').index( $('.tab_list li.active') );
+		
+		console.log('submit');
+	});
+
+    $("input[name$=_date]").datepicker({
+        closeText: "닫기",
+        currentText: "오늘",
+        monthNames: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
+        monthNamesShort: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
+        dayNamesMin:['일','월','화','수','목','금','토'],
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "yy-mm-dd",
+        showButtonPanel: true,
+        yearRange: "c-99:c+99",
+        //maxDate: "+0d"
+    });
+}); 
+</script>
+
+<?php
+include_once("./kpi.".$sub_page.".php");
+?>
+
+<?php
+include_once ('./_tail.php');

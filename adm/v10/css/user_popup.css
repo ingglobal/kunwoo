@@ -1,0 +1,19 @@
+@charset "utf-8";
+/* 팝업창을 위한 별도 설정입니다. */
+
+body {background: #43535C;}
+.new_win {padding-bottom:40px;}
+.new_win .btn_fixed_top {position:absolute;top: 9px;}
+.new_win .local_sch {margin-left: 0;position:relative;}
+.new_win .td_empty{padding:50px 0;}
+
+#mms_view .view01 {margin:10px;}
+#mms_view table[class^="table"] td{border:solid 1px #444;vertical-align: top;padding:5px;}
+#mms_view .td_image{background: #333;}
+#mms_view .table01 tr td:first-child{background: #222;width:75px;}
+#mms_view tr[class^="tr_title"] td{position:relative;background: #222;color:white;}
+#mms_view tr[class^="tr_title"] td .btn_more{position:absolute;color:#bbb;top:5px;right:10px;font-size:0.8em;}
+#mms_view tr[class^="item_title"] td{background: #222;color:white;}
+
+#mms_view .table02 .td_item{background: #222;width:75px;}
+.new_win .empty_table {padding: 30px 0 !important;color:#888;}

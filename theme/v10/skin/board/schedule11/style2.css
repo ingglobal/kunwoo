@@ -1,0 +1,192 @@
+@charset "utf-8";
+
+/* 리스트 */
+#bo_gall td {text-align: center;}
+#bo_gall .td_date {width: 170px;}
+#bo_gall .td_date .bo_tit {font-weight:normal;}
+#bo_list_total .btn_mode {border:solid 1px #ddd;border-radius:3px;padding:8px 10px;background:#444;cursor:pointer;color:white;font-weight:bold;font-size:1.1em;}
+#bo_list_total a, .calendar_title a {text-decoration:none;}
+.calendar_title .btn_mode {border:solid 1px #ddd;border-radius:3px;padding:7px 9px;background:#444;cursor:pointer;color:white;
+font-size:0.45em;
+position:absolute;top:4px;
+display:inline-block;
+}
+.calendar_title .btn_calendar_skin {left:0;}
+.calendar_title .btn_list_skin {left:61px;}
+.calendar_title .btn_write {right:0px;}
+.td_modify {text-align:center;}
+
+/* 보기 */
+.item_name {font-weight:bold;}
+.cmt_btn {background-position-x: 97px;}
+#bo_v_con {border-top:solid 1px #ddd;padding-top:10px;}
+#bo_v_date_place {margin-top:20px;font-size:1.4em;color:#087dff;}
+
+/* 쓰기(수정) */
+.btn_confirm {margin-top:30px !important;}
+.write_div > div {display:block;margin-bottom:10px;}
+.write_div > div:after {display:block;visibility:hidden;clear:both;content:'';}
+.write_div label {
+    font-size: 0.9em;
+    color:#818181;
+    line-height: inherit;
+    overflow: hidden !important;
+}
+.write_div label.sound_only strong{display:none;}
+#wr_content {padding:7px;line-height:1.6em;}
+#wr_subject {padding-left:5px;}
+.div_icons i {padding:4px;color:#818181;cursor:pointer;}
+.bo_w_link, .bo_w_flie {display:none;} /* 기본적으로는 숨김(화면에 복잡해!) */
+.full_input {width:100%;height:40px;}
+
+/* 달력 설정 */
+.calendar_title {font-size:2.3em;text-align:center;font-family: tahoma;font-weight: 600;position:relative;}
+.calendar_title .this_month {margin:0 10px;}
+.table_calendar {width:100%;margin-top:10px;}
+.table_calendar thead th {background:#dadada;width:14%;text-align:center;padding:5px;border: 1px solid #999;border-top:solid 2px #444;border-bottom:solid 1px #555;}
+.table_calendar thead th.th_sunday {color:red;}
+.table_calendar thead th.th_saturday {color:dodgerblue;}
+.table_calendar .td_day{vertical-align:top;height:70px;border: 1px solid #dcdcdc;padding:5px;}
+.table_calendar .day_no_holiday {}
+.table_calendar .day_no_holiday:after {display:block;visibility:hidden;clear:both;content:'';}
+.table_calendar .day_no {display:inline-block;color:#555;font-family:tahoma;font-size:0.9em;line-height:14px;}
+.table_calendar .day_holiday_text {display:inline-block;color:#555;font-size:0.9em;margin-left:5px;color:red;}
+.table_calendar .day_today .day_no {background: #ffc107;border-radius: 7px;padding: 0 5px;}
+.table_calendar .day_sunday .day_no {color:red;}
+.table_calendar .day_saturday .day_no {color:dodgerblue;}
+.table_calendar .day_holiday .day_no {color:red;}
+.table_calendar .day_disable .day_no {text-decoration:line-through;}
+.table_calendar .day_prev_month
+,.table_calendar .day_next_month {background:#f1f1f1;}
+.table_calendar .day_prev_month .day_no
+,.table_calendar .day_next_month .day_no {color:#aaa;}
+.table_calendar .schedule_item {margin-bottom:0;}
+.table_calendar .schedule_ymd {display:none;}
+.table_calendar .schedule_ampm {font-size:0.8em;height:20px;line-height:20px;color:#818181;display:none;}
+.table_calendar .schedule_hi {display:none;}
+.table_calendar .schedule_his {display:none;}
+.table_calendar .schedule_range {font-size:0.8em;height:20px;line-height:20px;color:#818181;}
+.table_calendar .schedule_subject {
+    display: block;
+    overflow: hidden;
+    vertical-align: top;
+    width:140px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-top: -5px;
+}
+.table_calendar .schedule_count {font-size:0.8em;height:20px;line-height:20px;margin-left:3px;}
+.table_calendar .schedule_status_stat {padding:3px 4px 2px;font-size:0.9em;background: #dfeaff;border:solid 1px #bec3ff;border-radius:4px;cursor:pointer;margin-top: 4px;}
+
+.table_calendar .certify_judge_date {display:none;}
+.table_calendar .certify_mb_name_rank {color:#818181;font-size:0.8em;}
+.table_calendar .certify_mb_name_rank:before {content:'[';}
+.table_calendar .certify_mb_name_rank:after {content:']';}
+.table_calendar .certify_judge_name {color:#818181;font-size:0.8em;}
+
+
+.caution {margin: 0 0 -5px;text-align:right;}
+.btn_apply {font-size:0.9em;cursor:pointer;display:inline-block;border: solid 1px #ccc;padding: 2px 4px 1px;background: #F2F2F3;border-radius: 4px;}
+.btn_overbooked {font-size:0.9em;display:inline-block;padding: 2px 4px 1px;background: #bfbfbf;border-radius: 4px;color:#fff;}
+.btn_disable {font-size:0.9em;display:inline-block;padding: 2px 4px 1px;background: #ffdfdf;border: solid 1px #f9c3c3;border-radius: 4px;color:#2f2f2f;}
+.btn_oldday {font-size:0.9em;display:inline-block;padding: 2px 4px 1px;background: #bfbfbf;border-radius: 4px;color:#fff;}
+.max_time_apply {height: 40px;padding: 0 13px;border-radius: 5px;}
+.reservation_type {height: 40px;padding: 0 13px;border-radius: 5px;}
+.gender {height: 40px;padding: 0 0;border-radius: 5px;}
+.policy {cursor:pointer;display:inline-block !important;}
+.btn_cancel {border:solid 1px #ddd !important;}
+
+/* 환경설정 폼 */
+.config_caution {margin: 10px 0 25px;padding: 10px 25px;border: 1px solid #ddd;background: #f9f9f9;}
+.config_caution ol {}
+
+.config_form h2{margin:0 0 10px;font-size:1.25em}
+.config_form li{margin:10px 0}
+.config_form li:after {display:block;visibility:hidden;clear:both;content:""}
+.config_form li .right_input{float:right}
+.config_form textarea{height:100px;width:100%}
+.config_form .frm_label{display:inline-block;width:130px}
+.config_form .form_left{float:left;width:49.5%}
+.config_form .form_right{float:right;width:49.5%}
+.config_form .frm_info {display: block;color: #3497d9;font-size: 0.92em;}
+.config_form .tbl_wrap {margin-bottom:55px;}
+.config_form .tbl_wrap h2 {font-weight:bold;}
+.config_form .frm_info {margin:5px 0 10px 132px;font-size:0.9em;}
+
+.label_set_week_disable {margin-right:10px;}
+.label_set_week_disable input {margin-right:2px;}
+.set_name_type {margin-right:10px;}
+.set_name_type input {margin-right:2px;}
+.btn_set_time, .btn_set_holiday {font-size:0.9em;cursor:pointer;display:inline-block;}
+.btn_set_time:hover, .btn_set_holiday:hover {color:blue;text-decoration:underline;}
+.btn_set_holiday {float:right;}
+.div_set_time {font-size:0.75em;}
+.div_set_break_time {font-size:0.75em;}
+.div_backdrop {position:fixed;top:0;left:0;height:100%;width:100%;background:rgba(0, 0, 0, 0.8);z-index:10;display:none;}
+.div_modal {position:fixed;background:#fff;z-index:20;display:none;border:solid 2px black;
+width:500px;
+min-height:500px;
+top: 60%;
+left: 50%;
+margin-top: -350px; /* Negative half of height. */
+margin-left: -250px; /* Negative half of width. */
+}
+.modal_header {text-align: center;height: 50px;line-height: 50px;background: #111;color: white;font-size: 1.5em;}
+.modal_body {padding:20px;}
+.modal_body .btn_submit {padding: 8px 15px 6px;border-radius: 4px;}
+.set_policy_content {margin-left:132px;width:60% !important;height:200px !important;padding:10px !important;}
+.set_hp_yn {margin-right:10px;}
+
+
+input.setting_reset {
+    -webkit-appearance: checkbox;
+    margin-right:5px;
+}
+
+
+/* 번호 부분 폭 조정 */
+.td_num2 {width: 70px;text-align:center;}
+.tbl_head01 td {border-left: 0px solid #f3f3f3;}
+
+/* basic 버튼 퍼블 수정 */
+a.btn_admin, .btn_admin {padding:0 10px;}
+
+/* 관리자 설정 */
+#bo_gall {
+    border: solid 2px #3e3e3e;
+    padding: 10px;
+    margin-top: 40px;
+}
+#bo_gall:after {display:block;visibility:hidden;clear:both;content:'';}
+.div_admin {
+    padding: 5px;
+    color: white;
+    background: #565656;
+}
+
+
+
+/* 달력 인증관련 */
+.table_calendar .certify_item {margin-bottom:0;}
+.table_calendar .certify_ymd {display:none;}
+.table_calendar .certify_text {font-size:0.8em;height:20px;line-height:20px;color:#ff7373;}
+.table_calendar .certify_code_name {font-size:0.8em;height:20px;line-height:20px;color:#818181;margin-left:2px;}
+.table_calendar .certify_code_name:before {content:'[';}
+.table_calendar .certify_code_name:after {content:']';}
+.table_calendar .certify_com_name {
+    display: block;
+    overflow: hidden;
+    vertical-align: top;
+    width:140px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-top: -5px;
+}
+.table_calendar .certify_status_stat {padding:3px 4px 2px;font-size:0.9em;background: #dfeaff;border:solid 1px #bec3ff;border-radius:4px;cursor:pointer;margin-top: 4px;}
+
+/*
+.table_calendar .certify_text:before {content:'•';color:green;font-size:2em;}
+.table_calendar .certify_judge_name:before {content:'•';color:deepskyblue;}*/
+.table_calendar .certify_text i {color:#13c613;}
+.table_calendar .certify_judge_name i {color:deepskyblue;}
+.table_calendar .schedule_range i {color:black;margin-right:3px;}

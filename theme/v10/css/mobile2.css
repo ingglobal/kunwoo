@@ -1,0 +1,55 @@
+@charset "utf-8";
+/* 전체설정을 영향을 주는 스타일 재선언입니다. */
+/* 별도 설정은 /usr/sytle.css에서 선언해 주세요. */
+
+html {background:#777;}
+
+/* 레이아웃 */
+#container.is_community {padding-bottom:50px;}
+#hd_btn .fa {font-size:1.3em;}
+.btn_back {margin-right:2px;} /* 상단 타이틀옆 뒤로가기 버튼 오른쪽 마진 */
+.top_btns li {font-size:0.7em;}
+
+/* 공통설정 */
+.btn001 {
+    display:inline-block;padding:0 5px;
+    height:32px;line-height:30px;
+    border-radius:3px;
+    font-weight:normal;font-size:0.8em;
+    border:solid 1px #ddd;
+    vertical-align: unset;
+}
+
+/* 왼편 카테고리 */
+.menu_wr .content {margin:10px;background:#fbfbfb;}
+.menu_wr .content .category {padding:10px 7px;border:solid 1px #ccc;}
+.menu_wr .content .category li {height:45px;line-height:45px;margin-left:15px;font-size:1.2em;border-bottom:solid 1px #ddd;}
+.menu_wr .content .category li:last-child {border-bottom:none;}
+.menu_wr .content .category li i.fa {margin-right: 5px;}
+
+.li_gnb1 > a {font-size:1.2em;}
+.li_gnb2 > a {font-size:1.05em;}
+.btn_dash {position:relative;background:#f2f2f2;border:solid 1px #ccc;border-radius:4px;margin:8px;padding:13px;font-size:1.2em;}
+.btn_dash span {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    border: 0;
+    width: 30px;
+    height: 40px;
+    overflow: hidden;
+    border: 0;
+    background: url(../img/mobile/gnb_bg.png) no-repeat 50% 50%;
+    text-indent: -9999px;
+}
+
+
+/* 고객관리 */
+#container_title {position:relative;border-bottom:solid 1px #ccc;}
+.div_fixed_top {position:absolute;top:9px;right:5px;display:none;}
+
+ul.top_btns {}
+ul.top_btns li {float:left;margin-left:5px;}
+ul.top_btns li button,
+ul.top_btns li a {background: #f2f2f2;padding:0 7px;}
+

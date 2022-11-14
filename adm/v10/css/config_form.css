@@ -1,0 +1,10 @@
+@charset "utf-8";
+
+input[name="cf_naver_clientid"],
+input[name="cf_facebook_appid"],
+input[name="cf_twitter_key"],
+input[name="cf_google_clientid"],
+input[name="cf_googl_shorturl_apikey"],
+input[name="cf_kakao_rest_key"],
+input[name="cf_kakao_js_apikey"],
+input[name="cf_payco_clientid"]{width:215px;}

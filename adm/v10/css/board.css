@@ -1,0 +1,66 @@
+@charset "utf-8";
+/* 인트라 게시판(관리자단 내부) 설정을 위한 css */
+/* /adm/v10/_head.php 에서 선언된 파일입니다. */
+
+html {
+    background: #f3f3f3;
+    height:100%;
+}
+select{background:#1e2531;}
+#container {margin-top:50px;}
+
+#container_title {
+    top: unset;
+    padding-left:237px;
+}
+#container.container-small #container_title {
+    padding-left: 67px;
+}
+
+.container_wr {
+    padding-top: 70px;
+    min-height:600px;
+}
+
+/*게시판목록*/
+#bo_sch{background:#060D1B;}
+#bo_sch .bo_sch_group{background:#060D1B;border-radius:0;border:0;;}
+#bo_sch select{border-right:0;height:38px;line-height:38px;margin:0;margin-right:5px;}
+#bo_sch .sch_input{border:0;border-radius:0 !important;}
+#bo_sch .sch_btn{background:#1e2531;color:#efefef;}
+#bo_list_total{border-radius:0;background:#43535C;color:#efefef;}
+
+.td_parts_count .fa{border:1px solid #3c5b99;color:#3c5b99;}
+
+
+/*게시판목록 테이블관련*/
+#bo_list .tbl_head01 td{background:#0B1838;}
+#bo_list .tbl_head01 tr:nth-child(even) td{background:#0a1631;}
+#bo_cate{background:#242F4B;border:1px solid #142546;}
+#bo_cate a{color:#fff !important;}
+
+/*게시판 버튼관련*/
+.btn{border-radius:0;}
+a.btn_admin,.btn_admin{background:#D05153;color:#fff !important;}
+a.btn_b02, .btn_b02{background:#0891D1;color:#fff !important;}
+
+/*게시판 보기*/
+#bo_v{background:#060D1B;}
+#bo_report{color:#999;border-top:1px solid #142546;border-bottom:1px solid #142546;}
+#bo_v_top{border-top:1px solid #142546;}
+#bo_v_info{border-bottom:1px solid #142546;}
+#bo_v_info .sv_member{color:#fff;}
+#bo_v_file{border:1px solid #142546;}
+#bo_v_file h2{background:#43535C;}
+
+/*게시판 쓰기*/
+#bo_w {}
+#bo_w input[type="text"],#bo_w input[type="password"],#bo_w input[type="url"],#bo_w select{height:40px;line-height:40px;}
+#bo_w .btn_cancel{height:30px;line-height:27px;}
+#bo_w #btn_mms{height:40px;line-height:40x;}
+#bo_w .write_div{background:#060D1B;}
+.towhom_wrapper{border:1px solid #142546;}
+.towhom_info{background:#1e2531 !important;border:1px solid #142546;}
+#bo_w .bo_w_flie .file_wr{background:#242F4B;padding-left:40px;border:1px solid #1e2531;}
+#bo_w .bo_w_flie .lb_icon{background:#1e2531;color:#aaa;}
+#bo_w .bo_w_flie .file_del{color:#aaa;}

@@ -1,0 +1,66 @@
+@charset "utf-8";
+
+/* 초기화 */
+html {overflow-y:scroll}
+body {margin:0;padding:0;font-size:2.1em;font-family:'Malgun Gothic', dotum, sans-serif; background:#333;color:#ccc;}
+html, h1, h2, h3, h4, h5, h6, form, fieldset, img {margin:0;padding:0;border:0}
+h1, h2, h3, h4, h5, h6 {font-size:1em;font-family:'Malgun Gothic', dotum, sans-serif}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display:block}
+ul {margin:0;padding:0;list-style:none}
+ol,li,dl,dt,dd {margin:0;padding:0}
+legend {position:absolute;margin:0;padding:0;font-size:0;line-height:0;text-indent:-9999em;overflow:hidden}
+label, input, button, select, img {vertical-align:middle}
+input, button {margin:0;padding:0;font-family:'Malgun Gothic', dotum, sans-serif;font-size:1em}
+button {cursor:pointer}
+textarea, select {font-family:'Malgun Gothic', dotum, sans-serif;font-size:1em}
+select {margin:0}
+p {margin:0;padding:0;word-break:break-all}
+hr {display:none}
+pre {overflow-x:scroll;font-size:1.1em}
+a {color:#aaa;text-decoration:none}
+
+*, :after, :before {
+-webkit-box-sizing:border-box;
+-moz-box-sizing:border-box;
+box-sizing:border-box;
+}
+
+html,body{height:100%;}
+
+.tbl_wrap table {width:100%;border-collapse:collapse;border-spacing:0 5px;border-top:1px solid #ececec;border-bottom:1px solid #ececec} 
+.tbl_wrap {margin:0 0 10px;padding:0}
+.tbl_wrap caption {padding:20px;font-weight:bold;text-align:left;font-size:2.4em;}
+/* thead 한 줄 테이블 */
+.tbl_head01 {}
+.tbl_head01 table {clear:both;width:100%;border-collapse:collapse;border-spacing:0}
+.tbl_head01 thead th {background:#6f809a;color:#fff;border:1px solid #60718b;font-weight:normal;text-align:center;padding:8px 5px;font-size:0.92em}
+.tbl_head01 thead th a{color:#fff}
+.tbl_head01 thead input {vertical-align:top} /* middle 로 하면 게시판 읽기에서 목록 사용시 체크박스 라인 깨짐 */
+.tbl_head01 thead a {color:#383838;text-decoration:underline}
+.tbl_head01 tbody th{border:1px solid #d6dce7;padding:10px;text-align:center}
+.tbl_head01 tbody td{border:1px solid #d6dce7;padding:10px;text-align:center}
+.tbl_head01 tbody tr:nth-child(even){background:#eff3f9}
+.tbl_head01 tbody td .frm_input{width:100%;}
+.tbl_head01 tbody td select{width:100%}
+.tbl_head01 table .tbl_input{height:27px;line-height:25px;border:1px solid #d5d5d5;width:100%}
+.tbl_head01 table select {height: 27px;line-height: 25px;width: 100%;}
+
+/* thead 두 줄 테이블 */
+.tbl_head02 {}
+.tbl_head02 table {clear:both;width:100%;border-collapse:collapse;border-spacing:0}
+.tbl_head02 thead th, .tbl_head02 tbody th {padding:5px 0;border:1px solid #d1dee2;background:#e5ecef;color:#383838;letter-spacing:-0.1em}
+.tbl_head02 thead th {font-size:0.95em}
+.tbl_head02 thead input {vertical-align:top} /* middle 로 하면 게시판 읽기에서 목록 사용시 체크박스 라인 깨짐 */
+.tbl_head02 thead a {color:#383838;text-decoration:underline}
+.tbl_head02 tbody th {}
+.tbl_head02 tbody td {padding:7px 5px;line-height:1.4em;word-break:break-all}
+
+/* 테이블 관련 */
+.tbl_head01 th{background:#000204 !important;border: 1px solid #151904 !important;}
+.tbl_head01 tbody td{border: 1px solid #122142;color:#bbb;}
+.tbl_head01 thead tr th {white-space:nowrap;}
+.tbl_head01 thead th {
+    background: #0B1838;
+    border: 1px solid #3E4B64;
+}
+.tbl_head01 tr:nth-child(even) td{background:#071127;}

@@ -1,0 +1,58 @@
+@charset "utf-8";
+/* 첫페이지 그래프 영역 iframe.index.css */
+
+body {padding-top:10px;}
+/*
+#sortables { list-style-type: none; margin: 0; padding: 0; width: 450px; }
+#sortables li { margin: 3px 3px 3px 0; padding: 1px; float: left; width: 100px; height: 90px; font-size: 4em; text-align: center; }
+*/
+#sortables { list-style-type: none; margin: 0; padding: 0; width: 100%; }
+#sortables div[id^="chart"] {width:100%;height:299px;} /* chart height */
+#sortables > li { position: relative; /*margin: 4.5px;*/ margin-bottom:10px; float: left; height: 335px;} /* chart height + 35 */
+#sortables .graph_header {padding: 5px;cursor: grab;font-weight:bold;color:black;}
+#sortables .graph_title {display:inline-block;width:89%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#sortables .graph_icons {position: absolute;top: 5px;right: 5px;cursor:pointer;}
+#sortables .graph_icons a {margin-left:5px;}
+#sortables .mms_multi_marks {position:absolute;top:28px;right:6px;z-index:10;}
+#sortables .mms_multi_marks .fa {font-size:.7em;color:#ffca89;margin-left:4px;}
+#sortables .graph_setting {position:absolute;top:4px;right:25px;display:none;z-index:20;background:#333;padding:5px 8px;border-radius:6px;width:auto;}
+#sortables .graph_setting:before {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 64px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 6px 0 6px 6px;
+    border-color: transparent transparent transparent #333;
+}
+#sortables .graph_setting a {display:inline-block;color:white;}
+
+/* 1 column arrange */
+#sortables li.x1 {width: 100%;}
+#sortables li.x1 { margin-right: 0;}
+
+/* 2 column arrange */
+#sortables li.x2 {width: 100%;}
+#sortables li.x2:nth-child(2n) { margin-right: 0;}
+
+/* 3 column arrange */
+#sortables li.x3 {width: 100%;}
+#sortables li.x3:nth-child(3n) { margin-right: 0;}
+
+/* 4 column arrange */
+#sortables li.x4 {width: 100%;}
+#sortables li.x4:nth-child(4n) { margin-right: 0;}
+
+/* 5 column arrange */
+#sortables li.x5 {width: 100%;}
+#sortables li.x5:nth-child(5n) { margin-right: 0;}
+
+
+.portlet {margin: 0 1em 1em 0;padding: 0.3em;}
+.portlet-header {padding: 0.2em 0.3em;margin-bottom: 0.5em;position: relative;cursor:grab;}
+.portlet-newwin {position: absolute;top: 5px;right: 5px;cursor:pointer;}
+.portlet-content {padding: 0.4em;}
+.portlet-placeholder {border: 1px dotted black;margin: 0 1em 1em 0;height: 150px;}
+

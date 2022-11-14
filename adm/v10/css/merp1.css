@@ -1,0 +1,27 @@
+@charset "utf-8";
+/* KPI report common */
+
+.div_stat {background:#ffffff;text-align:center;border:solid 0px #ddd;width:100%;padding:25px 0;}
+.div_stat:after {display:block;visibility: hidden;clear: both;content: '';}
+.div_stat ul {margin:0 auto;}
+.div_stat ul li {position:relative;display:inline-block;width:130px;height:130px;line-height:130px;border-radius:65px;margin:0 15px;background:#4ca8bc;color:white;}
+.div_stat ul span {position:absolute;transform:translate(-50%,-50%);}
+.div_stat ul li span {line-height:normal;}
+.div_stat ul li .title {top:28%;left:50%;font-size:1em;width:100px;}
+.div_stat ul li .content {top:50%;left:50%;font-size:2.5em;color:#f0ff00;}
+.div_stat ul li .unit {top:75%;left:50%;font-size:1.5em;}
+
+.div_title_01 {border:solid 1px #cecece; border-radius:10px;;padding:10px;background:#b6d3da;text-align:center; font-size:1.7em;margin:25px 0 10px;color:#326e7c;}
+.div_title_02 {font-size:1.2em;color:#3ab4d2;margin-bottom:5px;}
+.div_title_02 .more {float:right;font-size:0.8em;color:#818181;margin-right:3px;}
+
+.div_wrapper:after {display:block;visibility:hidden;clear:both;content:'';}
+.div_wrapper > div {border:solid 1px #ddd;border-radius:5px;min-height:200px;padding:10px;}
+.div_wrapper > div > div.div_info_body {margin-bottom:15px;max-height:360px;overflow-y:auto;overflow-x: hidden;}
+.div_left {float:left;width:49.5%;}
+.div_right {float:right;width:49.5%;}
+
+.table01 {width:100%;border-collapse: collapse;border-spacing: 0;}
+.table01 th {background:#d5e2e5;color:#424242;height:30px;}
+.table01 td {border:solid 1px #ddd;padding:3px;}
+.table01 tr:nth-child(2n) td {background:#fafafa;}

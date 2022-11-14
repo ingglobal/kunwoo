@@ -1,0 +1,181 @@
+@charset "utf-8";
+/* 영카트 기본 관리자단의 후킹을 위한 css */
+/* /adm/css/admin.css 내부에서 @import된 파일입니다. */
+/* 영카트 기본 관리자단에 없는 영역이 추가될 때, 기본관리자단에서도 존재해야 하는 스타일이면 현재 파일에 설정해야 됩니다. ex. 왼편메뉴 아이콘 설정.. */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+/*
+font-family: 'Noto Sans KR', sans-serif;
+*/
+body {font-family: 'Noto Sans KR', sans-serif;background: #fefefe;font-size:0.82em;overflow-x: hidden !important;padding-top:50px;}
+h1, h2, h3, h4, h5, h6 {font-family: 'Noto Sans KR', sans-serif;}
+input, button {font-family: 'Noto Sans KR', sans-serif;}
+textarea, select {font-family: 'Noto Sans KR', sans-serif;}
+select{background:#fff;border-radius:0;}
+select:focus{outline:none;}
+input[type='text'],input[type='password'],input[type='url']{
+    border-radius:0 !important;background:#fff;box-shadow:none !important;padding-left:5px;padding-right:5px;
+}
+/* 레이아웃  (default_project에서 width:1100px 선언된 부분 무력화  */
+#container {width: inherit;}
+#container_title {font-size: 1.3em;}
+.container_wr {padding:0;padding-bottom:50px;min-height:850px;}
+.btn_fixed_top {
+    z-index: 1001;
+}
+#ft {position:fixed;bottom:0;left:0;width:100%;}
+
+/*  배경 컬러 */
+#hd_top {background: #3a5038;position:fixed;top:0;left:0;width:100%;z-index:999;}
+#logo {background: #1264a3;}
+#btn_gnb {background-color:#1264a3;}
+#gnb .gnb_oparea {background: #ececec;}
+#gnb .gnb_oparea li a {
+    color: #5a5a5a;
+}
+#gnb .gnb_oparea li a:hover, #gnb .gnb_oparea li .on {
+    color: #9c1818;
+}
+#gnb .gnb_oparea .gnb_grp_style {
+    padding-left:45px !important;
+}
+#btn_gnb.btn_gnb_open {
+    background-color:#1c291b;
+}
+#gnb .gnb_con {
+    width: 320px;
+}
+#gnb .gnb_oparea {
+    border-right:none;
+}
+#gnb .gnb_li {
+    border-bottom: 1px solid #ccc;
+}
+#tnb .tnb_community:hover {
+    background-color: #217abd !important;
+}
+
+
+#container_title {
+    background: #d5edff;
+}
+
+/*관리자단 메뉴숨김*/
+.tnb_li .tnb_shop {display:none !important;} /*오른편 상단 쇼핑몰바로가기 아이콘 숨김*/
+.tnb_li .tnb_service {display:none !important;} /*오른편 상단 부가서비스 숨김*/
+/*.menu-400, .menu-500, .menu-900 {display:none;} */
+.tnb_mb_area li:first-child {display:none;}
+
+
+
+/* 회원사이트뷰 세로 진열 안 되게 처리함 */
+.tbl_wrap .sv_wrap > a {white-space:nowrap;}
+
+/*장바구니 (상단 오른편)*/
+#tnb .tnb_cart{width:30px;height:30px;overflow:hidden;text-indent:-1px;}
+#tnb .tnb_cart:hover{background-color:#17a957}
+#tnb button {
+    background: #207dc5;
+}
+#tnb button span {
+    background-color:#3091dc;
+}
+#tnb .tnb_mb_area {
+    background: #217dc5;
+    z-index:1002;
+}
+#tnb .tnb_mb_btn
+,button {
+    -moz-outline: none;
+    outline: none;
+    ie-dummy: expression(this.hideFocus=true);    
+}
+#tnb button:hover {
+    background: #1c7ac3;
+}
+
+/* 테이블 관련 */
+.tbl_head01 thead tr th {white-space:nowrap;}
+.tbl_head01 thead th {
+    background: #54565a;
+    border: 1px solid #6f7177;
+}
+.tbl_head01 thead th{background:none;border:0;color:#777;}
+.tbl_head01 thead th label{position:relative;top:-5px;}
+.tbl_head01 tbody td{position:relative;text-align:left;vertical-align:top;padding-right:5px;}
+.tbl_head01 tbody td .td_chk{position:absolute;top:5px;right:5px;}
+.tbl_head01 tbody td .mng_box{position:relative;padding:5px 5px 5px 35px;border-top:1px solid #eee;min-height:30px;margin-top:5px;}
+.tbl_head01 tbody td .btn_manager{position:absolute;left:7px;top:7px;font-size:1.2em;color:#aaa;}
+.tbl_head01 tbody td .a_mod{position:absolute;right:12px;bottom:10px;font-size:1.4em;color:#348c5b;}
+.tbl_head01 tbody td .a_cop{position:absolute;right:36px;bottom:10px;font-size:1.4em;color:#348c5b;}
+.tbl_head01 tbody td p{line-height:1.5em !important;}
+.local_ov01 .allchk_box{position:absolute;bottom:0;right:5px;}
+
+.tbl_frm01 td input[type="password"],
+.tbl_frm01 td input[type="text"]{width:100% !important;}
+.div_member_company {margin-bottom:5px;}
+.div_member_company span {font-size:0.8em;}
+.div_member_company:before {content:'• ';}
+
+/* mtbl */
+.mtbl{}
+.mtbl th{background:none !important;border:0 !important;color:#333 !important;}
+.mtbl th,.mtbl td{position:relative;}
+.mtbl th label{position:relative;top:-4px;}
+.mtbl td{border-left:0 !important;}
+.mtbl td .td_chk{position:absolute;top:5px;right:5px;}
+.mtbl td .td_mod{position:absolute;bottom:5px;right:8px;font-size:1.4em;}
+
+/* 설명문구 테두리 부분 */
+.local_desc01 {
+    border: 1px solid #d5d5d5;
+}
+
+.top_inf{}
+.top_inf:after{display:block;visibility:hidden;clear:both;content:"";}
+.top_inf .top_c{padding:10px 5px;}
+.top_inf .top_no{float:left;}
+.top_inf .top_mag{float:right}
+.top_inf .top_mag a{border:1px solid #ddd;display:inline-block;height:35px;line-height:35px;padding:0 10px;}
+.top_inf .top_mag .mag_com{margin-right:10px;background:#555;color:#fff;}
+.top_inf .top_mag #mag_act_txt{width:30px;text-align:right;position:relative;top:-3px;}
+.top_inf .top_mag .mag_act{background:#d67e5b;color:#fff;margin-left:5px;}
+.top_inf .top_mag span{margin-left:5px;}
+
+.top_inf .top_mag .mng_com_mb{background:#555;color:#fff;}
+.top_inf .top_mag input[type="text"]{position:relative;top:-3px;}
+.top_inf .top_mag #com_name{width:120px;}
+.top_inf .top_mag #mng_name{width:120px;}
+.top_inf .top_mag #mng_email{width:200px;}
+
+
+#btn_excel_down{width:30px;font-size:0;background-image:url(https://icongr.am/fontawesome/file-excel-o.svg?size=20&color=ffffff);background-size:auto 60%;background-position:center center;background-repeat:no-repeat;}
+#btn_add{width:30px;font-size:0;background-image:url(https://icongr.am/fontawesome/plus.svg?size=20&color=ffffff) !important;background-color:#03c75a;background-size:auto 66% !important;background-position:center center !important;background-repeat:no-repeat !important;}
+input[value="선택담기"]{border-radius:0 !important;width:40px;font-size:0;background-image:url(https://icongr.am/feather/shopping-cart.svg?size=128&color=777777);background-size:auto 66%;background-position:center center;background-repeat:no-repeat;}
+input[value="선택수정"]{border-radius:0 !important;width:40px;font-size:0;background-image:url(https://icongr.am/feather/tool.svg?size=128&color=777777);background-size:auto 66%;background-position:center center;background-repeat:no-repeat;}
+input[value="선택삭제"]{border-radius:0 !important;width:40px;font-size:0;background-image:url(https://icongr.am/feather/trash-2.svg?size=128&color=777777);background-size:auto 66%;background-position:center center;background-repeat:no-repeat;}
+
+
+div[class="div_session"] {padding:30px 20px 40px;}
+div[class="div_session"]:nth-of-type(n+2) {border-top:solid 1px #ddd;}
+div[class="div_session"]:nth-child(odd) {background:#f9f9f9;}
+.div_session .div_title_h1 {font-size:2em;margin:10px 0;font-weight:700;}
+.div_session .div_title_h2 {font-size:1.5em;margin:5px 0;}
+.div_session .div_icon i {font-size:3em;color:#1264a3;margin:15px 0;}
+.div_session .div_link a {font-size:1.2em;color:#1264a3;margin:15px 0;display:inline-block;}
+/* .div_link a:after {content:"->";} */
+.div_session .div_link:after {
+    background-image: url(data:image/svg+xml;charset=utf-8,%3Csvg%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1%206a.5.5%200%200%200%200%201V6zM12.854.646a.5.5%200%200%200-.708.708l.708-.708zM18%206.5l.354.354a.5.5%200%200%200%200-.708L18%206.5zm-5.854%205.146a.5.5%200%200%200%20.708.708l-.708-.708zM1%207h16.5V6H1v1zm16.646-.854l-5.5%205.5.708.708%205.5-5.5-.708-.708zm-5.5-4.792l2.75%202.75.708-.708-2.75-2.75-.708.708zm2.75%202.75l2.75%202.75.708-.708-2.75-2.75-.708.708z%22%20fill%3D%22%231264A3%22%2F%3E%3C%2Fsvg%3E);
+    content: '';
+    width: 19px;
+    height: 13px;
+    display: inline-block;
+    margin-left: .5em;
+}
+.div_session .div_title_content {font-size:1em;}
+.div_session .div_content ul {margin:10px 0;}
+.div_session .div_content ul li {color:#818181;margin:5px 0;}
+.div_session .div_content ul b {color:#000;}
+.div_session .div_content ul b:after {content:":";margin-right:5px;}
+.div_session .div_content_code {overflow:auto;border:solid 1px #ddd;padding:10px 5px;margin:5px 0;}
+
