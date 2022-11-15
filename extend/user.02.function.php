@@ -2234,6 +2234,23 @@ function category_tree_array($cat_code){
     return $cat_arr;
 }
 }
+
+//SVG아이콘 표시 echo svg_icon(파일명,클래스,너비,높이,색상)
+if(!function_exists('svg_icon')){
+function svg_icon($n='_default_icon',$c='svg_icon',$w=24,$h=24,$f='#ffffff'){
+	$file = G5_USER_ADMIN_SVG_PHP_PATH.'/'.$n.'.php';
+	if (!file_exists($file)) {
+		return $file." 파일을 찾을 수 없습니다.";
+	} else {
+		ob_start();
+		include($file);
+		$content = ob_get_contents();
+		ob_end_clean();
+		return $content;
+	}
+}
+}
+
 //
 
 if(!function_exists('tmp_test')){

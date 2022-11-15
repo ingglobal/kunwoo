@@ -672,6 +672,7 @@ if(defined('G5_IS_ADMIN')){
 			// 사용자 정의 함수, 파일명과 같은 js가 있으면 자동으로 추가됨
 			if(is_file(G5_USER_ADMIN_JS_PATH.'/'.$g5['file_name'].'.js')) echo '<script src="'.G5_USER_ADMIN_JS_URL.'/'.$g5['file_name'].'.js"></script>'.PHP_EOL;
 			if(is_file(G5_USER_ADMIN_JS_PATH.'/tail.js')) echo '<script src="'.G5_USER_ADMIN_JS_URL.'/tail.js"></script>'.PHP_EOL;
+
 		}
 		
 		// 후킹 추가

@@ -136,6 +136,8 @@ $sql = " SELECT oop.oop_idx
                 , bom.bom_part_no
                 , bom.bom_std
                 , ( SELECT bom_name FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_name
+                , ( SELECT bom_part_no FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_part_no
+                , ( SELECT bom_std FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_std
                 , mms.mms_name
                 , mms.mms_model
             FROM {$g5['order_out_practice_table']} AS oop
@@ -151,11 +153,11 @@ $result = sql_query($sql,1);
 // print_r2($result);
 for($row=0;$row=sql_fetch_array($result);$row++){
     // print_r2($row);
-    if($row['forge_mms_idx'] && $row['oop_count'])
+    if($row['forge_mms_idx'] && $row['oop_count']) //각 단조설비별로 분류
         array_push($forge_arr[$row['forge_mms_idx']]['orp_arr'][$row['orp_start_date']],$row);
-    else if(!$row['forge_mms_idx'] && $row['cut_mms_idx'] && $row['oop_count'])
+    else if(!$row['forge_mms_idx'] && $row['cut_mms_idx'] && $row['oop_count']) //절단내부, 단조외주
         array_push($forge_arr['0']['orp_arr'][$row['orp_start_date']],$row);
-    else if(!$row['forge_mms_idx'] && !$row['cut_mms_idx'] && $row['oop_count'])
+    else if(!$row['forge_mms_idx'] && !$row['cut_mms_idx'] && $row['oop_count']) //절단외주, 단조외주
         array_push($forge_arr['-1']['orp_arr'][$row['orp_start_date']],$row);
 
 }
@@ -203,9 +205,9 @@ add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/function.date.js"></script
 .dv_item p.p_no{color:yellow;font-size:0.9em;}
 .dv_item p.p_std{color:pink;font-size:0.95em;}
 .dv_item p.p_mtr{color:white;font-size:0.9em;}
-.dv_item span{position:absolute;display:block;top:5px;right:5px;border:1px solid #711320;background:#711320;padding:3px 5px;border-radius:4px;}
+.dv_item span{position:absolute;display:block;top:5px;right:5px;border:0px solid #711320;background:rgba(77, 11, 59,0.7);padding:3px 5px;border-radius:4px;}
 .dv_item span.s_cnt{}
-.dv_item .orp_mod{position:absolute;bottom:5px;right:5px;display:block;width:28px;height:28px;line-height:24px;text-align:center;border-radius:50%;background:rgba(0,0,0,0.4);}
+.dv_item .orp_mod{position:absolute;bottom:5px;right:5px;display:block;width:30px;height:30px;line-height:32px;text-align:center;border-radius:50%;background:rgba(0,0,0,0.4);}
 </style>
 <div class="local_ov01 local_ov">
     <?php echo $listall ?>
@@ -273,15 +275,19 @@ echo $g5['container_sub_title'];
                             <p class="p_name"><?=cut_str($forge_val[$i]['bom_name'],20,'...')?></p>
                             <p class="p_no"><?=$forge_val[$i]['bom_part_no']?></p>
                             <p class="p_std"><?=$forge_val[$i]['bom_std']?></p>
-                            <p class="p_mtr"><?=$forge_val[$i]['mtr_bom_name']?></p>
+                            <p class="p_mtr">
+                                <?php
+                                $forge_val[$i]['mtr_bom_str'] = ($forge_val[$i]['mtr_bom_std'])?$forge_val[$i]['mtr_bom_name'].'('.$forge_val[$i]['mtr_bom_std'].')':$forge_val[$i]['mtr_bom_name'];
+                                ?>
+                                <?=cut_str($forge_val[$i]['mtr_bom_str'],20,'...')?>
+                            </p>
                             <span class="s_cnt"><?=number_format($forge_val[$i]['oop_1'])?></span>
-                            <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획추가"><img src="<?=G5_USER_ADMIN_SVG_EX_URL?>/ic_modify_white_20x20.svg"></a>
+                            <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획수정"><?=svg_icon('edit','svg_edit',20,20,'#ffffff')?></a>
                         </div>
                     <?php } //if($forge_val[$i]['oop_1']) ?>
                     <?php } //for($i=0;$i<count($forge_val);$i++) ?>
                 <?php } //if(count($forge_val)) ?>
             </div>
-            <!-- <a href="" class="orp_add" title="계획추가"><img src="<?=G5_USER_ADMIN_SVG_EX_URL?>/ic_plus_yellow_24x24.svg"></a> -->
             </td>
             <?php } ?>
         </tr>
@@ -297,15 +303,19 @@ echo $g5['container_sub_title'];
                             <p class="p_name"><?=cut_str($forge_val[$i]['bom_name'],20,'...')?></p>
                             <p class="p_no"><?=$forge_val[$i]['bom_part_no']?></p>
                             <p class="p_std"><?=$forge_val[$i]['bom_std']?></p>
-                            <p class="p_mtr"><?=$forge_val[$i]['mtr_bom_name']?></p>
+                            <p class="p_mtr">
+                                <?php
+                                $forge_val[$i]['mtr_bom_str'] = ($forge_val[$i]['mtr_bom_std'])?$forge_val[$i]['mtr_bom_name'].'('.$forge_val[$i]['mtr_bom_std'].')':$forge_val[$i]['mtr_bom_name'];
+                                ?>
+                                <?=cut_str($forge_val[$i]['mtr_bom_str'],20,'...')?>
+                            </p>
                             <span class="s_cnt"><?=number_format($forge_val[$i]['oop_2'])?></span>
-                            <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획추가"><img src="<?=G5_USER_ADMIN_SVG_EX_URL?>/ic_modify_white_20x20.svg"></a>
+                            <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획수정"><?=svg_icon('edit','svg_edit',20,20,'#ffffff')?></a>
                         </div>
                     <?php } //if($forge_val[$i]['oop_2']) ?>
                 <?php } //for($i=0;$i<count($forge_val);$i++) ?>
                 <?php } //if(count($forge_val)) ?>
             </div>
-            <!-- <a href="./order_out_practice_form.php?calendar=1&orp_start_date=<?=$d?>" class="orp_add" title="계획추가"><img src="<?=G5_USER_ADMIN_SVG_EX_URL?>/ic_plus_yellow_24x24.svg"></a> -->
             </td>
             <?php } ?>
         </tr>

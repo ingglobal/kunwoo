@@ -1,0 +1,8 @@
+@charset "utf-8";
+
+#modal .mdl_box .mdl_head{}
+#modal .mdl_box .mdl_cont{}
+#modal .mdl_box .mdl_cont > p{position:relative;padding-left:130px;}
+#modal .mdl_box .mdl_cont > p strong{display:block;position:absolute;top:0;left:0;width:130px;}
+#modal .mdl_box .mdl_cont > p span{display:block;width:100%;}
+#modal .mdl_box .mdl_tail{}
