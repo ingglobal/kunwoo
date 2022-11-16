@@ -2,7 +2,7 @@
 
 /* 초기화 */
 html {overflow-y:scroll}
-body {margin:0;padding:0;font-size:2.1em;font-family:'Malgun Gothic', dotum, sans-serif; background:#333;color:#ccc;}
+body {margin:0;padding:0;font-size:1.2em;font-family:'Malgun Gothic', dotum, sans-serif; background:#091b41;color:#ccc;}
 html, h1, h2, h3, h4, h5, h6, form, fieldset, img {margin:0;padding:0;border:0}
 h1, h2, h3, h4, h5, h6 {font-size:1em;font-family:'Malgun Gothic', dotum, sans-serif}
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {display:block}
@@ -39,7 +39,7 @@ html,body{height:100%;}
 .tbl_head01 thead a {color:#383838;text-decoration:underline}
 .tbl_head01 tbody th{border:1px solid #d6dce7;padding:10px;text-align:center}
 .tbl_head01 tbody td{border:1px solid #d6dce7;padding:10px;text-align:center}
-.tbl_head01 tbody tr:nth-child(even){background:#eff3f9}
+.tbl_head01 tbody tr:nth-child(even){background:#091b41;}
 .tbl_head01 tbody td .frm_input{width:100%;}
 .tbl_head01 tbody td select{width:100%}
 .tbl_head01 table .tbl_input{height:27px;line-height:25px;border:1px solid #d5d5d5;width:100%}
@@ -56,11 +56,13 @@ html,body{height:100%;}
 .tbl_head02 tbody td {padding:7px 5px;line-height:1.4em;word-break:break-all}
 
 /* 테이블 관련 */
-.tbl_head01 th{background:#000204 !important;border: 1px solid #151904 !important;}
-.tbl_head01 tbody td{border: 1px solid #122142;color:#bbb;}
+.tbl_head01 th{background:#000204 !important;border: 1px solid #50537c !important;}
+.tbl_head01 tbody td{border: 1px solid #4d5a77;color:#bbb;}
 .tbl_head01 thead tr th {white-space:nowrap;}
 .tbl_head01 thead th {
     background: #0B1838;
     border: 1px solid #3E4B64;
 }
 .tbl_head01 tr:nth-child(even) td{background:#071127;}
+
+.sound_only{display:none;}

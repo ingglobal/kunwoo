@@ -7,7 +7,8 @@ auth_check($auth[$sub_menu], 'w');
 if(!$bom_idx) alert('제품을 선택해 주세요.');
 if(!$orp_start_date) alert('생산시작일을 입력해 주세요.');
 if(!$oop_count) alert('지시수량을 입력해 주세요.');
-if($oop_memo) $oop_memo = conv_unescape_nl(stripslashes($oop_memo));
+if($oop_memo) $oop_memo = trim($oop_memo);
+// if($oop_memo) $oop_memo = conv_unescape_nl(stripslashes($oop_memo));
 //$content = conv_unescape_nl(stripslashes($content));
 
 // print_r2($_POST);
@@ -46,7 +47,7 @@ if($w == ''){
                 , orp_start_date = '{$orp_start_date}'
                 , orp_done_date = '{$orp_done_date}'
                 , orp_memo = ''
-                , orp_status = 'ok'
+                , orp_status = '{$oop_status}'
                 , orp_reg_dt = '".G5_TIME_YMDHIS."'
                 , orp_update_dt = '".G5_TIME_YMDHIS."'
     ";
@@ -85,7 +86,7 @@ else if($w == 'u'){
                 , orp_start_date = '{$orp_start_date}'
                 , orp_done_date = '{$orp_done_date}'
                 , orp_memo = ''
-                , orp_status = 'ok'
+                , orp_status = '{$oop_status}'
                 , orp_update_dt = '".G5_TIME_YMDHIS."'
             WHERE orp_idx = '{$orp_idx}'
     ";

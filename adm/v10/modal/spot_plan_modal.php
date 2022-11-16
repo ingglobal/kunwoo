@@ -15,7 +15,7 @@
             <p><strong class="st_cnt_n">야간수량</strong><span class="sp_cnt_n"></span></p>
             <p><strong class="st_cnt">전체수량</strong><span class="sp_cnt"></span></p>
             <p><strong class="st_date">생산일</strong><span class="sp_date"></span></p>
-            <p><strong class="st_date">메모</strong><span class="sp_memo"></span></p>
+            <p><strong class="st_memo">메모</strong><span class="sp_memo"></span></p>
             <p><strong class="st_status">상태</strong><span class="sp_status"></span></p>
         </div>
     </div>

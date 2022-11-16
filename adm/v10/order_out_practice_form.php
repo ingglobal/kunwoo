@@ -190,11 +190,11 @@ include_once('./_head.php');
             </td>
         </tr>
         <tr>
-            <th scope="row">오전수량</th>
+            <th scope="row">주간수량</th>
             <td>
                 <input type="text" name="oop_1" value="<?=$row['oop_1']?>" onclick="javascript:chk_Number(this)" class="oop_ex frm_input" style="text-align:right;width:70px;">
             </td>
-            <th scope="row">오후수량</th>
+            <th scope="row">야간수량</th>
             <td>
                 <input type="text" name="oop_2" value="<?=$row['oop_2']?>" onclick="javascript:chk_Number(this)" class="oop_ex frm_input" style="text-align:right;width:70px;">
             </td>
@@ -209,14 +209,15 @@ include_once('./_head.php');
                 <select name="oop_status" id="oop_status">
                     <?=$g5['set_oop_status_value_options']?>
                 </select>
+                <script>
+                $('#oop_status').val('<?=$row['oop_status']?>');   
+                </script>
             </td>
         </tr>
         <tr>
             <th scope="row">메모</th>
             <td colspan="3">
-                <textarea name="oop_memo" id="oop_memo" rows="5">
-                    <?=$row['oop_memo']?>
-                </textarea>
+                <input type="text" name="oop_memo" id="oop_memo" class="frm_input" value="<?=$row['oop_memo']?>" style="width:600px;">
             </td>
         </tr>
 	</tbody>

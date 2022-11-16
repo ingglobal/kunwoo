@@ -1,13 +1,6 @@
 <?php
-$sub_menu = "930100";
 include_once('./_common.php');
-
-auth_check($auth[$sub_menu], 'r');
-//erp - personal_carexp_month_list파일 참고
-$g5['title'] = '생산실행계획(날짜/설비별)';
-// include_once('./_top_menu_orp.php');
-include_once('./_head.php');
-include_once('./_top_menu_practice.php');
+include_once('./head.php');
 $yoil = array('일','월','화','수','목','금','토');
 // $forge_arr = $g5['trms']['forge_arr'];
 $forge_arr = array();
@@ -115,6 +108,7 @@ $forge_arr['-1'] = $add_ex_all;
 $sql_common = " AND orp_start_date >= '{$first_date}' 
                 AND orp_start_date <= '{$last_date}'
 ";
+
 $sql = " SELECT oop.oop_idx
                 , oop.ori_idx
                 , oop.bom_idx
@@ -166,64 +160,15 @@ for($row=0;$row=sql_fetch_array($result);$row++){
 
 }
 // echo $qstr;
-$qstr .= '&calendar=1&start_date='.$first_date.'&end_date='.$last_date; // 추가로 확장해서 넘겨야 할 변수들
+// $qstr .= '&calendar=1&start_date='.$first_date.'&end_date='.$last_date; // 추가로 확장해서 넘겨야 할 변수들
 // echo $qstr;
-add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/function.date.js"></script>', 0);
 // print_r2($forge_arr);
 ?>
-<style>
-.local_sch{position:relative;}
-.sch_dv{position:relative;padding-bottom:20px;}
-.sch_label{position:relative;}
-.sch_label span{position:absolute;top:-23px;left:5px;z-index:2;}
-.sch_label .date_blank{position:absolute;top:-21px;right:0px;z-index:2;font-size:1.1em;cursor:pointer;}
-.slt_label{position:relative;}
-.slt_label span{position:absolute;top:-23px;left:5px;z-index:2;}
-
-#dv_title{margin-top:20px;position:relative;}
-#dv_title h1{font-size:1.5em;}
-#dv_title h1 span{font-size:0.7em;}
-#dv_title .ul_btn{position:absolute;bottom:10px;right:10px;}
-#dv_title .ul_btn:after{display:block;visibility:hidden;clear:both;content:'';}
-#dv_title .ul_btn li{float:left;}
-#dv_title .ul_btn li a{display:block;width:40px;height:40px;line-height:45px;text-align:center;border:1px solid #888;}
-#dv_title .ul_btn li a i{font-size:2em;}
-#dv_title .ul_btn li:first-child{margin-right:10px;}
-.tbl_head01 thead th{position:sticky;top:127px;z-index:100;font-size:1.1em;}
-.tbl_head01 thead th.th_today{background:#B33771 !important;}
-.tbl_head01 tbody td.td_mms{width:110px !important;}
-.tbl_head01 tbody td.td_dnn{width:45px !important;}
-.tbl_head01 tbody td.td_cell{padding:10px;width:12% !important;position:relative;}
-.tbl_head01 tbody td.td_cell .orp_add{position:absolute;bottom:5px;right:5px;display:block;width:24px;height:24px;line-height:20px;text-align:center;border-radius:50%;background:rgba(0,0,0,0.6);}
-.tbl_head01 tbody td.td_cell .orp_add img{}
-.tbl_head01 tbody td.td_mms,
-.tbl_head01 tbody td.td_n{border-bottom:2px solid #888;}
-.tbl_head01 tbody td.td_d{border-bottom:1px solid #555;}
-.tbl_head01 tbody td .dv_cell{min-height:100px;}
-.tbl_head01 tbody td.td_today{background:#6D214F;}
-.tbl_head01 tbody td.td_today_n{background:#4B112D;}
-.dv_item{position:relative;text-align:left;padding:5px;border:1px solid #2980b9;background:#1e3799;border-radius:5px;margin-top:5px;}
-.dv_item.dv_stop{border:1px solid #4c4e56;background:#383a40;opacity:0.7;}
-.dv_item:first-child{margin-top:0px;}
-.dv_item p{text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height:23px;line-height:23px;}
-.dv_item .p_info{cursor:pointer;}
-.dv_item p.p_name{color:orange;}
-.dv_item p.p_no{color:yellow;font-size:0.9em;}
-.dv_item p.p_std{color:pink;font-size:0.95em;}
-.dv_item p.p_mtr{color:white;font-size:0.9em;}
-.dv_item span{position:absolute;display:block;top:5px;right:5px;border:0px solid #711320;background:rgba(77, 11, 59,0.7);padding:3px 5px;border-radius:4px;}
-.dv_item span.s_cnt{}
-.dv_item .orp_mod{position:absolute;bottom:5px;right:5px;display:block;width:30px;height:30px;line-height:32px;text-align:center;border-radius:50%;background:rgba(0,0,0,0.4);}
-</style>
-<div class="local_ov01 local_ov">
+<div class="local_ov01 local_ov" style="display:none;">
     <?php echo $listall ?>
     <span class="btn_ov01"><span class="ov_txt">총 </span><span class="ov_num"> <?php echo number_format($total_count) ?>건 </span></span>
 </div>
-<?php
-echo $g5['container_sub_title'];
-// print_r2($date_range);
-?>
-<form id="fsearch" name="fsearch" class="local_sch01 local_sch" method="get">
+<form id="fsearch" name="fsearch" class="local_sch01 local_sch" method="get" style="display:none;">
     <div class="sch_dv">생산시작일의 검색범위는 무조건 일주일간(7일간)의 범위로 설정됩니다.</div>
     <label for="start_date" class="sch_label">
         <span>검색시작일</span>
@@ -240,15 +185,17 @@ echo $g5['container_sub_title'];
 </form>
 <div id="pdf_box">
     <div id="dv_title">
-        <h1><?=$g5['title']?> <span>( <?=G5_TIME_YMD?> )</span></h1>
+        <h1 class="">생산계획 <span>( <?=G5_TIME_YMD?> )</span></h1>
+        <?php echo $listall ?>
+        <span class="btn_ov01"><span class="ov_txt">총 </span><span class="ov_num"> <?php echo number_format($total_count) ?>건 </span></span>
         <ul class="ul_btn">
-            <li><a href="./order_out_practice_calendar_list.php?start_date=<?=$prev_week_date?>" class="prev_week"><span class="sound_only">이전주</span><i class="fa fa-angle-left" aria-hidden="true"></i></a></li>
-            <li><a href="./order_out_practice_calendar_list.php?start_date=<?=$next_week_date?>" class="next_week"><span class="sound_only">다음주</span><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+            <li><a href="<?=G5_DEVICE_URL?>/plan/spot_plan.php?start_date=<?=$prev_week_date?>" class="prev_week"><span class="sound_only">이전주</span><i class="fa fa-angle-left" aria-hidden="true"></i></a></li>
+            <li><a href="<?=G5_DEVICE_URL?>/plan/spot_plan.php?start_date=<?=$next_week_date?>" class="next_week"><span class="sound_only">다음주</span><i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
         </ul>
     </div>
     <div class="tbl_head01 tbl_wrap">
         <table class="table table-bordered table-condensed">
-        <caption><?php echo $g5['title']; ?> 목록</caption>
+        <caption class="sound_only"><?php echo $g5['title']; ?> 목록</caption>
         <thead>
         <tr>
             <th scope="col">설비명</th>
@@ -288,23 +235,18 @@ echo $g5['container_sub_title'];
                         mtr="<?=$forge_val[$i]['mtr_bom_str']?>"
                         cut="<?=$forge_val[$i]['cut_mms_name_str']?>"
                         forge="<?=$forge_val[$i]['forge_mms_name_str']?>"
-                        cnt_d="<?=number_format($forge_val[$i]['oop_1'])?>"
-                        cnt_n="<?=number_format($forge_val[$i]['oop_2'])?>"
-                        cnt="<?=number_format($forge_val[$i]['oop_count'])?>"
+                        cnt_d="<?=$forge_val[$i]['oop_1']?>"
+                        cnt_n="<?=$forge_val[$i]['oop_2']?>"
+                        cnt="<?=$forge_val[$i]['oop_count']?>"
                         date="<?=$forge_val[$i]['orp_start_date']?>"
-                        memo="<?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),30,'...')?>"
                         status="<?=$g5['set_oop_status_value'][$forge_val[$i]['oop_status']]?>">
                             <p class="p_info p_name"><?=cut_str($forge_val[$i]['bom_name'],20,'...')?></p>
                             <p class="p_info p_no"><?=$forge_val[$i]['bom_part_no']?></p>
                             <p class="p_info p_std"><?=$forge_val[$i]['bom_std']?></p>
                             <p class="p_info p_mtr">
-                                <?=cut_str($forge_val[$i]['mtr_bom_str'],12,'...')?>
+                                <?=cut_str($forge_val[$i]['mtr_bom_str'],20,'...')?>
                             </p>
-                            <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
-                            <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),12,'...')?></p>
-                            <?php } ?>
                             <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_1'])?></span>
-                            <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획수정"><?=svg_icon('edit','svg_edit',20,20,'#ffffff')?></a>
                         </div>
                     <?php } //if($forge_val[$i]['oop_1']) ?>
                     <?php } //for($i=0;$i<count($forge_val);$i++) ?>
@@ -332,23 +274,18 @@ echo $g5['container_sub_title'];
                         mtr="<?=$forge_val[$i]['mtr_bom_str']?>"
                         cut="<?=$forge_val[$i]['cut_mms_name_str']?>"
                         forge="<?=$forge_val[$i]['forge_mms_name_str']?>"
-                        cnt_d="<?=number_format($forge_val[$i]['oop_1'])?>"
-                        cnt_n="<?=number_format($forge_val[$i]['oop_2'])?>"
-                        cnt="<?=number_format($forge_val[$i]['oop_count'])?>"
+                        cnt_d="<?=$forge_val[$i]['oop_1']?>"
+                        cnt_n="<?=$forge_val[$i]['oop_2']?>"
+                        cnt="<?=$forge_val[$i]['oop_count']?>"
                         date="<?=$forge_val[$i]['orp_start_date']?>"
-                        memo="<?=trim(strip_tags($forge_val[$i]['oop_memo']))?>"
                         status="<?=$g5['set_oop_status_value'][$forge_val[$i]['oop_status']]?>">
                             <p class="p_info p_name"><?=cut_str($forge_val[$i]['bom_name'],20,'...')?></p>
                             <p class="p_info p_no"><?=$forge_val[$i]['bom_part_no']?></p>
                             <p class="p_info p_std"><?=$forge_val[$i]['bom_std']?></p>
                             <p class="p_info p_mtr">
-                                <?=cut_str($forge_val[$i]['mtr_bom_str'],12,'...')?>
+                                <?=cut_str($forge_val[$i]['mtr_bom_str'],20,'...')?>
                             </p>
-                            <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
-                            <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),12,'...')?></p>
-                            <?php } ?>
                             <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_2'])?></span>
-                            <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획수정"><?=svg_icon('edit','svg_edit',20,20,'#ffffff')?></a>
                         </div>
                     <?php } //if($forge_val[$i]['oop_2']) ?>
                 <?php } //for($i=0;$i<count($forge_val);$i++) ?>
@@ -361,11 +298,6 @@ echo $g5['container_sub_title'];
         </tbody>
         </table>
     </div>
-</div>
-<div class="btn_fixed_top">
-    <?php if (!auth_check($auth[$sub_menu],'w')) { ?>
-    <a href="./order_out_practice_form.php?calendar=1" id="member_add" class="btn btn_01">생산계획추가</a>
-    <?php } ?>
 </div>
 <script>
 $("input[name=start_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect: function(selectedDate){
@@ -388,7 +320,6 @@ $('.p_info').on('click',function(){
     var cnt_n = plan.attr('cnt_n');
     var cnt = plan.attr('cnt');
     var date = plan.attr('date');
-    var memo = plan.attr('memo');
     var status = plan.attr('status');
     $('#modal').removeClass('mdl_hide');
     $('.h1_item').text(itm);
@@ -401,7 +332,6 @@ $('.p_info').on('click',function(){
     $('.sp_cnt_n').text(cnt_n);
     $('.sp_cnt').text(cnt);
     $('.sp_date').text(date);
-    $('.sp_memo').text(memo);
     $('.sp_status').text(status);
     modal_event_on();
 });
@@ -418,7 +348,6 @@ function modal_event_on(){
         $('.sp_cnt_n').text("");
         $('.sp_cnt').text("");
         $('.sp_date').text("");
-        $('.sp_memo').text("");
         $('.sp_status').text("");
         $('#modal').addClass('mdl_hide');
         modal_event_off();
@@ -430,5 +359,5 @@ function modal_event_off(){
 }
 </script>
 <?php
-include_once ('./_tail.php');
+include_once('./tail.php');
 ?>

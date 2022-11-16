@@ -58,7 +58,7 @@ foreach($chk_arr as $oro_idx_v){
                 orp_start_date = '0000-00-00',
                 orp_done_date = '0000-00-00',
                 orp_memo = '',
-                orp_status = 'confirm',
+                orp_status = 'pending',
                 orp_reg_dt = '".G5_TIME_YMDHIS."',
                 orp_update_dt = '".G5_TIME_YMDHIS."'
     ";

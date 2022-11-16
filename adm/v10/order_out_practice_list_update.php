@@ -53,7 +53,7 @@ if ($_POST['act_button'] == "선택수정") {
                     ,forge_mb_id = '{$_POST['forge_mb'][$oop_idx_v]}'
                     ,trm_idx_line = '{$trm_idx}'
                     ,orp_start_date = '{$_POST['orp_start_date'][$oop_idx_v]}'
-                    ,orp_status = 'confirm'
+                    ,orp_status = '".$common_status."'
                     ,orp_update_dt = '".G5_TIME_YMDHIS."'
                 WHERE orp_idx = '{$_POST['orp_idx'][$oop_idx_v]}'
         ";
