@@ -288,9 +288,9 @@ echo $g5['container_sub_title'];
                         mtr="<?=$forge_val[$i]['mtr_bom_str']?>"
                         cut="<?=$forge_val[$i]['cut_mms_name_str']?>"
                         forge="<?=$forge_val[$i]['forge_mms_name_str']?>"
-                        cnt_d="<?=number_format($forge_val[$i]['oop_1'])?>"
-                        cnt_n="<?=number_format($forge_val[$i]['oop_2'])?>"
-                        cnt="<?=number_format($forge_val[$i]['oop_count'])?>"
+                        cnt_d="<?=@number_format($forge_val[$i]['oop_1'])?>"
+                        cnt_n="<?=@number_format($forge_val[$i]['oop_2'])?>"
+                        cnt="<?=@number_format($forge_val[$i]['oop_count'])?>"
                         date="<?=$forge_val[$i]['orp_start_date']?>"
                         memo="<?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),30,'...')?>"
                         status="<?=$g5['set_oop_status_value'][$forge_val[$i]['oop_status']]?>">
