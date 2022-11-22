@@ -6,7 +6,7 @@ auth_check($auth[$sub_menu], 'r');
 
 $g5['title'] = '자재재고관리';
 include_once('./_head.php');
-include_once('./_top_menu_mtr.php');
+// include_once('./_top_menu_mtr.php');
 // echo $g5['container_sub_title'];
 
 $sql_common = " FROM {$g5['material_table']} AS mtr
@@ -134,28 +134,8 @@ echo $g5['container_sub_title'];
         <input type="submit" class="btn_submit" value="검색">
     </form>
 
-    <form name="finput" id="finput" action="./material_input_update.php" onsubmit="return input_form(this);" method="post">
-        <label for="bom_name">
-            <input type="hidden" name="bom_idx" value="">
-            <input type="hidden" name="bom_part_no" value="">
-            <input type="hidden" name="bom_type" value="">
-            <input type="hidden" name="bom_price" value="">
-            <input type="text" id="bom_name" name="bom_name" link="./material_select.php" readonly class="frm_input readonly" placeholder="입고자재상품선택(클릭!)" value="" style="width:200px;">
-        </label>
-        <label for="mtr_input_date">
-            <input type="text" name="mtr_input_date" id="mtr_input_date" readonly required class="frm_input readonly required" value="<?=G5_TIME_YMD?>" style="width:80px;">
-        </label>
-        <select name="mtr_times" required id="mtr_times">
-            <?=$g5['set_mtr_times_value_options']?>
-        </select>
-        <label for="counts" id="counts">
-            <input type="text" name="counts" required class="frm_input required" placeholder="자재갯수" value="" style="text-align:right;width:100px;" onclick="javascript:chk_Number(this)">
-        </label>
-        <input type="submit" name="act_button" class="btn_input btn btn_01" onclick="document.pressed=this.value" value="자재입고">
-        <input type="submit" name="act_button" class="btn_input btn btn_04" onclick="document.pressed=this.value" value="자재삭제">
-    </form>
 </div>
-<div class="local_desc01 local_desc" style="display:no ne;">
+<div class="local_desc01 local_desc" style="display:none;">
     <p>새로운 자재를 품목별로 재고갯수를 확인하는 페이지입니다. [등록/삭제]처리도 할 수 있습니다.</p>
     <p>등록된 자재를 삭제할 경우 자재상품을 선택하시고, 삭제할 수량만 입력하신후 [자재삭제]를 클릭해 주세요.</p>
     <p>자재삭제시 날짜와 차수는 상관없이 가장 먼전 등록된 순서로 삭제가 됩니다.</p>

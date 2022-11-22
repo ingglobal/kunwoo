@@ -303,7 +303,9 @@ echo $g5['container_sub_title'];
                             <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
                             <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),12,'...')?></p>
                             <?php } ?>
-                            <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_1'])?></span>
+                            <?php if($forge_val[$i]['oop_1']){ ?>
+                            <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_count'])?></span>
+                            <?php } ?>
                             <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획수정"><?=svg_icon('edit','svg_edit',20,20,'#ffffff')?></a>
                         </div>
                     <?php } //if($forge_val[$i]['oop_1']) ?>
@@ -347,7 +349,9 @@ echo $g5['container_sub_title'];
                             <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
                             <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),12,'...')?></p>
                             <?php } ?>
-                            <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_2'])?></span>
+                            <?php if(!$forge_val[$i]['oop_1']){ ?>
+                            <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_count'])?></span>
+                            <?php } ?>
                             <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획수정"><?=svg_icon('edit','svg_edit',20,20,'#ffffff')?></a>
                         </div>
                     <?php } //if($forge_val[$i]['oop_2']) ?>

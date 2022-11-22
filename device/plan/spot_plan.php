@@ -225,9 +225,9 @@ for($row=0;$row=sql_fetch_array($result);$row++){
                         mtr="<?=$forge_val[$i]['mtr_bom_str']?>"
                         cut="<?=$forge_val[$i]['cut_mms_name_str']?>"
                         forge="<?=$forge_val[$i]['forge_mms_name_str']?>"
-                        cnt_d="<?=number_format($forge_val[$i]['oop_1'])?>"
-                        cnt_n="<?=number_format($forge_val[$i]['oop_2'])?>"
-                        cnt="<?=number_format($forge_val[$i]['oop_count'])?>"
+                        cnt_d="<?=@number_format($forge_val[$i]['oop_1'])?>"
+                        cnt_n="<?=@number_format($forge_val[$i]['oop_2'])?>"
+                        cnt="<?=@number_format($forge_val[$i]['oop_count'])?>"
                         date="<?=$forge_val[$i]['orp_start_date']?>"
                         memo="<?=trim(strip_tags($forge_val[$i]['oop_memo']))?>"
                         status="<?=$g5['set_oop_status_value'][$forge_val[$i]['oop_status']]?>">
@@ -240,7 +240,9 @@ for($row=0;$row=sql_fetch_array($result);$row++){
                             <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
                             <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),15,'...')?></p>
                             <?php } ?>
-                            <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_1'])?></span>
+                            <?php if($forge_val[$i]['oop_1']){ ?>
+                            <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_count'])?></span>
+                            <?php } ?>
                         </div>
                     <?php } //if($forge_val[$i]['oop_1']) ?>
                     <?php } //for($i=0;$i<count($forge_val);$i++) ?>
@@ -268,9 +270,9 @@ for($row=0;$row=sql_fetch_array($result);$row++){
                         mtr="<?=$forge_val[$i]['mtr_bom_str']?>"
                         cut="<?=$forge_val[$i]['cut_mms_name_str']?>"
                         forge="<?=$forge_val[$i]['forge_mms_name_str']?>"
-                        cnt_d="<?=number_format($forge_val[$i]['oop_1'])?>"
-                        cnt_n="<?=number_format($forge_val[$i]['oop_2'])?>"
-                        cnt="<?=number_format($forge_val[$i]['oop_count'])?>"
+                        cnt_d="<?=@number_format($forge_val[$i]['oop_1'])?>"
+                        cnt_n="<?=@number_format($forge_val[$i]['oop_2'])?>"
+                        cnt="<?=@number_format($forge_val[$i]['oop_count'])?>"
                         date="<?=$forge_val[$i]['orp_start_date']?>"
                         memo="<?=trim(strip_tags($forge_val[$i]['oop_memo']))?>"
                         status="<?=$g5['set_oop_status_value'][$forge_val[$i]['oop_status']]?>">
@@ -283,7 +285,9 @@ for($row=0;$row=sql_fetch_array($result);$row++){
                             <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
                             <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),15,'...')?></p>
                             <?php } ?>
-                            <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_2'])?></span>
+                            <?php if(!$forge_val[$i]['oop_1']){ ?>
+                            <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_count'])?></span>
+                            <?php } ?>
                         </div>
                     <?php } //if($forge_val[$i]['oop_2']) ?>
                 <?php } //for($i=0;$i<count($forge_val);$i++) ?>
