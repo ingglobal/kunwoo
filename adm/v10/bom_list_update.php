@@ -41,7 +41,7 @@ if ($_POST['act_button'] == "선택수정") {
                     bom_length = '".trim($_POST['bom_length'][$k])."',
                     bom_weight = '".trim($_POST['bom_weight'][$k])."',
                     bom_price = '".trim($_POST['bom_price'][$k])."',
-                    bom_io_yn = '".$_POST['bom_io_yn'][$k]."'
+                    bom_press_type = '".$_POST['bom_press_type'][$k]."'
                 WHERE bom_idx = '".$_POST['bom_idx'][$k]."'
         ";
         // echo $sql.'<br>';
@@ -84,6 +84,6 @@ if ($msg)
     alert($msg);
 
 // exit;
-$qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_io_yn='.$ser_bom_io_yn; // 추가로 확장해서 넘겨야 할 변수들
+$qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_press_type='.$ser_bom_press_type; // 추가로 확장해서 넘겨야 할 변수들
 goto_url('./bom_list.php?'.$qstr);
 ?>

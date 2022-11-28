@@ -4,9 +4,10 @@ include_once('./_common.php');
 
 auth_check($auth[$sub_menu], 'r');
 
-$g5['title'] = '생산실행(제품별)계획';
+$g5['title'] = '생산실행계획(제품별)';
 // include_once('./_top_menu_orp.php');
 include_once('./_head.php');
+include_once('./_top_menu_practice.php');
 // echo $g5['container_sub_title'];
 $sql_common = " FROM {$g5['order_out_practice_table']} AS oop
     LEFT JOIN {$g5['bom_table']} AS bom ON oop.bom_idx = bom.bom_idx
@@ -149,7 +150,9 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
     <?php echo $listall ?>
     <span class="btn_ov01"><span class="ov_txt">총 </span><span class="ov_num"> <?php echo number_format($total_count) ?>건 </span></span>
 </div>
-
+<?php
+echo $g5['container_sub_title'];
+?>
 <form id="fsearch" name="fsearch" class="local_sch01 local_sch" method="get">
     <label for="sfl" class="sound_only">검색대상</label>
     <label for="schrows" class="sch_label" style="margin-right:10px;">
@@ -258,13 +261,12 @@ $('.data_blank').on('click',function(e){
         <th scope="col">수주ID</th>
         <!-- <th scope="col">생산계획ID</th> -->
         <th scope="col">출하계획<br>수주일</th>
-        <th scope="col">작업지시번호</th>
+        <th scope="col">원자재</th>
         <th scope="col">절단설비</th>
         <th scope="col">절단담당자</th>
         <th scope="col">단조설비</th>
         <th scope="col">단조담당자</th>
         <th scope="col">생산시작일</th>
-        <th scope="col">생산종료일</th>
         <th scope="col">납품수량</th>
         <th scope="col">지시수량</th>
         <th scope="col">주간수량<span></th>
@@ -321,8 +323,41 @@ $('.data_blank').on('click',function(e){
             <?php } ?>
             <?=(($row['ord_date'])?substr($row['ord_date'],2,8):' - ')?>
         </td>
-        <td class="td_order_no">
-            <input type="text" name="orp_order_no[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" value="<?=$row['orp_order_no']?>" readonly class="readonly tbl_input" style="width:200px;background:#333 !important;">
+        <td class="td_mtr">
+            <input type="hidden" name="orp_order_no[<?=$row['oop_idx']?>]" value="<?=$row['orp_order_no']?>">
+            <?php
+            $mtr_tbl = " SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = (
+                SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = '{$row['bom_idx']}'
+            ) ";
+
+            $mtr_sql = " SELECT bom_idx,bom_name,bom_part_no,bom_std FROM ( {$mtr_tbl} ) AS bit
+                            LEFT JOIN {$g5['bom_table']} AS bom ON bit.bom_idx_child = bom.bom_idx ";
+            $mtr_res = sql_query($mtr_sql,1);
+            $mopts = '';
+            if($mtr_res->num_rows){
+                $mtr_boms = array(); 
+                $mopts .= '<select name="mtr_bom_idx['.$row['oop_idx'].']" oop_idx="'.$row['oop_idx'].'" class="mtr_bom_idx mtr_bom_idx_'.$row['oop_idx'].'">'.PHP_EOL;
+                for($mrow=0;$mrow=sql_fetch_array($mtr_res);$mrow++){
+                    $mopts .= '<option value="'.$mrow['bom_idx'].'">'.$mrow['bom_name'].'('.$mrow['bom_std'].')</option>'.PHP_EOL;
+                    array_push($mtr_boms,$mrow['bom_idx']);
+                }
+                // print_r2($mtr_boms);
+                $mtr_bom = ($row['mtr_bom_idx'] != 0) ? $row['mtr_bom_idx'] : $mtr_boms[0];
+                // print_r2($mtr_bom);
+                $mopts .= '</select>'.PHP_EOL;
+                $mopts .= '<script>'.PHP_EOL;
+                $mopts .= "var oop_val_".$i." = ".$mtr_bom.';'.PHP_EOL;
+                $mopts .= '$(".mtr_bom_idx_'.$row['oop_idx'].'").val(oop_val_'.$i.');'.PHP_EOL;
+                $mopts .= '</script>'.PHP_EOL;
+            }
+            else{
+                $mopts .= '<input type="hidden" name="mtr_bom_idx['.$row['oop_idx'].']" value="'.$row['mtr_bom_idx'].'">'.PHP_EOL;
+                $mopts .= '-';
+            }
+            echo $mopts;
+            // $mtr_res = sql_fetch(" SELECT GROUP_CONCAT(bom_idx_child) AS bom_idxs FROM {$g5['bom_item_table']} WHERE bom_idx = '{$half_res['bom_idx_child']}' ");
+            // echo $mtr_res['bom_idxs'];
+            ?>
         </td>
         <td class="td_cut_mms">
             <select name="cut_mms[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" class="cut_mms_idx cut_mms_<?=$row['oop_idx']?>">
@@ -364,9 +399,6 @@ $('.data_blank').on('click',function(e){
         <td class="td_start_date">
             <input type="text" name="orp_start_date[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" value="<?=(($row['orp_start_date'] == '0000-00-00')?'-':$row['orp_start_date'])?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">
         </td>
-        <td class="td_end_date">
-            <input type="text" name="orp_done_date[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" value="<?=(($row['orp_done_date'] == '0000-00-00')?'-':$row['orp_done_date'])?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">
-        </td>
         <td class="td_oro_cnt">
             <?php if($row['oro_count']){ ?>
                 <span class="oro_count_<?=$row['oop_idx']?>"><?=$row['oro_count']?></span>
@@ -394,7 +426,7 @@ $('.data_blank').on('click',function(e){
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='18' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='17' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>

@@ -147,28 +147,6 @@ include_once('./_head.php');
             </td>
         </tr>
         <tr>
-            <th scope="row">절단담당자</th>
-            <td>
-                <select name="cut_mb_id" class="frm_input cut_mb_id">
-                    <option value="">-없음-</option>
-                    <?=$g5['cut_mb_options']?>
-                </select>
-                <script>
-                    $('.cut_mb_id').val('<?=(($row['cut_mb_id'])?$row['cut_mb_id']:"")?>');
-                </script>
-            </td>
-            <th scope="row">단조담당자</th>
-            <td>
-                <select name="forge_mb_id" class="frm_input forge_mb_id">
-                    <option value="">-없음-</option>
-                    <?=$g5['forge_mb_options']?>
-                </select>
-                <script>
-                    $('.forge_mb_id').val('<?=(($row['forge_mb_id'])?$row['forge_mb_id']:"")?>');
-                </script>
-            </td>
-        </tr>
-        <tr>
             <th scope="row">작업지시번호</th>
             <td>
                 <?php
@@ -204,20 +182,30 @@ include_once('./_head.php');
             <td>
                 <input type="text" name="orp_start_date" id="orp_start_date" value="<?=(($row['orp_start_date'])?$row['orp_start_date']:'0000-00-00')?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">
             </td>
+            <th scope="row">해당제품만단조</th>
+            <td>
+                <p>멀티단조에서 본제품에 문제(불량)가 발생하여<br>본제품만 따로 재생산해야 할경우 "예"로 선택하세요.<br><br></p>
+                <select name="oop_onlythis_yn" id="oop_onlythis_yn">
+                    <?=$g5['set_noyes_value_options']?>
+                </select>
+                <script>
+                $('#oop_onlythis_yn').val('<?=(($w=='')?'0':$row['oop_onlythis_yn'])?>');   
+                </script>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row">메모</th>
+            <td>
+                <input type="text" name="oop_memo" id="oop_memo" class="frm_input" value="<?=$row['oop_memo']?>" style="width:80%;">
+            </td>
             <th scope="row">상태</th>
             <td>
                 <select name="oop_status" id="oop_status">
                     <?=$g5['set_oop_status_value_options']?>
                 </select>
                 <script>
-                $('#oop_status').val('<?=$row['oop_status']?>');   
+                $('#oop_status').val('<?=(($w=='')?'done':$row['oop_status'])?>');   
                 </script>
-            </td>
-        </tr>
-        <tr>
-            <th scope="row">메모</th>
-            <td colspan="3">
-                <input type="text" name="oop_memo" id="oop_memo" class="frm_input" value="<?=$row['oop_memo']?>" style="width:600px;">
             </td>
         </tr>
 	</tbody>

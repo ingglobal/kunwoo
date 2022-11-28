@@ -523,6 +523,13 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 			</td>
 		</tr>
 		<tr>
+			<th scope="row">BOM 프레스카운팅 유형</th>
+			<td colspan="3">
+				<?php echo help('제품의 프레스카운팅 유형을 선택. 0_1=0타1개,1_1=1타1개,1_2=1타2개,2_1=2타1개,2_2=2타2개,1_3=1타3개,1_4=1타4개'); ?>
+				<input type="text" name="set_bom_press_type" value="<?php echo $g5['setting']['set_bom_press_type']; ?>" class="frm_input" style="width:70%;">
+			</td>
+		</tr>
+		<tr>
 			<th scope="row">수주상태</th>
 			<td colspan="3">
 				<?php echo help('ok=완료,pendign=대기,cancel=취소,trash=삭제'); ?>
@@ -661,7 +668,7 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 				<input type="text" name="set_oop_status" value="<?php echo $g5['setting']['set_oop_status']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
-            <tr>
+        <tr>
 			<th scope="row">생산계획상태</th>
 			<td colspan="3">
 				<?php echo help('predict=예측,confirm=확정,done=완료,trash=휴지통'); ?>

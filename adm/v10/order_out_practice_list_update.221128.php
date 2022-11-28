@@ -21,12 +21,12 @@ if ($_POST['act_button'] == "선택수정") {
         $_POST['oop_count'][$oop_idx_v] = preg_replace("/,/","",$_POST['oop_count'][$oop_idx_v]);
 
         $_POST['orp_start_date'][$oop_idx_v] = (trim($_POST['orp_start_date'][$oop_idx_v]) == '-')?'0000-00-00':$_POST['orp_start_date'][$oop_idx_v];
-        $_POST['orp_done_date'][$oop_idx_v] = (trim($_POST['orp_done_date'][$oop_idx_v]) == '-')?'0000-00-00':$_POST['orp_done_date'][$oop_idx_v];
 
         $common_status = ($_POST['orp_start_date'][$oop_idx_v] == '0000-00-00') ? 'pending' : $_POST['oop_status'][$oop_idx_v];
 
         $sql = " UPDATE {$g5['order_out_practice_table']} SET
-                    oop_count = '".sql_real_escape_string($_POST['oop_count'][$oop_idx_v])."'
+                    mtr_bom_idx = '".$_POST['mtr_bom_idx'][$oop_idx_v]."'
+                    ,oop_count = '".sql_real_escape_string($_POST['oop_count'][$oop_idx_v])."'
                     ,oop_status = '".$common_status."'
                     ,oop_update_dt = '".G5_TIME_YMDHIS."'
                     ,oop_1 = '".$_POST['oop_1'][$oop_idx_v]."'
@@ -43,7 +43,7 @@ if ($_POST['act_button'] == "선택수정") {
 
         
         $mms_com = $_POST['cut_mms'][$oop_idx_v].'_'.$_POST['forge_mms'][$oop_idx_v];
-        $trm_idx = $g5['trms']['linemms_trm'][$mms_com];
+        $trm_idx = ($mms_com)?$g5['trms']['linemms_trm'][$mms_com]:$g5['trms']['linemms_trm']['0_0'];
         //$g5['trms']['linemms_trm'][0_0]
         $sql2 = " UPDATE {$g5['order_practice_table']} SET
                     orp_order_no = '{$_POST['orp_order_no'][$oop_idx_v]}'
@@ -53,8 +53,7 @@ if ($_POST['act_button'] == "선택수정") {
                     ,forge_mb_id = '{$_POST['forge_mb'][$oop_idx_v]}'
                     ,trm_idx_line = '{$trm_idx}'
                     ,orp_start_date = '{$_POST['orp_start_date'][$oop_idx_v]}'
-                    ,orp_done_date = '{$_POST['orp_done_date'][$oop_idx_v]}'
-                    ,orp_status = 'confirm'
+                    ,orp_status = '".$common_status."'
                     ,orp_update_dt = '".G5_TIME_YMDHIS."'
                 WHERE orp_idx = '{$_POST['orp_idx'][$oop_idx_v]}'
         ";

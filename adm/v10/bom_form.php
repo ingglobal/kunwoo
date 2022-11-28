@@ -262,23 +262,15 @@ label[for="bom_notax_yes"]{margin-right:20px;}
     </tr>
     <?php if(true){ //(${$pre}['bom_type'] == 'product'){ ?>
     <tr>
-        <th scope="row">IO타입여부</th>
+        <th scope="row">프레스카운팅 유형</th>
         <td>
-            <span class="frm_info">Inner/Outer듀얼생성제품이면 "예"를 선택하세요.<br>싱글생성제품이면 "아니오"를 선택하세요.</span>
-            <?php
-            if($w == 'u'){
-                $bom_io_y_chk = (${$pre}['bom_io_yn']) ? ' checked="checked"':'';
-                $bom_io_n_chk = (!${$pre}['bom_io_yn']) ? ' checked="checked"':'';
-            }
-            else{
-                $bom_io_y_chk = '';
-                $bom_io_n_chk = ' checked="checked"';
-            }
-            ?>
-            <input type="radio" name="bom_io_yn" value="1" id="bom_io_y"<?=$bom_io_y_chk?>>
-            <label for="bom_io_y">예</label>&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="radio" name="bom_io_yn" value="0" id="bom_io_n"<?=$bom_io_n_chk?>>
-            <label for="bom_io_n">아니오</label>
+            <span class="frm_info">프레스카운팅 한 번 또는 두 번에<br>몇 개의 제품이 생성되는지 선택하세요.<br>( <b style='color:orange;'>0타1개</b>는 트리밍단 프레스를 거치지 않는 제품을 의미합니다. ) </span>
+            <select name="<?=$pre?>_press_type" id="<?=$pre?>_press_type"
+                <?php if (auth_check($auth[$sub_menu],"d",1)) { ?>onFocus='this.initialSelect=this.selectedIndex;' onChange='this.selectedIndex=this.initialSelect;'<?php } ?>>
+                <option value="">::필수선택::</option>
+                <?=$g5['set_bom_press_type_value_options']?>
+            </select>
+            <script>$('select[name="<?=$pre?>_press_type"]').val('<?=${$pre}[$pre.'_press_type']?>');</script>
         </td>
         <th scope="row">상태</th>
         <td>
@@ -524,6 +516,12 @@ function form01_submit(f) {
     if($('#sp_ex_notice').hasClass('sp_error')){
         alert('올바른 외부라벨 코드를 입력해 주세요.');
         $('input[name="bom_ex_label"]').focus();
+        return false;
+    }
+
+    if(!f.bom_trim_type.value){
+        alert('프레스카운팅 유형을 반드시 선택해 주세요.');
+        $('input[name="bom_press_type"]').focus();
         return false;
     }
 

@@ -193,7 +193,7 @@ label[for="bom_notax_yes"]{margin-right:20px;}
         $ar['help'] = '구매단위를 숫자로 입력하세요.';
         $ar['width'] = '50px';
         if(${$pre}['bom_type'] != 'product'){
-        $ar['colspan'] = '3';
+        // $ar['colspan'] = '3';
         }
         $ar['unit'] = '개';
         $ar['form_script'] = 'onClick="javascript:chk_Number(this)"';
@@ -202,7 +202,7 @@ label[for="bom_notax_yes"]{margin-right:20px;}
         ?>
         <th scope="row">규격</th>
 		<td>
-            <input type="text" name="bom_standard" value="<?php echo ${$pre}['bom_standard'] ?>" id="bom_standard" class="frm_input" style="width:300px;">
+            <input type="text" name="bom_std" value="<?php echo ${$pre}['bom_std'] ?>" id="bom_std" class="frm_input" onclick="javascript:chk_en_upper(this)" style="width:300px;">
 		</td>
     </tr>
     <tr>
@@ -238,32 +238,6 @@ label[for="bom_notax_yes"]{margin-right:20px;}
         unset($ar);
         ?>
     </tr>
-    <?php if(${$pre}['bom_type'] == 'product'){ ?>
-    <tr>
-        <th scope="row">IO타입여부</th>
-        <td>
-            <span class="frm_info">Inner/Outer듀얼생성제품이면 "예"를 선택하세요.<br>싱글생성제품이면 "아니오"를 선택하세요.</span>
-            <?php
-            $bom_io_y_chk = (${$pre}['bom_io_yn']) ? ' checked="checked"':'';
-            $bom_io_n_chk = (!${$pre}['bom_io_yn']) ? ' checked="checked"':'';
-            ?>
-            <input type="radio" name="bom_io_yn" value="1" id="bom_io_y"<?=$bom_io_y_chk?>>
-            <label for="bom_io_y">예</label>&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="radio" name="bom_io_yn" value="0" id="bom_io_n"<?=$bom_io_n_chk?>>
-            <label for="bom_io_n">아니오</label>
-            <script>
-                <?php if($w == 'u'){ ?>
-                $('#bom_io_n').attr('checked',true);
-                <?php } ?>
-            </script>
-        </td>
-        <th scope="row">고객업체(외부)라벨</th>
-        <td>
-            <input type="text" name="bom_ex_label" value="<?php echo ${$pre}['bom_ex_label'] ?>" id="bom_ex_label" class="frm_input" style="width:150px;text-transform:uppercase;" onkeyup="javascript:chk_exCode(this)">
-            <span id="sp_ex_notice"></span>
-        </td>
-    </tr>
-    <?php } ?>
     <tr class="tr_price" style="display:<?=($w=='u')?'none':''?>">
         <?php
         $ar['id'] = 'bom_price';
@@ -286,19 +260,25 @@ label[for="bom_notax_yes"]{margin-right:20px;}
         unset($ar);
         ?>
     </tr>
-    <?php
-    $ar['id'] = 'bom_memo';
-    $ar['name'] = '메모';
-    $ar['type'] = 'textarea';
-    $ar['value'] = ${$pre}[$ar['id']];
-    $ar['colspan'] = 3;
-    echo create_tr_input($ar);
-    unset($ar);
-    ?>
+    <?php if(true){ //(${$pre}['bom_type'] == 'product'){ ?>
     <tr>
-        <th scope="row">알림최소재고수량</th>
+        <th scope="row">IO타입여부</th>
         <td>
-            <input type="text" name="bom_min_cnt" id="bom_min_cnt" value="<?=${$pre}[$pre.'_min_cnt']?>" class="frm_input" style="width:50px;text-align:right;" onclick="javascript:chk_Number(this)">개
+            <span class="frm_info">Inner/Outer듀얼생성제품이면 "예"를 선택하세요.<br>싱글생성제품이면 "아니오"를 선택하세요.</span>
+            <?php
+            if($w == 'u'){
+                $bom_io_y_chk = (${$pre}['bom_io_yn']) ? ' checked="checked"':'';
+                $bom_io_n_chk = (!${$pre}['bom_io_yn']) ? ' checked="checked"':'';
+            }
+            else{
+                $bom_io_y_chk = '';
+                $bom_io_n_chk = ' checked="checked"';
+            }
+            ?>
+            <input type="radio" name="bom_io_yn" value="1" id="bom_io_y"<?=$bom_io_y_chk?>>
+            <label for="bom_io_y">예</label>&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="radio" name="bom_io_yn" value="0" id="bom_io_n"<?=$bom_io_n_chk?>>
+            <label for="bom_io_n">아니오</label>
         </td>
         <th scope="row">상태</th>
         <td>
@@ -309,105 +289,36 @@ label[for="bom_notax_yes"]{margin-right:20px;}
             <script>$('select[name="<?=$pre?>_status"]').val('<?=${$pre}[$pre.'_status']?>');</script>
         </td>
     </tr>
-    <?php if(false){ //($w == 'u' && ${$pre}['bom_type'] == 'product'){ ?>
-    <tr>
-        <th scope="row"><label for="multi_file1">모니터 이미지파일#1</label></th>
-        <td colspan="3">
-            <?php echo help("모니터 이미지파일#1을 등록하고 관리해 주시면 됩니다."); ?>
-            <input type="file" id="multi_file1" name="bom_f1[]" multiple class="bom_file">
-            <?php
-            //print_r3($row);
-            if(@count($rowb['bom_bomf1'])){
-                echo '<ul>'.PHP_EOL;
-                for($i=0;$i<count($rowb['bom_bomf1']);$i++) {
-                    echo "<li>[".($i+1).']'.$rowb['bom_bomf1'][$i]['file']."</li>".PHP_EOL;
-                }
-                echo '</ul>'.PHP_EOL;
-            }
-            ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label for="multi_file2">모니터 이미지파일#2</label></th>
-        <td colspan="3">
-            <?php echo help("모니터 이미지파일#2을 등록하고 관리해 주시면 됩니다."); ?>
-            <input type="file" id="multi_file2" name="bom_f2[]" multiple class="bom_file">
-            <?php
-            if(@count($rowb['bom_bomf2'])){
-                echo '<ul>'.PHP_EOL;
-                for($i=0;$i<count($rowb['bom_bomf2']);$i++) {
-                    echo "<li>[".($i+1).']'.$rowb['bom_bomf2'][$i]['file']."</li>".PHP_EOL;
-                }
-                echo '</ul>'.PHP_EOL;
-            }
-            ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label for="multi_file3">모니터 이미지파일#3</label></th>
-        <td colspan="3">
-            <?php echo help("모니터 이미지파일#3을 등록하고 관리해 주시면 됩니다."); ?>
-            <input type="file" id="multi_file3" name="bom_f3[]" multiple class="bom_file">
-            <?php
-            if(@count($rowb['bom_bomf3'])){
-                echo '<ul>'.PHP_EOL;
-                for($i=0;$i<count($rowb['bom_bomf3']);$i++) {
-                    echo "<li>[".($i+1).']'.$rowb['bom_bomf3'][$i]['file']."</li>".PHP_EOL;
-                }
-                echo '</ul>'.PHP_EOL;
-            }
-            ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label for="multi_file4">모니터 이미지파일#4</label></th>
-        <td colspan="3">
-            <?php echo help("모니터 이미지파일#4을 등록하고 관리해 주시면 됩니다."); ?>
-            <input type="file" id="multi_file4" name="bom_f4[]" multiple class="bom_file">
-            <?php
-            if(@count($rowb['bom_bomf4'])){
-                echo '<ul>'.PHP_EOL;
-                for($i=0;$i<count($rowb['bom_bomf4']);$i++) {
-                    echo "<li>[".($i+1).']'.$rowb['bom_bomf4'][$i]['file']."</li>".PHP_EOL;
-                }
-                echo '</ul>'.PHP_EOL;
-            }
-            ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label for="multi_file5">모니터 이미지파일#5</label></th>
-        <td colspan="3">
-            <?php echo help("모니터 이미지파일#5을 등록하고 관리해 주시면 됩니다."); ?>
-            <input type="file" id="multi_file5" name="bom_f5[]" multiple class="bom_file">
-            <?php
-            if(@count($rowb['bom_bomf5'])){
-                echo '<ul>'.PHP_EOL;
-                for($i=0;$i<count($rowb['bom_bomf5']);$i++) {
-                    echo "<li>[".($i+1).']'.$rowb['bom_bomf5'][$i]['file']."</li>".PHP_EOL;
-                }
-                echo '</ul>'.PHP_EOL;
-            }
-            ?>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row"><label for="multi_file6">모니터 이미지파일#6</label></th>
-        <td colspan="3">
-            <?php echo help("모니터 이미지파일#6을 등록하고 관리해 주시면 됩니다."); ?>
-            <input type="file" id="multi_file6" name="bom_f6[]" multiple class="bom_file">
-            <?php
-            if(@count($rowb['bom_bomf6'])){
-                echo '<ul>'.PHP_EOL;
-                for($i=0;$i<count($rowb['bom_bomf6']);$i++) {
-                    echo "<li>[".($i+1).']'.$rowb['bom_bomf6'][$i]['file']."</li>".PHP_EOL;
-                }
-                echo '</ul>'.PHP_EOL;
-            }
-            ?>
-        </td>
-    </tr>
     <?php } ?>
+    <tr>
+        <th scope="row">재질</th>
+		<td>
+            <input type="text" name="bom_texture" value="<?php echo ${$pre}['bom_texture'] ?>" id="bom_texture" class="frm_input" style="width:300px;">
+		</td>
+        <th scope="row">무게</th>
+		<td>
+            <input type="text" name="bom_weight" onclick="javascript:chk_float_Number(this)" value="<?php echo ${$pre}['bom_weight'] ?>" id="bom_weight" class="frm_input" style="width:80px;text-align:right;">&nbsp;kg
+		</td>
+    </tr>
+    <tr>
+        <th scope="row">지름(Ø)</th>
+		<td>
+            <input type="text" name="bom_pai" onclick="javascript:chk_Number(this)" value="<?php echo ${$pre}['bom_pai'] ?>" id="bom_pai" class="bom_pai" style="width:80px;text-align:right;">&nbsp;mm
+		</td>
+        <th scope="row">길이</th>
+		<td>
+            <input type="text" name="bom_length" onclick="javascript:chk_Number(this)" value="<?php echo ${$pre}['bom_length'] ?>" id="bom_length" class="bom_length" style="width:80px;text-align:right;">&nbsp;mm
+		</td>
+    </tr>
+    <?php
+    $ar['id'] = 'bom_memo';
+    $ar['name'] = '메모';
+    $ar['type'] = 'textarea';
+    $ar['value'] = ${$pre}[$ar['id']];
+    $ar['colspan'] = 3;
+    echo create_tr_input($ar);
+    unset($ar);
+    ?>
 	</tbody>
 	</table>
 </div>
@@ -423,7 +334,7 @@ $(function() {
     //코드형식에 맞는지 확인
     chk_Code(document.getElementById('bom_part_no'));
     <?php if(${$pre}['bom_type'] == 'product'){ ?>
-    chk_exCode(document.getElementById('bom_ex_label'));
+    //chk_exCode(document.getElementById('bom_ex_label'));
     <?php } ?>
 
     <?php if($w == 'u' && ${$pre}['bom_type'] == 'product'){ ?>
@@ -500,10 +411,23 @@ $(function() {
 
 });
 
+//영문숫자 대문자만 입력
+function chk_en_upper(obj){
+    $(obj).keyup(function(){
+        $(this).val($(this).val().replace(/[^0-9A-Za-z\_\.\-\(\)\s]/g,""));
+        $(this).val($(this).val().toUpperCase());
+    });
+}
+
 // 숫자만 입력
 function chk_Number(object){
     $(object).keyup(function(){
-        $(this).val($(this).val().replace(/[^0-9|-]/g,""));
+        $(this).val($(this).val().replace(/[^0-9]/g,""));
+    });
+}
+function chk_float_Number(object){
+    $(object).keyup(function(){
+        $(this).val($(this).val().replace(/[^0-9\.]/g,""));
     });
 }
 

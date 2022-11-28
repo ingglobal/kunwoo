@@ -49,9 +49,9 @@ if($ser_bom_type!='all') {  // all 인 경우는 조건이 필요없음
     $where[] = " bom_type = '".trim($ser_bom_type)."' ";
 }
 
-$ser_bom_io_yn = $ser_bom_io_yn?$ser_bom_io_yn:'all';
-if($ser_bom_io_yn != 'all') {  // all 인 경우는 조건이 필요없음
-    $where[] = " bom_io_yn = '".(($ser_bom_io_yn == 'dual')?1:0)."' ";
+$ser_bom_press_type = $ser_bom_press_type?$ser_bom_press_type:'';
+if($ser_bom_press_type != '') {  // all 인 경우는 조건이 필요없음
+    $where[] = " bom_press_type = '{$ser_bom_press_type}'";
 }
 
 // 최종 WHERE 생성
@@ -82,7 +82,7 @@ $sql = "SELECT *
 $result = sql_query($sql,1);
 
 $listall = '<a href="'.$_SERVER['SCRIPT_NAME'].'" class="ov_listall">전체목록</a>';
-$qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_io_yn='.$ser_bom_io_yn; // 추가로 확장해서 넘겨야 할 변수들
+$qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_press_type='.$ser_bom_press_type; // 추가로 확장해서 넘겨야 할 변수들
 ?>
 <style>
 .tbl_head01 thead tr th{position:sticky;top:100px;z-index:100;}
@@ -118,12 +118,11 @@ $qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_io_yn='.$ser_bom_
 </select>
 <script>$('select[name="ser_bom_type"]').val('<?=$ser_bom_type?>');</script>
 
-<select name="ser_bom_io_yn" id="ser_bom_io_yn">
-    <option value="all">IO구분없이</option>
-    <option value="single">싱글</option>
-    <option value="dual">듀얼</option>
+<select name="ser_bom_press_type" id="ser_bom_press_type">
+    <option value="">프레스유형</option>
+    <?=$g5['set_bom_press_type_value_options']?>
 </select>
-<script>$('select[name="ser_bom_io_yn"]').val('<?=$ser_bom_io_yn?>');</script>
+<script>$('select[name="ser_bom_press_type"]').val('<?=$ser_bom_press_type?>');</script>
 
 <label for="sfl" class="sound_only">검색대상</label>
 <select name="sfl" id="sfl">
@@ -131,7 +130,6 @@ $qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_io_yn='.$ser_bom_
     <option value="bom_name"<?php echo get_selected($_GET['sfl'], "bom_name"); ?>>품명</option>
     <option value="bom_std"<?php echo get_selected($_GET['sfl'], "bom_std"); ?>>규격</option>
 </select>
-<script>$('select[name="ser_bom_io_yn"]').val('<?=$ser_bom_io_yn?>');</script>
 <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
 <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
 <input type="submit" class="btn_submit" value="검색">
@@ -168,7 +166,7 @@ $qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_io_yn='.$ser_bom_
         <th scope="col">길이(mm)</th>
         <th scope="col">무게(kg)</th>
         <th scope="col">단가</th>
-        <th scope="col">I/O여부</th>
+        <th scope="col">프레스<br>카운팅유형</th>
         <th scope="col">타입</th>
         <th scope="col">관리</th>
     </tr>
@@ -267,14 +265,14 @@ $qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_io_yn='.$ser_bom_
             <label for="price_<?php echo $i; ?>" class="sound_only">단가</label>
             <input type="text" name="bom_price[<?php echo $i; ?>]" value="<?=number_format($row['bom_price'])?>" id="price_<?php echo $i; ?>" class="tbl_input sit_amt" style="width:100px;" onClick="javascript:chk_Number(this)">
         </td>
-        <td class="td_bom_io_yn">
-            <lable for="io_yn_<?php echo $i; ?>">
-                <select name="bom_io_yn[<?php echo $i; ?>]" id="io_yn_<?php echo $i; ?>">
-                    <?=$g5['set_bom_io_yn_value_options']?>
+        <td class="td_bom_press_type">
+            <lable for="press_type_<?php echo $i; ?>">
+                <select name="bom_press_type[<?php echo $i; ?>]" id="press_type_<?php echo $i; ?>">
+                    <?=$g5['set_bom_press_type_value_options']?>
                 </select>
             </lable>
             <script>
-                $('#io_yn_<?php echo $i; ?>').val('<?=$row['bom_io_yn']?>');
+                $('#press_type_<?php echo $i; ?>').val('<?=$row['bom_press_type']?>');
             </script>
         </td>
         <td class="td_bom_type"><?=$g5['set_bom_type_value'][$row['bom_type']]?></td><!-- 타입 -->
@@ -303,7 +301,7 @@ $qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_io_yn='.$ser_bom_
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='9' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='12' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>

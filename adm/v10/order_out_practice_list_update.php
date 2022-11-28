@@ -27,6 +27,7 @@ if ($_POST['act_button'] == "선택수정") {
         $sql = " UPDATE {$g5['order_out_practice_table']} SET
                     mtr_bom_idx = '".$_POST['mtr_bom_idx'][$oop_idx_v]."'
                     ,oop_count = '".sql_real_escape_string($_POST['oop_count'][$oop_idx_v])."'
+                    ,oop_onlythis_yn = '".$_POST['oop_onlythis_yn'][$oop_idx_v]."'
                     ,oop_status = '".$common_status."'
                     ,oop_update_dt = '".G5_TIME_YMDHIS."'
                     ,oop_1 = '".$_POST['oop_1'][$oop_idx_v]."'
@@ -48,9 +49,7 @@ if ($_POST['act_button'] == "선택수정") {
         $sql2 = " UPDATE {$g5['order_practice_table']} SET
                     orp_order_no = '{$_POST['orp_order_no'][$oop_idx_v]}'
                     ,cut_mms_idx = '{$_POST['cut_mms'][$oop_idx_v]}'
-                    ,cut_mb_id = '{$_POST['cut_mb'][$oop_idx_v]}'
                     ,forge_mms_idx = '{$_POST['forge_mms'][$oop_idx_v]}'
-                    ,forge_mb_id = '{$_POST['forge_mb'][$oop_idx_v]}'
                     ,trm_idx_line = '{$trm_idx}'
                     ,orp_start_date = '{$_POST['orp_start_date'][$oop_idx_v]}'
                     ,orp_status = '".$common_status."'

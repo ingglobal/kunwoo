@@ -263,14 +263,13 @@ $('.data_blank').on('click',function(e){
         <th scope="col">출하계획<br>수주일</th>
         <th scope="col">원자재</th>
         <th scope="col">절단설비</th>
-        <th scope="col">절단담당자</th>
         <th scope="col">단조설비</th>
-        <th scope="col">단조담당자</th>
         <th scope="col">생산시작일</th>
         <th scope="col">납품수량</th>
         <th scope="col">지시수량</th>
         <th scope="col">주간수량<span></th>
         <th scope="col">야간수량<span></th>
+        <th scope="col">본제품만<br>재단조</th>
         <th scope="col">상태</th>
         <th scope="col">관리</th>
     </tr>
@@ -368,16 +367,6 @@ $('.data_blank').on('click',function(e){
                 $('.cut_mms_<?=$row['oop_idx']?>').val('<?=$row['cut_mms_idx']?>');
                 </script>
         </td>
-        <td class="td_cut_mb td_cut_mb_<?=$row['oop_idx']?>">
-            <select name="cut_mb[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" class="cut_mb_id cut_mb_<?=$row['oop_idx']?>">
-                <option value="">-담당-</option>
-                <?=$g5['cut_mb_options']?>
-            </select>
-            <script>
-                $('.cut_mb_<?=$row['oop_idx']?>').val('<?=(($row['cut_mb_id'])?$row['cut_mb_id']:'0
-                ')?>');
-            </script>
-        </td>
         <td class="td_forge_mms">
             <select name="forge_mms[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" class="forge_mms_idx forge_mms_<?=$row['oop_idx']?>">
                 <option value="0">외주작업</option>
@@ -386,15 +375,6 @@ $('.data_blank').on('click',function(e){
             <script>
                 $('.forge_mms_<?=$row['oop_idx']?>').val('<?=(($row['forge_mms_idx'])?$row['forge_mms_idx']:'0')?>');
                 </script>
-        </td>
-        <td class="td_forge_mb td_forge_mb_<?=$row['oop_idx']?>">
-            <select name="forge_mb[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" class="forge_mb_id forge_mb_<?=$row['oop_idx']?>">
-                <option value="">-담당-</option>
-                <?=$g5['forge_mb_options']?>
-            </select>
-            <script>
-                $('.forge_mb_<?=$row['oop_idx']?>').val('<?=$row['forge_mb_id']?>');
-            </script>
         </td>
         <td class="td_start_date">
             <input type="text" name="orp_start_date[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" value="<?=(($row['orp_start_date'] == '0000-00-00')?'-':$row['orp_start_date'])?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">
@@ -411,6 +391,14 @@ $('.data_blank').on('click',function(e){
         </td>
         <td class="td_oop_1"><input type="text" oop="1" oop_idx="<?=$row['oop_idx']?>" name="oop_1[<?=$row['oop_idx']?>]" value="<?=$row['oop_1']?>" class="tbl_input shf_one oop_1_<?=$row['oro_idx']?>" style="width:60px;text-align:right;"></td>
         <td class="td_oop_2"><input type="text" oop="2" oop_idx="<?=$row['oop_idx']?>" name="oop_2[<?=$row['oop_idx']?>]" value="<?=$row['oop_2']?>" class="tbl_input shf_one oop_2_<?=$row['oro_idx']?>" style="width:60px;text-align:right;"></td>
+        <td class="td_oop_onlythis_yn td_oop_onlythis_yn_<?=$row['oop_idx']?>" style="width:60px;">
+            <select name="oop_onlythis_yn[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" class="oop_onlythis_yn oop_onlythis_yn_<?=$row['oop_idx']?>" style="width:67px;">
+                <?=$g5['set_noyes_value_options']?>
+            </select>
+            <script>
+                $('.oop_onlythis_yn_<?=$row['oop_idx']?>').val('<?=$row['oop_onlythis_yn']?>');
+            </script>
+        </td><!-- 본제품만재단조 -->
         <td class="td_orp_status td_oop_status_<?=$row['oop_idx']?>" style="width:60px;">
             <select name="oop_status[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" class="oop_status oop_status_<?=$row['oop_idx']?>">
                 <?=$g5['set_oop_status_value_options']?>
@@ -426,7 +414,7 @@ $('.data_blank').on('click',function(e){
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='17' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='16' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>

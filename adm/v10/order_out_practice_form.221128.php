@@ -12,9 +12,25 @@ $sql = " SELECT * FROM {$g5['order_practice_table']} AS orp
         WHERE oop_idx = '{$oop_idx}'
 ";
 $row = sql_fetch($sql,1);
+
+
 // print_r3($row);
 $readonly = ' readonly';
 $required= ' required';
+
+//원자재관련 정보 추출
+$mtr_tbl = " SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = (
+    SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = '{$row['bom_idx']}'
+) ";
+$mtr_sql = " SELECT bom_idx,bom_name,bom_part_no,bom_std FROM ( {$mtr_tbl} ) AS bit
+                LEFT JOIN {$g5['bom_table']} AS bom ON bit.bom_idx_child = bom.bom_idx ";
+$mtr_res = sql_query($mtr_sql,1);
+$mtr = array();
+if($mtr_res->num_rows){
+for($mrow=0;$mrow=sql_fetch_array($mtr_res);$mrow++){
+    $mtr[$mrow['bom_idx']] = $mrow['bom_name'].'('.$mrow['bom_std'].')';
+}
+}
 
 if($w == ''){
 
@@ -27,7 +43,9 @@ $html_title = ($w=='')?'추가':'수정';
 $html_title = ($w=='c')?'복제':$html_title;
 $g5['title'] = '생산계획 '.$html_title;
 // $g5['title'] = '(제품별)출하생산계획 '.$html_title;
-$g5['title'] .= ($w != '') ? ' - '.$bom['bom_name'].'['.$bom['bom_part_no'].']' : '';
+$g5['title'] .= ($w != '') ? ' - '.$row['bom_name'].'['.$row['bom_part_no'].']' : '';
+
+$qstr .= ($calendar)?'&start_date='.$first_date.'&end_date='.$last_date:'';
 
 include_once('./_head.php');
 ?>
@@ -54,6 +72,11 @@ include_once('./_head.php');
 <input type="hidden" name="orp_idx" value="<?php echo $row["orp_idx"] ?>">
 <input type="hidden" name="oop_idx" value="<?php echo $row["oop_idx"] ?>">
 <input type="hidden" name="trm_idx_line" value="<?php echo $row['trm_idx_line'] ?>">
+<?php if($calendar){ ?>
+<input type="hidden" name="calendar" value="1">
+<input type="hidden" name="start_date" value="<?=$start_date?>">
+<input type="hidden" name="end_date" value="<?=$end_date?>">
+<?php } ?>
 
 <div class="local_desc01 local_desc" style="display:none;">
     <p>각종 고유번호(설비번호, IMP번호..)들은 내부적으로 다른 데이타베이스 연동을 통해서 정보를 가지고 오게 됩니다.</p>
@@ -72,10 +95,16 @@ include_once('./_head.php');
 	<tbody>
         <tr>
             <th scope="row">상품선택</th>
-            <td colspan="3">
+            <td>
                 <a href="./bom_select2.php?file_name=<?=$g5['file_name']?>" class="btn btn_02" id="btn_ori">상품선택</a>
                 <input type="hidden" name="bom_idx" id="bom_idx" value="<?=$row['bom_idx']?>">
                 <input type="text" name="bom_name" id="bom_name" value="<?=$row['bom_name']?>"<?=($required.$readonly)?> class="frm_input<?=($required.$readonly)?>" style="width:300px;">
+            </td>
+            <th scope="row">원자재</th>
+            <td>
+                <a href="./mtr_select.php?file_name=<?=$g5['file_name']?>" class="btn btn_02" id="btn_mtr">원자재선택</a>
+                <input type="hidden" name="mtr_bom_idx" id="mtr_bom_idx" value="<?=$row['mtr_bom_idx']?>">
+                <input type="text" name="mtr_bom_name" id="mtr_bom_name" value="<?=$mtr[$row['mtr_bom_idx']]?>"<?=($required.$readonly)?> class="frm_input<?=($required.$readonly)?>" style="width:300px;">
             </td>
         </tr>
         <tr>
@@ -140,16 +169,6 @@ include_once('./_head.php');
             </td>
         </tr>
         <tr>
-            <th scope="row">생산시작일</th>
-            <td>
-                <input type="text" name="orp_start_date" id="orp_start_date" value="<?=(($row['orp_start_date'])?$row['orp_start_date']:'0000-00-00')?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">
-            </td>
-            <th scope="row">생산종료일</th>
-            <td>
-                <input type="text" name="orp_done_date" id="orp_done_date" value="<?=(($row['orp_done_date'])?$row['orp_done_date']:'0000-00-00')?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">
-            </td>
-        </tr>
-        <tr>
             <th scope="row">작업지시번호</th>
             <td>
                 <?php
@@ -171,29 +190,34 @@ include_once('./_head.php');
             </td>
         </tr>
         <tr>
-            <th scope="row">오전수량</th>
+            <th scope="row">주간수량</th>
             <td>
                 <input type="text" name="oop_1" value="<?=$row['oop_1']?>" onclick="javascript:chk_Number(this)" class="oop_ex frm_input" style="text-align:right;width:70px;">
             </td>
-            <th scope="row">오후수량</th>
+            <th scope="row">야간수량</th>
             <td>
                 <input type="text" name="oop_2" value="<?=$row['oop_2']?>" onclick="javascript:chk_Number(this)" class="oop_ex frm_input" style="text-align:right;width:70px;">
             </td>
         </tr>
         <tr>
+            <th scope="row">생산시작일</th>
+            <td>
+                <input type="text" name="orp_start_date" id="orp_start_date" value="<?=(($row['orp_start_date'])?$row['orp_start_date']:'0000-00-00')?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">
+            </td>
             <th scope="row">상태</th>
-            <td colspan="3">
+            <td>
                 <select name="oop_status" id="oop_status">
                     <?=$g5['set_oop_status_value_options']?>
                 </select>
+                <script>
+                $('#oop_status').val('<?=$row['oop_status']?>');   
+                </script>
             </td>
         </tr>
         <tr>
             <th scope="row">메모</th>
             <td colspan="3">
-                <textarea name="oop_memo" id="oop_memo" rows="5">
-                    <?=$row['oop_memo']?>
-                </textarea>
+                <input type="text" name="oop_memo" id="oop_memo" class="frm_input" value="<?=$row['oop_memo']?>" style="width:600px;">
             </td>
         </tr>
 	</tbody>
@@ -201,7 +225,10 @@ include_once('./_head.php');
 </div>
 
 <div class="btn_fixed_top">
-    <a href="./order_out_practice_list.php?<?php echo $qstr ?>" class="btn btn_02">목록</a>
+    <?php
+    $order_out_practice_url = ($calendar) ? './order_out_practice_calendar_list.php?'.$qstr:'./order_out_practice_list.php?'.$qstr;
+    ?>
+    <a href="<?=$order_out_practice_url?>" class="btn btn_02">목록</a>
     <input type="submit" value="확인" class="btn_submit btn" accesskey='s'>
 </div>
 </form>
@@ -209,9 +236,7 @@ include_once('./_head.php');
 <script>
 $(function(){
     //생산일선택을 하면 [생산계획ID] 선택을 해제해야 한다.
-    $("#orp_start_date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", closeText:'취소', onSelect: function(selectedDate){$("#orp_done_date").datepicker('option','minDate',selectedDate);}, onClose:function(){if($(window.event.srcElement).hasClass('ui-datepicker-close')){$(this).val('0000-00-00');}}});
-
-    $("#orp_done_date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", closeText:'취소', onSelect: function(selectedDate){$("#orp_start_date").datepicker('option','maxDate',selectedDate);}, onClose:function(){if($(window.event.srcElement).hasClass('ui-datepicker-close')){$(this).val('0000-00-00')}}});
+    $("#orp_start_date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", closeText:'취소', onClose:function(){if($(window.event.srcElement).hasClass('ui-datepicker-close')){$(this).val('0000-00-00');}}});
 
     // 생산제품(상품)선택 버튼 클릭
     $('#btn_ori').click(function(e){
@@ -222,6 +247,20 @@ $(function(){
         return false;
     });
 
+    // 원자재찾기 버튼 클릭
+	$("#btn_mtr").click(function(e) {
+		e.preventDefault();
+        if(!$('#bom_idx').val()){
+            alert('상품을 먼저 선택해 주세요.');
+            $('#bom_name').focus();
+            return false;
+        }
+        var href = $(this).attr('href')+'&bom_idx='+$('#bom_idx').val();
+		var winMaterialSelect = window.open(href, "winMaterialSelect", "left=300,top=150,width=650,height=700,scrollbars=1");
+        winMaterialSelect.focus();
+        return false;
+	});
+
     // 수주ID찾기 버튼 클릭
 	$("#btn_ord").click(function(e) {
 		e.preventDefault();
@@ -231,6 +270,11 @@ $(function(){
             $('#ori_idx').val('');
             $('#ord_date').val('');
             $('#ord_idx').val('');
+            return false;
+        }
+        if(!$('#mtr_bom_idx').val()){
+            alert('원자재를 먼저 선택해 주세요.');
+            $('#mtr_bom_name').focus();
             return false;
         }
         var href = $(this).attr('href')+'&bom_idx='+$('#bom_idx').val();
@@ -250,6 +294,11 @@ $(function(){
             $('#ord_idx').val('');
             $('#oro_date_plan').val('');
             $('#oro_idx').val('');
+            return false;
+        }
+        if(!$('#mtr_bom_idx').val()){
+            alert('원자재를 먼저 선택해 주세요.');
+            $('#mtr_bom_name').focus();
             return false;
         }
         if(!$('#ord_idx').val()){
@@ -310,6 +359,13 @@ function form01_submit(f){
     if(!f.bom_idx.value){
         alert('생산할 상품을 선택해 주세요.');
         f.bom_name.focus();
+        return false;
+    }
+
+    //원자재를 선택하세요
+    if(!f.mtr_bom_idx.value){
+        alert('원자재를 선택해 주세요.');
+        f.mtr_bom_name.focus();
         return false;
     }
 
