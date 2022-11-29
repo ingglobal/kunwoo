@@ -1,0 +1,43 @@
+@charset "utf-8";
+
+body{background:#333;color:#fff;padding:20px;}
+#snd_div{padding-bottom:20px;}
+#snd_div h5{margin-top:10px;margin-bottom:0px;}
+#snd_div p{line-height:1.5em;}
+#lst_div{padding-bottom:20px;display:none;}
+#lst_div h5{margin-top:10px;margin-bottom:0px;}
+#lst_div p{line-height:1.5em;}
+a,a:hover{color:#fff;}
+.home{color:skyblue;}
+.home:hover{color:pink;}
+#hd_login_msg{display:none;}
+caption{text-align:left;}
+#tbl_box{}
+#tbl_box:after{display:none;visibility:hidden;clear:both;content:'';}
+.tbl_head02{width:50%;float:left;}
+.tbl_head02 table{width:100%;}
+.tbl_head02 tbody tr{background:#555;}
+.tbl_head02 tbody tr.bg0{background:#777;}
+.tbl_head02 tbody tr.bg1{background:#666;}
+.tbl_head02 tbody tr:hover{background:#2951A7;}
+.tbl_head02 tbody tr.focus{background:#7E4416;}
+.tbl_head02 thead th,.tbl_head02 tbody td{font-size:0.8em;}
+.tbl_head02 thead th span{font-size:0.6em;}
+.tbl_head02 tbody td{padding:5px;}
+.td_oop_idx{text-align:right;}
+.td_bom_name{width:90px;}
+.td_ord_idx{text-align:right;}
+.td_orp_idx{text-align:right;}
+.td_ord_date{text-align:center;}
+.td_trm_idx_line{text-align:center;}
+.td_start_date{text-align:center;width:50px !important;}
+.td_end_date{text-align:center;width:50px !important;}
+.td_oro_cnt{text-align:right;}
+.td_oop_cnt{text-align:right;}
+.td_oop_status{text-align:right;overflow:hidden;width:70px;}
+.td_itm_total{text-align:right;width:50px;}
+.td_mtr_weight{text-align:right;width:50px;}
+.td_itm_weight{text-align:right;width:50px;}
+.td_loss{text-align:right;width:50px;}
+button{cursor:pointer;}
+.btn_end{}

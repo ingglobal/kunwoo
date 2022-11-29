@@ -1,0 +1,31 @@
+@charset "utf-8";
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+/*
+font-family: 'Noto Sans KR', sans-serif;
+*/
+#hd_login_msg{display:none;}
+::-webkit-scrollbar{height:auto;width:auto;width:8px;}
+::-webkit-scrollbar-thumb{border-radius:0px;background:#2d2d2d;}
+::-webkit-scrollbar-track{
+	background:#555555;
+	-webkit-border-radius:0px;
+	-moz-border-radius:0px;
+	border-radius:0px;
+}
+::-webkit-scrollbar-thumb:window-inactive{background:#888888;}
+
+body {font-family: 'Noto Sans KR', sans-serif;background: #060D1B !important;font-size:1em;color:#e1e1e1;}
+h1, h2, h3, h4, h5, h6 {font-family: 'Noto Sans KR', sans-serif;}
+input, button {font-family: 'Noto Sans KR', sans-serif;}
+textarea, select {font-family: 'Noto Sans KR', sans-serif;}
+select{background-color:#2a3241 !important;color:#aaa;border:1px solid #2a3241;}
+.required{background: url(../../img/wrest.png) top right no-repeat #2a3241 !important}
+input[type="text"],input[type="url"],input[type="number"],input[type="password"],input[type="email"],textarea{background:#333 !important;color:#aaa !important;border:1px solid #2a3241 !important;}
+a{color:#aaa;}
+input[type="number"]{text-align:left;}
+a:link,a:visited{color:#bbb;}
+a:hover{color:#fff;}
+input[type="checkbox"]{-webkit-font-smoothing: antialiased;text-rendering: optimizeSpeed;position: relative;height:15px;line-height:15px;}
+input[type="checkbox"]:before{content: "";position: absolute;width:100%;height:100%;left:0;top:0;-webkit-box-shadow: inset 0 1px 1px #555555, 0 1px 0 #555555;-moz-box-shadow: inset 0 1px 1px #555555, 0 1px 0 #555555;box-shadow: inset 0 1px 1px #555555, 0 1px 0 #555555;background: #555555;}
+input[type="checkbox"]:checked:before{-webkit-box-shadow: inset 0 1px 1px #1f4fa8, 0 1px 0 #1f4fa8;-moz-box-shadow: inset 0 1px 1px #1f4fa8, 0 1px 0 #1f4fa8;box-shadow: inset 0 1px 1px #1f4fa8, 0 1px 0 #1f4fa8;background:#1f4fa8;}
+input[type="checkbox"]:checked:after{font-family:FontAwesome;position:absolute;content:'\f00c';color:#fff;width:100%;height:100%;}
