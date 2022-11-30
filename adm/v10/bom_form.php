@@ -202,7 +202,7 @@ label[for="bom_notax_yes"]{margin-right:20px;}
         ?>
         <th scope="row">규격</th>
 		<td>
-            <input type="text" name="bom_std" value="<?php echo ${$pre}['bom_std'] ?>" id="bom_std" class="frm_input" onclick="javascript:chk_en_upper(this)" style="width:300px;">
+            <input type="text" name="bom_std" value="<?php echo ${$pre}['bom_std'] ?>" id="bom_std" class="frm_input" onclick="javascript:chk_en_ko_upper(this)" style="width:300px;">
 		</td>
     </tr>
     <tr>
@@ -407,6 +407,14 @@ $(function() {
 function chk_en_upper(obj){
     $(obj).keyup(function(){
         $(this).val($(this).val().replace(/[^0-9A-Za-z\_\.\-\(\)\s]/g,""));
+        $(this).val($(this).val().toUpperCase());
+    });
+}
+
+//영문숫자 대문자 한글만 입력
+function chk_en_ko_upper(obj){
+    $(obj).keyup(function(){
+        $(this).val($(this).val().replace(/[^ㄱ-ㅎ가-힣0-9A-Za-z\_\.\-\(\)\s]/g,""));
         $(this).val($(this).val().toUpperCase());
     });
 }

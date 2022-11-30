@@ -246,7 +246,7 @@ $qstr .= '&sca='.$sca.'&ser_bom_type='.$ser_bom_type.'&ser_bom_press_type='.$ser
             <?=$row['bom_part_no']?>
         </td><!-- 파트넘버 -->
         <td class="td_bom_std">
-            <input type="text" name="bom_std[<?php echo $i; ?>]" value="<?=$row['bom_std']?>" id="std_<?php echo $i; ?>" class="tbl_input" style="width:100%;" onClick="javascript:chk_en_upper(this)">
+            <input type="text" name="bom_std[<?php echo $i; ?>]" value="<?=$row['bom_std']?>" id="std_<?php echo $i; ?>" class="tbl_input" style="width:100%;" onClick="javascript:chk_en_ko_upper(this)">
         </td><!-- 규격 -->
         <td class="td_bct_name"><?=$row['bct_name_tree']?></td><!-- 카테고리 -->
         <td class="td_bom_pai" style="text-align:right;">
@@ -384,6 +384,14 @@ $(document).on( 'keyup','input[name^=bom_price], input[name^=bom_count], input[n
 function chk_en_upper(obj){
     $(obj).keyup(function(){
         $(this).val($(this).val().replace(/[^0-9A-Za-z\_\.\-\(\)\s]/g,""));
+        $(this).val($(this).val().toUpperCase());
+    });
+}
+
+//영문숫자 대문자 한글만 입력
+function chk_en_ko_upper(obj){
+    $(obj).keyup(function(){
+        $(this).val($(this).val().replace(/[^ㄱ-ㅎ가-힣0-9A-Za-z\_\.\-\(\)\s]/g,""));
         $(this).val($(this).val().toUpperCase());
     });
 }
