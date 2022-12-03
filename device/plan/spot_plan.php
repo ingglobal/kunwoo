@@ -116,6 +116,7 @@ $sql = " SELECT oop.oop_idx
                 , oop.mtr_bom_idx
                 , oop.oop_count
                 , oop.oop_memo
+                , oop.oop_onlythis_yn
                 , oop.oop_1
                 , oop.oop_2
                 , oop.oop_status
@@ -129,6 +130,7 @@ $sql = " SELECT oop.oop_idx
                 , bom.bom_name
                 , bom.bom_part_no
                 , bom.bom_std
+                , bom.bom_press_type
                 , ( SELECT bom_name FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_name
                 , ( SELECT bom_part_no FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_part_no
                 , ( SELECT bom_std FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_std
@@ -222,6 +224,7 @@ for($row=0;$row=sql_fetch_array($result);$row++){
                         itm="<?=cut_str($forge_val[$i]['bom_name'],20,'...')?>"
                         no="<?=$forge_val[$i]['bom_part_no']?>"
                         std="<?=$forge_val[$i]['bom_std']?>"
+                        press_type="<?=$g5['set_bom_press_type_value'][$forge_val[$i]['bom_press_type']]?>"
                         mtr="<?=$forge_val[$i]['mtr_bom_str']?>"
                         cut="<?=$forge_val[$i]['cut_mms_name_str']?>"
                         forge="<?=$forge_val[$i]['forge_mms_name_str']?>"
@@ -229,14 +232,17 @@ for($row=0;$row=sql_fetch_array($result);$row++){
                         cnt_n="<?=@number_format($forge_val[$i]['oop_2'])?>"
                         cnt="<?=@number_format($forge_val[$i]['oop_count'])?>"
                         date="<?=$forge_val[$i]['orp_start_date']?>"
+                        onlythis="<?=$g5['set_noyes_value'][$forge_val[$i]['oop_onlythis_yn']]?>"
                         memo="<?=trim(strip_tags($forge_val[$i]['oop_memo']))?>"
                         status="<?=$g5['set_oop_status_value'][$forge_val[$i]['oop_status']]?>">
                             <p class="p_info p_name"><?=cut_str($forge_val[$i]['bom_name'],15,'...')?></p>
                             <p class="p_info p_no"><?=$forge_val[$i]['bom_part_no']?></p>
                             <p class="p_info p_std"><?=$forge_val[$i]['bom_std']?></p>
+                            <p class="p_info p_press_type"><?=$g5['set_bom_press_type_value'][$forge_val[$i]['bom_press_type']]?></p>
                             <p class="p_info p_mtr">
                                 <?=cut_str($forge_val[$i]['mtr_bom_str'],15,'...')?>
                             </p>
+                            <p class="p_info p_onlythis">단일단조 : <?=$g5['set_noyes_value'][$forge_val[$i]['oop_onlythis_yn']]?></p>
                             <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
                             <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),15,'...')?></p>
                             <?php } ?>
@@ -267,6 +273,7 @@ for($row=0;$row=sql_fetch_array($result);$row++){
                         itm="<?=cut_str($forge_val[$i]['bom_name'],20,'...')?>"
                         no="<?=$forge_val[$i]['bom_part_no']?>"
                         std="<?=$forge_val[$i]['bom_std']?>"
+                        press_type="<?=$g5['set_bom_press_type_value'][$forge_val[$i]['bom_press_type']]?>"
                         mtr="<?=$forge_val[$i]['mtr_bom_str']?>"
                         cut="<?=$forge_val[$i]['cut_mms_name_str']?>"
                         forge="<?=$forge_val[$i]['forge_mms_name_str']?>"
@@ -274,14 +281,17 @@ for($row=0;$row=sql_fetch_array($result);$row++){
                         cnt_n="<?=@number_format($forge_val[$i]['oop_2'])?>"
                         cnt="<?=@number_format($forge_val[$i]['oop_count'])?>"
                         date="<?=$forge_val[$i]['orp_start_date']?>"
+                        onlythis="<?=$g5['set_noyes_value'][$forge_val[$i]['oop_onlythis_yn']]?>"
                         memo="<?=trim(strip_tags($forge_val[$i]['oop_memo']))?>"
                         status="<?=$g5['set_oop_status_value'][$forge_val[$i]['oop_status']]?>">
                             <p class="p_info p_name"><?=cut_str($forge_val[$i]['bom_name'],15,'...')?></p>
                             <p class="p_info p_no"><?=$forge_val[$i]['bom_part_no']?></p>
                             <p class="p_info p_std"><?=$forge_val[$i]['bom_std']?></p>
+                            <p class="p_info p_press_type"><?=$g5['set_bom_press_type_value'][$forge_val[$i]['bom_press_type']]?></p>
                             <p class="p_info p_mtr">
                                 <?=cut_str($forge_val[$i]['mtr_bom_str'],15,'...')?>
                             </p>
+                            <p class="p_info p_onlythis">단일단조 : <?=$g5['set_noyes_value'][$forge_val[$i]['oop_onlythis_yn']]?></p>
                             <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
                             <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),15,'...')?></p>
                             <?php } ?>
@@ -316,6 +326,7 @@ $('.p_info').on('click',function(){
     var itm = plan.attr('itm');
     var no = plan.attr('no');
     var std = plan.attr('std');
+    var press_type = plan.attr('press_type');
     var mtr = plan.attr('mtr');
     var cut = plan.attr('cut');
     var forge = plan.attr('forge');
@@ -323,19 +334,22 @@ $('.p_info').on('click',function(){
     var cnt_n = plan.attr('cnt_n');
     var cnt = plan.attr('cnt');
     var date = plan.attr('date');
+    var onlythis = plan.attr('onlythis');
     var memo = plan.attr('memo');
     var status = plan.attr('status');
     $('#modal').removeClass('mdl_hide');
     $('.h1_item').text(itm);
     $('.sp_no').text(no);
     $('.sp_std').text(std);
+    $('.sp_press_type').text(press_type);
     $('.sp_mtr').text(mtr);
     $('.sp_cut').text(cut);
     $('.sp_forge').text(forge);
-    $('.sp_cnt_d').text(cnt_d);
-    $('.sp_cnt_n').text(cnt_n);
+    // $('.sp_cnt_d').text(cnt_d);
+    // $('.sp_cnt_n').text(cnt_n);
     $('.sp_cnt').text(cnt);
     $('.sp_date').text(date);
+    $('.sp_onlythis').text(onlythis);
     $('.sp_memo').text(memo);
     $('.sp_status').text(status);
     modal_event_on();
@@ -346,13 +360,15 @@ function modal_event_on(){
         $('.h1_item').text("");
         $('.sp_no').text("");
         $('.sp_std').text("");
+        $('.sp_press_type').text("");
         $('.sp_mtr').text("");
         $('.sp_cut').text("");
         $('.sp_forge').text("");
-        $('.sp_cnt_d').text("");
-        $('.sp_cnt_n').text("");
+        // $('.sp_cnt_d').text("");
+        // $('.sp_cnt_n').text("");
         $('.sp_cnt').text("");
         $('.sp_date').text("");
+        $('.sp_onlythis').text("");
         $('.sp_memo').text("");
         $('.sp_status').text("");
         $('#modal').addClass('mdl_hide');

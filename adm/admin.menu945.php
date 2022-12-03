@@ -1,9 +1,9 @@
 <?php
 if($is_admin){
 	$menu["menu945"] = array (
-		array('945000', '재고관리', ''.G5_USER_ADMIN_URL.'/material_list.php', 'material_list')
+		array('945000', '재고관리', ''.G5_USER_ADMIN_URL.'/material_row_list.php', 'material_row_list')
 		//,array('945100', '수불전표관리', ''.G5_USER_ADMIN_URL.'/config_form.php', 'config_form')
-		,array('945110', '원자재재고관리', ''.G5_USER_ADMIN_URL.'/material_list.php', 'material_list')
+		,array('945110', '원자재재고관리', ''.G5_USER_ADMIN_URL.'/material_row_list.php', 'material_row_list')
 		,array('945113', '절단재재고관리', ''.G5_USER_ADMIN_URL.'/half_list.php', 'half_list')
 		,array('945115', '완제품재고관리', ''.G5_USER_ADMIN_URL.'/item_list.php', 'item_list')
 		//,array('945118', '고객처재고관리', ''.G5_USER_ADMIN_URL.'/guest_item_list.php', 'guest_item_list')
@@ -17,9 +17,9 @@ if($is_admin){
 }
 else{
 	$menu["menu945"] = array (
-		array('945000', '재고관리', ''.G5_USER_ADMIN_URL.'/material_list.php', 'config_form')
+		array('945000', '재고관리', ''.G5_USER_ADMIN_URL.'/material_row_list.php', 'config_row_list')
 		//,array('945100', '수불전표관리', ''.G5_USER_ADMIN_URL.'/config_form.php', 'config_form')
-		,array('945110', '원자재재고관리', ''.G5_USER_ADMIN_URL.'/material_list.php', 'material_list')
+		,array('945110', '원자재재고관리', ''.G5_USER_ADMIN_URL.'/material_row_list.php', 'material_row_list')
 		,array('945113', '절단재재고관리', ''.G5_USER_ADMIN_URL.'/half_list.php', 'half_list')
 		,array('945115', '완제품재고관리', ''.G5_USER_ADMIN_URL.'/item_list.php', 'item_list')
 		//,array('945118', '고객처재고관리', ''.G5_USER_ADMIN_URL.'/guest_item_list.php', 'guest_item_list')

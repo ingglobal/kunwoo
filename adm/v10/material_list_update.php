@@ -53,5 +53,5 @@ if ($msg)
 
 // exit;
 $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 넘겨야 할 변수들
-goto_url('./material_list.php?'.$qstr);
+goto_url('./'.$file_name.'.php?'.$qstr);
 ?>

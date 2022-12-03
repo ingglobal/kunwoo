@@ -38,6 +38,10 @@ if ($stx != "") {
     }
 }
 
+if($press_type){
+    $where[] = " bom.bom_press_type = '".$press_type."' ";
+}
+
 // 최종 WHERE 생성
 if ($where)
     $sql_search = ' WHERE '.implode(' AND ', $where);
@@ -68,7 +72,7 @@ $sql = "SELECT *
 // print_r3($sql);
 $result = sql_query($sql,1);
 
-$qstr .= '&sca='.$sca.'&file_name='.$file_name; // 추가로 확장해서 넘겨야 할 변수들
+$qstr .= '&sca='.$sca.'&file_name='.$file_name.'&press_type='.$press_type; // 추가로 확장해서 넘겨야 할 변수들
 
 $g5['title'] = '제품(자재)리스트 ('.number_format($total_count).')';
 include_once('./_head.sub.php');
@@ -96,6 +100,11 @@ include_once('./_head.sub.php');
             <option value="bom_part_no"<?php echo get_selected($_GET['sfl'], "bom_part_no"); ?>>품번</option>
             <option value="bom_name"<?php echo get_selected($_GET['sfl'], "bom_name"); ?>>품명</option>
         </select>
+        <select name="press_type" id="press_type">
+            <option value="">::타수선택::</option>
+            <?=$g5['set_bom_press_type_value_options']?>
+        </select>
+        <script>$('#press_type').val('<?=(($press_type)?$press_type:'')?>');</script>
         <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
         <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input" style="width:160px;">
         <input type="submit" value="검색" class="btn_frmline">
@@ -110,23 +119,25 @@ include_once('./_head.sub.php');
             <th scope="col"><?php echo subject_sort_link('bom_name') ?>품명</a></th>
             <th scope="col">품번</th>
             <th scope="col">규격</th>
-            <th scope="col">단가</th>
-            <th scope="col">타입</th>
+            <!-- <th scope="col">단가</th> -->
+            <th scope="col">타수유형</th>
+            <!-- <th scope="col">타입</th> -->
             <th scope="col">선택</th>
         </tr>
         </thead>
         <tbody>
         <?php
         for ($i=0; $row=sql_fetch_array($result); $i++) {
-
+            $g5['set_bom_press_type_value'][$row['bom_press_type']];
             $bg = 'bg'.($i%2);
         ?>
         <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['bom_idx'] ?>">
             <td class="td_bom_name"><?=$row['bom_name']?></td><!-- 품명 -->
             <td class="td_bom_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
             <td class="td_com_name"><?=$row['bom_std']?></td><!-- 규격 -->
-            <td class="td_bom_price"><?=number_format($row['bom_price'])?></td><!-- 단가 -->
-            <td class="td_bom_type"><?=$g5['set_bom_type_value'][$row['bom_type']]?></td>
+            <!-- <td class="td_bom_price"><?=number_format($row['bom_price'])?></td> -->
+            <td class="td_bom_press_type"><?=$g5['set_bom_press_type_value'][$row['bom_press_type']]?></td><!-- 타수유형 -->
+            <!-- <td class="td_bom_type"><?=$g5['set_bom_type_value'][$row['bom_type']]?></td> -->
             <td class="td_mng td_mng_s">
                 <button type="button" class="btn btn_03 btn_select"
                     bom_idx="<?=$row['bom_idx']?>"
@@ -142,7 +153,7 @@ include_once('./_head.sub.php');
         <?php
         }
         if($i ==0)
-            echo '<tr><td colspan="6" class="empty_table">검색된 자료가 없습니다.</td></tr>';
+            echo '<tr><td colspan="5" class="empty_table">검색된 자료가 없습니다.</td></tr>';
         ?>
         </tbody>
         </table>

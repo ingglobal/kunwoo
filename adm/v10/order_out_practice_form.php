@@ -182,7 +182,7 @@ include_once('./_head.php');
             <td>
                 <input type="text" name="orp_start_date" id="orp_start_date" value="<?=(($row['orp_start_date'])?$row['orp_start_date']:'0000-00-00')?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">
             </td>
-            <th scope="row">해당제품만단조</th>
+            <th scope="row">해당제품만단조<br>(단일단조)</th>
             <td>
                 <p>멀티단조에서 본제품에 문제(불량)가 발생하여<br>본제품만 따로 재생산해야 할경우 "예"로 선택하세요.<br><br></p>
                 <select name="oop_onlythis_yn" id="oop_onlythis_yn">

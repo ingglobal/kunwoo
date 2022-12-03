@@ -8,10 +8,8 @@ $g5['title'] = '절단재등록';
 include_once(G5_PATH.'/head.sub.php');
 
 $sql_common = " FROM {$g5['order_out_practice_table']} AS oop
-    LEFT JOIN {$g5['bom_table']} AS bom ON oop.bom_idx = bom.bom_idx
     LEFT JOIN {$g5['order_practice_table']} AS orp ON orp.orp_idx = oop.orp_idx
-    LEFT JOIN {$g5['order_out_table']} AS oro ON oop.oro_idx = oro.oro_idx
-    LEFT JOIN {$g5['order_table']} AS ord ON oro.ord_idx = ord.ord_idx
+    LEFT JOIN {$g5['bom_table']} AS bom ON oop.bom_idx = bom.bom_idx
 ";
 
 $where = array();
@@ -56,7 +54,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_DEVICE_URL.'/'.$g5['dir_name']
 include('../head_menu.php'); 
 ?>
 <div id="snd_div">
-<h5>[종료버튼 클릭시 API에 넘겨줄 데이터]</h5>
+<h5>[등록버튼 클릭시 API에 넘겨줄 데이터]</h5>
 <p>
 <?php
 $data_str = "
@@ -129,7 +127,7 @@ echo nl2br($sql);
                 <td class="td_oro_cnt"><?=number_format($row['oop_count'])?></td>
                 <td class="td_oop_status"><?php echo $g5['set_oop_status_value'][$row['oop_status']]?><br>(<?=$row['oop_status']?>)</td><!-- 상태 -->
                 <td class="td_mtr_total"><?=number_format($row['mtr_total'])?></td>
-                <td class="td_mtr_end"><button type="button" oop_idx="<?=$row['oop_idx']?>" class="btn btn_end">종료</button></td>
+                <td class="td_mtr_end"><button type="button" oop_idx="<?=$row['oop_idx']?>" class="btn btn_end">등록</button></td>
                 <td class="td_mtr_detail"><a href="./form.php?oop_idx=<?=$row['oop_idx']?>" class="btn btn_detail">상세</a></td>
             </tr>
             <?php
@@ -188,8 +186,7 @@ echo nl2br($sql);
     </div><!--//.tbl_head02-->
     <?php } ?>
 </div><!--//#tbl_box-->
-<form id="form" action="./index.php" method="POST">
-</form>
+<form id="form" action="./index.php" method="POST"></form>
 <script>
 
 $('.btn_end').on('click',function(){

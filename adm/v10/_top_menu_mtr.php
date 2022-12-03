@@ -12,8 +12,8 @@ if($member['mb_manager_yn']) {
 ${'active_'.$g5['file_name']} = ' btn_top_menu_active';
 $g5['container_sub_title'] = '
 <h2 id="container_sub_title">
-	<a href="./material_list.php" class="btn_top_menu '.$active_material_list.'">자재재고관리</a>
-	<a href="./material_row_list.php" class="btn_top_menu '.$active_material_row_list.'">자재재고로우데이터</a>
+	<a href="./material_row_list.php" class="btn_top_menu '.$active_material_row_list.'">자재재고(번들번호)</a>
+	<a href="./material_list.php" class="btn_top_menu '.$active_material_list.'">자재재고(히트넘버)</a>
 	'.$sub_title_term_list.'
 </h2>
 ';

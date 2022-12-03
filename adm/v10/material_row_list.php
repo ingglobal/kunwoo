@@ -4,25 +4,35 @@ include_once('./_common.php');
 
 auth_check($auth[$sub_menu], 'r');
 
-$g5['title'] = '자재재고관리';
+$g5['title'] = '자재재고관리(번들넘버별)';
 include_once('./_head.php');
 include_once('./_top_menu_mtr.php');
 // echo $g5['container_sub_title'];
 
 $sql_common = " FROM {$g5['material_table']} AS mtr
-                    LEFT JOIN {$g5['bom_table']} AS bom ON bom.bom_idx = mtr.bom_idx
+                    LEFT JOIN {$g5['bom_table']} AS bom ON mtr.bom_part_no = bom.bom_part_no
                     LEFT JOIN {$g5['company_table']} AS com ON bom.com_idx_provider = com.com_idx
 ";
 
 $where = array();
 // 디폴트 검색조건 (used 제외)
-$where[] = " mtr_status NOT IN ('delete','trash','used') AND mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " mtr_status NOT IN ('delete','del','trash','cancel','used') ";
+$where[] = " mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 // 검색어 설정
 if ($stx != "") {
     switch ($sfl) {
 		case ( $sfl == 'mtr.bom_part_no' ) :
-			$where[] = " {$sfl} LIKE '%".trim($stx)."%' ";
+			$where[] = " {$sfl} = '".trim($stx)."' ";
+            break;
+		case ( $sfl == 'mtr.mtr_lot' ) :
+			$where[] = " {$sfl} = '".trim($stx)."' ";
+            break;
+		case ( $sfl == 'mtr.mtr_heat' ) :
+			$where[] = " {$sfl} = '".trim($stx)."' ";
+            break;
+		case ( $sfl == 'mtr.mtr_bundle' ) :
+			$where[] = " {$sfl} = '".trim($stx)."' ";
             break;
         default :
 			$where[] = " $sfl LIKE '%".trim($stx)."%' ";
@@ -30,7 +40,6 @@ if ($stx != "") {
     }
 }
 
-if($times) $where[] = " mtr_times = '".$times."' ";
 if($mtr_input2_date) $where[] = " mtr_input_date = '".$mtr_input2_date."' ";
 if($mtr2_status) $where[] = " mtr_status = '".$mtr2_status."' ";
 // 최종 WHERE 생성
@@ -48,7 +57,7 @@ $sql = " select count(*) as cnt {$sql_common} {$sql_search} ";
 $row = sql_fetch($sql);
 $total_count = $row['cnt'];
 
-$rows = 1000;//$config['cf_page_rows'];
+$rows = 50;//$config['cf_page_rows'];//1000
 $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
 if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
@@ -64,15 +73,18 @@ $listall = '<a href="'.$_SERVER['SCRIPT_NAME'].'" class="ov_listall">전체목�
 $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 넘겨야 할 변수들
 ?>
 <style>
-.tbl_head01 thead tr th{position:sticky;top:100px;z-index:100;}
+.tbl_head01 thead tr th{position:sticky;top:128px;z-index:100;}
 .td_chk{position:relative;}
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
 #top_form:after{display:block;visibility:hidden;clear:both;content:'';}
 #top_form #fsearch{float:left;}
 #top_form #finput{float:right;margin:10px 0;}
-.td_mtr_name {text-align:left !important;}
+.td_mtr_name,.td_mtr_lot,.td_mtr_heat,.td_mtr_bundle {text-align:left !important;}
 .td_mtr_part_no, .td_com_name, .td_mtr_maker
 ,.td_mtr_items, .td_mtr_items_title {text-align:left !important;}
+.td_mtr_weight
+,.td_mtr_price
+,.td_mtr_sum_price{text-align:right !important;}
 .span_mtr_price {margin-left:20px;}
 .span_mtr_price b, .span_bit_count b {color:#737132;font-weight:normal;}
 #modal01 table ol {padding-right: 20px;text-indent: -12px;padding-left: 12px;}
@@ -81,6 +93,8 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
     display: unset;
     margin: -8px 0 0 -8px;
 }
+.loading{display:inline-block;}
+.loading_hide{display:none;}
 label[for="mtr_input2_date"]{position:relative;}
 label[for="mtr_input2_date"] i{position:absolute;top:-10px;right:0px;z-index:2;cursor:pointer;}
 .slt_label{position:relative;}
@@ -99,62 +113,38 @@ echo $g5['container_sub_title'];
     <form id="fsearch" name="fsearch" class="local_sch01 local_sch" method="get">
         <label for="sfl" class="sound_only">검색대상</label>
         <select name="sfl" id="sfl">
+            <option value="mtr.mtr_bundle"<?php echo get_selected($_GET['sfl'], "mtr_bundle"); ?>>번들넘버</option>
+            <option value="mtr.mtr_heat"<?php echo get_selected($_GET['sfl'], "mtr_heat"); ?>>히트넘버</option>
+            <option value="mtr.mtr_lot"<?php echo get_selected($_GET['sfl'], "mtr_lot"); ?>>Lot넘버</option>
             <option value="mtr_name"<?php echo get_selected($_GET['sfl'], "mtr_name"); ?>>품명</option>
             <option value="mtr.bom_part_no"<?php echo get_selected($_GET['sfl'], "bom_part_no"); ?>>품번</option>
+            <option value="bom.bom_std"<?php echo get_selected($_GET['sfl'], "bom_std"); ?>>규격</option>
         </select>
         <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
         <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
-        <select name="times" id="times">
-            <option value="">::입고차수::</option>
-            <?=$g5['set_mtr_times_value_options']?>
-        </select>
         <select name="mtr2_status" id="mtr2_status">
             <option value="">-상태선택-</option>
             <?=$g5['set_mtr_status_value_options']?>
         </select>
-        <?php
-        $mtr_input2_date = ($mtr_input2_date) ? $mtr_input2_date : G5_TIME_YMD;
-        ?>
         <label for="mtr_input2_date"><strong class="sound_only">입고일 필수</strong>
         <i class="fa fa-times" aria-hidden="true"></i>
-        <input type="text" name="mtr_input2_date" value="<?php echo $mtr_input2_date ?>" placeholder="입고일" id="mtr_input_date" readonly class="frm_input readonly" style="width:80px;">
+        <input type="text" name="mtr_input2_date" value="<?php echo $mtr_input2_date ?>" placeholder="입고일" id="mtr_input_date" readonly class="frm_input readonly" style="width:95px;">
         </label>
         <script>
         <?php
-        $sfl = ($sfl == '') ? 'mtr_name' : $sfl;
+        $sfl = ($sfl == '') ? 'mtr.mtr_bundle' : $sfl;
         ?>
         $('#sfl').val('<?=$sfl?>');
-        $('#times').val('<?=$times?>');
         $('#mtr2_status').val('<?=$mtr2_status?>');
         </script>
         <input type="submit" class="btn_submit" value="검색">
     </form>
-
-    <form name="finput" id="finput" action="./material_input_update.php" onsubmit="return input_form(this);" method="post">
-        <label for="bom_name">
-            <input type="hidden" name="bom_idx" value="">
-            <input type="hidden" name="bom_part_no" value="">
-            <input type="hidden" name="bom_type" value="">
-            <input type="hidden" name="bom_price" value="">
-            <input type="text" id="bom_name" name="bom_name" link="./material_select.php" readonly class="frm_input readonly" placeholder="입고자재상품선택(클릭!)" value="" style="width:200px;">
-        </label>
-        <label for="mtr_input_date">
-            <input type="text" name="mtr_input_date" id="mtr_input_date" readonly required class="frm_input readonly required" value="<?=G5_TIME_YMD?>" style="width:80px;">
-        </label>
-        <select name="mtr_times" required id="mtr_times">
-            <?=$g5['set_mtr_times_value_options']?>
-        </select>
-        <label for="counts" id="counts">
-            <input type="text" name="counts" required class="frm_input required" placeholder="자재입고갯수" value="" style="text-align:right;width:100px;" onclick="javascript:chk_Number(this)">
-        </label>
-        <input type="submit" name="act_button" class="btn_input btn btn_01" onclick="document.pressed=this.value" value="자재입고">
-        <input type="submit" name="act_button" class="btn_input btn btn_04" onclick="document.pressed=this.value" value="자재삭제">
-    </form>
 </div>
 <div class="local_desc01 local_desc" style="display:no ne;">
-    <p>새로운 자재를 등록하는 페이지입니다.</p>
-    <p><b style="color:skyblue;">엑셀파일</b>로 등록할때는 <b style="color:red;">최초에 한 번만 등록할 수 있으니</b> 신중하게 작성해서 등록해 주시기 바랍니다.</p>
-    <p>엑셀파일에 의한 최초 등록후 재고품목의 <b style="color:skyblue">추가등록</b> 및 <b style="color:red">삭제작업</b>은 [<b style="color:orange">자재재고관리</b>] 페이지상에서 진행해 주세요.</p>
+    <p>새로운 자재를 엑셀파일로 등록/수정하는 페이지입니다.</p>
+    <p><b style="color:skyblue;">엑셀파일</b>로 등록할때는 반드시 <b style="color:red;">단일시트로</b> 작성해서 등록해 주시기 바랍니다.</p>
+    <p>목록중에 중간에 내용이 비어있는 라인이 있으면 안됩니다.</p>
+    <p>데이터의 셀위치를 함부로 변경하시면 등록이 안되오니 주의해 주시기 바랍니다.</p>
 </div>
 
 <div class="select_input">
@@ -197,6 +187,7 @@ $('.data_blank').on('click',function(e){
 <input type="hidden" name="stx" value="<?php echo $stx ?>">
 <input type="hidden" name="page" value="<?php echo $page ?>">
 <input type="hidden" name="token" value="">
+<input type="hidden" name="file_name" value="<?=$g5['file_name']?>">
 
 <div class="tbl_head01 tbl_wrap">
     <table>
@@ -209,12 +200,17 @@ $('.data_blank').on('click',function(e){
         </th>
         <th scope="col">ID</th>
         <th scope="col"><?php echo subject_sort_link('mtr_name') ?>품명</a></th>
-        <th scope="col">파트넘버</th>
-        <th scope="col">공급처</th>
+        <th scope="col">품목코드</th>
+        <th scope="col">규격</th>
+        <th scope="col">입고무게(kg)</th>
+        <th scope="col">입고단가</th>
+        <th scope="col">입고금액</th>
+        <th scope="col">Lot</th>
+        <th scope="col">히트넘버</th>
+        <th scope="col">번들넘버</th>
         <th scope="col">입고일</th>
-        <th scope="col">차수</th>
         <th scope="col">상태</th>
-        <th scope="col">관리</th>
+        <!-- <th scope="col">관리</th> -->
     </tr>
     <tr>
     </tr>
@@ -237,25 +233,30 @@ $('.data_blank').on('click',function(e){
             <input type="checkbox" name="chk[]" value="<?php echo $row['mtr_idx'] ?>" id="chk_<?php echo $i ?>">
             <div class="chkdiv_btn" chk_no="<?=$i?>"></div>
         </td>
-        <td class="td_mtr_name"><?=$row['mtr_idx']?></td><!-- ID -->
+        <td class="td_mtr_idx"><?=$row['mtr_idx']?></td><!-- ID -->
         <td class="td_mtr_name"><?=$row['mtr_name']?></td><!-- 품명 -->
         <td class="td_mtr_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
-        <td class="td_mtr_provider"><?=$row['com_name']?></td><!-- 공급처명 -->
+        <td class="td_mtr_std"><?=$row['bom_std']?></td><!-- 규격 -->
+        <td class="td_mtr_weight"><?=number_format($row['mtr_weight'])?></td><!-- 무게 -->
+        <td class="td_mtr_price"><?=number_format($row['mtr_price'])?></td><!-- 단가 -->
+        <td class="td_mtr_sum_price"><?=number_format($row['mtr_sum_price'])?></td><!-- 금액 -->
+        <td class="td_mtr_lot"><?=$row['mtr_lot']?></td><!-- Lot넘버 -->
+        <td class="td_mtr_heat"><?=$row['mtr_heat']?></td><!-- 히트넘버 -->
+        <td class="td_mtr_bundle"><?=$row['mtr_bundle']?></td><!-- 번들넘버 -->
         <td class="td_mtr_input_date"><?=$row['mtr_input_date']?></td><!-- 입고일 -->
-        <td class="td_mtr_times"><?=$row['mtr_times']?></td><!-- 차수 -->
         <td class="td_mtr_status td_mtr_status_<?=$row['mtr_idx']?>" style="width:180px;">
             <input type="hidden" name="mtr_status[<?php echo $row['mtr_idx'] ?>]" class="mtr_status_<?php echo $row['mtr_idx'] ?>" value="<?php echo $row['mtr_status']?>">
             <input type="text" value="<?php echo $g5['set_mtr_status'][$row['mtr_status']]?>" readonly class="tbl_input readonly mtr_status_name_<?php echo $row['mtr_idx'] ?>" style="width:170px;text-align:center;">
         </td><!-- 상태 -->
-        <td class="td_mng">
-            <?=($row['mtr_type']!='material')?$s_bom:''?><!-- 자재가 아닌 경우만 BOM 버튼 -->
+        <!-- <td class="td_mng">
+            <?=($row['mtr_type']!='material')?$s_bom:''?>
 			<?=$s_mod?>
-		</td>
+		</td> -->
     </tr>
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='9' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='13' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>
@@ -288,7 +289,6 @@ $('.data_blank').on('click',function(e){
         <tr>
             <td style="line-height:130%;padding:10px 0;">
                 <ol>
-                    <li>엑셀은 97-2003통합문서만 등록가능합니다. (*.xls파일로 저장)</li>
                     <li>엑셀은 하단에 탭으로 여러개 있으면 등록 안 됩니다. (한개의 독립 문서이어야 합니다.)</li>
                 </ol>
             </td>
@@ -301,6 +301,10 @@ $('.data_blank').on('click',function(e){
         <tr>
             <td style="padding:15px 0;">
                 <button type="submit" class="btn btn_01">확인</button>
+                <p class="loading loading_hide" style="padding-left:10px;">
+                    <img src="<?=G5_USER_ADMIN_IMG_URL?>/loading_small.gif">
+                    <b style="color:yellow;padding-left:10px;">실행중...</b>
+                </p>
             </td>
         </tr>
         </tbody>
@@ -334,6 +338,7 @@ $( "#btn_excel_upload" ).on( "click", function() {
 $( "#modal01" ).dialog({
     autoOpen: false
     , position: { my: "right-10 top-10", of: "#btn_excel_upload"}
+    , width: 350
 });
 
 
@@ -466,41 +471,10 @@ function form02_submit(f) {
         return false;
     }
 
-    return true;
-}
-
-
-function input_form(f){
-    if(!f.bom_name.value){
-        alert('입고할 상품을 선택해 주세요.');
-        f.bom_name.focus();
+    if(!confirm("대량데이터처리이므로 시간이 1분이상 소요될수 있습니다.\n실행하는 동안 창을 닫거나, 다른버튼을 클릭해서는 안됩니다.\n작업을 진행하시겠습니까?")){
         return false;
     }
-
-    if(!f.mtr_input_date.value){
-        alert('입고일을 선택해 주세요.');
-        f.mtr_input_date.focus();
-        return false;
-    }
-
-    if(!f.mtr_times.value){
-        alert('입고차수를 선택해 주세요.');
-        f.mtr_times.focus();
-        return false;
-    }
-
-    if(!f.counts.value){
-        alert('입고갯수를 설정해 주세요.');
-        f.counts.focus();
-        return false;
-    }
-
-    if(document.pressed == "자재삭제") {
-        if(!confirm("등록된 자재를 정말 삭제하시겠습니까?")) {
-            return false;
-        }
-    }
-
+    $('.loading').removeClass('loading_hide');
     return true;
 }
 </script>
