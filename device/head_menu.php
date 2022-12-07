@@ -14,4 +14,5 @@ ul{list-style:none;padding:0;margin:0;}
     <li class="nav_li nav_adm"><a href="<?php echo G5_USER_ADMIN_URL ?>" class="">관리자홈</a></li>
     <li class="nav_li nav_home"><a href="<?php echo G5_DEVICE_URL ?>" class="<?=($g5['dir_name'] == 'device')?' focus':''?>">APIs홈</a></li>
     <li class="nav_li"><a href="<?php echo G5_DEVICE_URL ?>/half_reg/form.php" class="<?=($g5['dir_name'] == 'half_reg')?' focus':''?>">절단재등록</a></li>
+    <li class="nav_li"><a href="<?php echo G5_DEVICE_URL ?>/half_plt/form.php" class="<?=($g5['dir_name'] == 'half_plt')?' focus':''?>">절단PLT등록</a></li>
 </ul>

@@ -108,7 +108,7 @@ $sql = " SELECT *
 $result = sql_query($sql,1);
 
 $listall = '<a href="'.$_SERVER['SCRIPT_NAME'].'" class="ov_listall">전체목록</a>';
-$qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 넘겨야 할 변수들
+$qstr .= '&sca='.$sca.'&order_date='.$order_date; // 추가로 확장해서 넘겨야 할 변수들
 ?>
 <style>
 .tbl_head01 thead tr th{position:sticky;top:100px;z-index:100;}
@@ -245,6 +245,7 @@ $('.data_blank').on('click',function(e){
 <input type="hidden" name="sfl2" value="<?php echo $sfl2 ?>">
 <input type="hidden" name="stx2" value="<?php echo $stx2 ?>">
 <input type="hidden" name="page" value="<?php echo $page ?>">
+<input type="hidden" name="order_date" value="<?php echo $order_date ?>">
 <input type="hidden" name="token" value="">
 <!--차종/품명/구분/전일재고/단가/납품/과부족/생산지시/시간1/시간2/시간3/시간4/시간5/시간6/시간7/시간8-->
 <div class="tbl_head01 tbl_wrap">
@@ -261,6 +262,7 @@ $('.data_blank').on('click',function(e){
         <th scope="col">수주ID</th>
         <!-- <th scope="col">생산계획ID</th> -->
         <th scope="col">출하계획<br>수주일</th>
+        <th scope="col">단조유형</th>
         <th scope="col">원자재</th>
         <th scope="col">절단설비</th>
         <th scope="col">단조설비</th>
@@ -322,6 +324,9 @@ $('.data_blank').on('click',function(e){
             <?php } ?>
             <?=(($row['ord_date'])?substr($row['ord_date'],2,8):' - ')?>
         </td>
+        <td class="td_press_type">
+            <?=$g5['set_bom_press_type_value'][$row['bom_press_type']]?>
+        </td>
         <td class="td_mtr">
             <input type="hidden" name="orp_order_no[<?=$row['oop_idx']?>]" value="<?=$row['orp_order_no']?>">
             <?php
@@ -329,8 +334,8 @@ $('.data_blank').on('click',function(e){
                 SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = '{$row['bom_idx']}'
             ) ";
 
-            $mtr_sql = " SELECT bom_idx,bom_name,bom_part_no,bom_std FROM ( {$mtr_tbl} ) AS bit
-                            LEFT JOIN {$g5['bom_table']} AS bom ON bit.bom_idx_child = bom.bom_idx ";
+            $mtr_sql = " SELECT bom.bom_idx,bom.bom_name,bom.bom_part_no,bom.bom_std FROM ( {$mtr_tbl} ) boi
+                            LEFT JOIN {$g5['bom_table']} bom ON boi.bom_idx_child = bom.bom_idx ";
             $mtr_res = sql_query($mtr_sql,1);
             $mopts = '';
             if($mtr_res->num_rows){
@@ -414,7 +419,7 @@ $('.data_blank').on('click',function(e){
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='16' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='17' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>

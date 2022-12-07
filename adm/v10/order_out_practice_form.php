@@ -72,6 +72,7 @@ include_once('./_head.php');
 <input type="hidden" name="orp_idx" value="<?php echo $row["orp_idx"] ?>">
 <input type="hidden" name="oop_idx" value="<?php echo $row["oop_idx"] ?>">
 <input type="hidden" name="trm_idx_line" value="<?php echo $row['trm_idx_line'] ?>">
+<input type="hidden" name="order_date" value="<?=$order_date?>">
 <?php if($calendar){ ?>
 <input type="hidden" name="calendar" value="1">
 <input type="hidden" name="start_date" value="<?=$start_date?>">

@@ -641,7 +641,9 @@ $g5['trms']['line_trm'] = array();
 $g5['trms']['trm_line'] = array();
 $g5['trms']['trm_linemms'] = array();
 $g5['trms']['cut_arr'] = array();
+$g5['trms']['cut_idx_arr'] = array();
 $g5['trms']['forge_arr'] = array();
+$g5['trms']['forge_idx_arr'] = array();
 
 $term_sql = " SELECT trm_idx,trm_name,trm_name2,trm_content,trm_more FROM {$g5['term_table']} WHERE com_idx = 14 AND trm_status = 'ok' ";
 $termres = sql_query($term_sql,1);
@@ -669,6 +671,8 @@ for($k=0;$trow=sql_fetch_array($termres);$k++){
                     ,'mms_model' => $tmp_mmsc['mms_model']
                     ,'mms_model' => $tmp_mmsc['mms_model']
                 ));
+                $g5['trms']['cut_idx_arr'][$tmp_mmsc['mms_idx']] = $tmp_mmsc['mms_name'];
+                $g5['trms']['cut_val_arr'][$tmp_mmsc['mms_name']] = $tmp_mmsc['mms_idx'];
             }
         }
     }
@@ -686,6 +690,8 @@ for($k=0;$trow=sql_fetch_array($termres);$k++){
                     ,'mms_model' => $tmp_mmsf['mms_model']
                     ,'mms_model' => $tmp_mmsf['mms_model']
                 ));
+                $g5['trms']['forge_idx_arr'][$tmp_mmsf['mms_idx']] = $tmp_mmsf['mms_name'];
+                $g5['trms']['forge_val_arr'][$tmp_mmsf['mms_name']] = $tmp_mmsf['mms_idx'];
             }
         }
     }
@@ -709,6 +715,7 @@ for($k=0;$trow=sql_fetch_array($termres);$k++){
         $g5['trms']['trm_line'][$trow['trm_idx']] = $trow['trm_name'];
     }
 }
+// print_r2($g5['trms']['forge_idx_arr']);exit;
 /*
 $g5['trms'] => array(
     ['lines] => array(
@@ -760,6 +767,22 @@ $g5['trms'] => array(
         )
         ....
     )
+    ['cut_idx_arr'] => array(
+        [68] => 절단프레스1
+        [69] => 절단프레스2
+        [70] => 절단원형톱1
+        [71] => 절단원형톱2
+        [72] => 절단원형톱3
+        [73] => 절단원형톱4       
+    )
+    ['cut_val_arr'] => array(
+        [절단프레스1] => 68
+        [절단프레스2] => 69
+        [절단원형톱1] => 70
+        [절단원형톱2] => 71
+        [절단원형톱3] => 72
+        [절단원형톱4] => 73       
+    )
     ['forge_arr'] => array(
         [0] => array(
             ['mms_idx'] => 75
@@ -769,6 +792,22 @@ $g5['trms'] => array(
             ,['mms_model'] => '1350-2 Ton'
         )
         ....
+    )
+    ['forge_idx_arr'] => array(
+        [75] => 단조1호
+        [65] => 단조2호
+        [77] => 단조3호
+        [78] => 단조4호
+        [79] => 단조5호
+        [80] => 단조6호      
+    )
+    ['forge_val_arr'] => array(
+        [단조1호] => 75
+        [단조2호] => 65
+        [단조3호] => 77
+        [단조4호] => 78
+        [단조5호] => 79
+        [단조6호] => 80      
     )
     ['cut_forge'] => array( ['mmg_idxs'] => 2,3 )
     ['cuts'] => array( ['imp_idx'] => 68,69,70,71,72,73 )

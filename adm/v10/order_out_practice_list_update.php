@@ -83,6 +83,6 @@ if ($msg)
     alert($msg);//echo '<script> alert("'.$msg.'"); </script>';
 
 // exit;
-$qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 넘겨야 할 변수들
-//echo $qstr;exit;
+$qstr .= '&order_date='.$order_date; // 추가로 확장해서 넘겨야 할 변수들
+// echo $qstr;exit;
 goto_url('./order_out_practice_list.php?'.$qstr);

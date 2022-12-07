@@ -111,7 +111,7 @@ else if($w == 'u'){
 }
 
 
-$qstr .= ($calendar)?'&start_date='.$first_date.'&end_date='.$last_date:'';
+$qstr .= ($calendar)?'&start_date='.$first_date.'&end_date='.$last_date:'&order_date='.$order_date;
 $order_out_practice_url = ($calendar) ? './order_out_practice_calendar_list.php?'.$qstr:'./order_out_practice_list.php?'.$qstr;
 
 goto_url($order_out_practice_url, false);
