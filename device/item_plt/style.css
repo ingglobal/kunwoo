@@ -1,5 +1,6 @@
 @charset "utf-8";
 
+
 body{background:#333;color:#fff;padding:20px;}
 #snd_div{padding-bottom:20px;}
 #snd_div h5{margin-top:10px;margin-bottom:0px;}
@@ -25,13 +26,17 @@ caption{text-align:left;}
 .tbl_head02 thead th span{font-size:0.6em;}
 .tbl_head02 tbody td{padding:5px;}
 .td_oop_idx{text-align:right;}
-.td_bom_name{width:115px;}
-.td_bom_press_type{width:90px !important;}
+.td_bom_name{width:90px;}
+.td_ord_idx{text-align:right;}
+.td_orp_idx{text-align:right;}
 .td_ord_date{text-align:center;}
 .td_start_date{text-align:center;width:50px !important;}
-.td_end_date{text-align:center;width:50px !important;}
+.td_oro_cnt{text-align:right;}
 .td_oop_cnt{text-align:right;}
-.td_itm_total{text-align:right;width:50px;}
+.td_oop_status{text-align:right;overflow:hidden;width:70px;}
+.td_mtr_total{text-align:right;width:50px;}
+.td_mtr_weight{text-align:right;width:50px;}
+.td_itm_weight{text-align:right;width:50px;}
 .td_loss{text-align:right;width:50px;}
 button{cursor:pointer;}
 .btn_end{}

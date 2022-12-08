@@ -164,7 +164,7 @@ $items = array(
         
         // mms list & count
         $sql = "SELECT mms_idx2, mms_name, mms_status FROM {$g5['mms_table']}
-                WHERE imp_idx = '".$row['imp_idx']."'
+                WHERE imp_idx = '".$row['imp_idx']."' AND mms_status NOT IN('delete','del','trash')
                 ORDER BY mms_idx2
         ";
         $rs1 = sql_query($sql,1);

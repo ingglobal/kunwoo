@@ -74,7 +74,7 @@ include('../head_menu.php');
 $data_str = "
 'token' : {$g5['setting']['set_api_token']}
 'oop_idx' : g5_1_order_out_practice 테이블의 oop_idx
-'mms_idx' : 절단설비idx g5_1_mms 테이블에서 mms_type = 'cut'을 참조
+'mms_idx' : 절단설비idx g5_1_mms 테이블에서 조건 mms_type = 'cut' , mms_status NOT IN('delete','del','trash','cancel')을 참조
 'bundle' : g5_1_material 테이블의 조건mtr_type='material' AND mtr_bundle = '번들번호'를 조회해서 존재하는 번들번호를 넘겨 주세요 
 ";
 echo nl2br($data_str);
