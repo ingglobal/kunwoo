@@ -38,9 +38,10 @@ if($test && $result_arr['message'] != 'ok'){
 }
 
 if($result_arr['message'] == 'ok'){
-    //oop_idx의 절단재 정보를 추출
-    $oop_sql = " SELECT orp.com_idx
+    //bom1_idx의 절단재 정보를 추출
+    $bom1_sql = " SELECT orp.com_idx
                     , oop.bom_idx
+                    , oop.oop_onlythis_yn
                     , orp.orp_start_date
                     , bom.bom_name
                     , bom.bom_part_no
@@ -56,10 +57,11 @@ if($result_arr['message'] == 'ok'){
                     INNER JOIN {$g5['bom_table']} mtr ON boi.bom_idx_child = mtr.bom_idx
                 WHERE  oop.oop_idx = '{$getData[0]['oop_idx']}'
     ";
-    // echo $oop_sql;exit;
-    $oop = sql_fetch($oop_sql);
-    if($oop['bom_press_type'] == '2_2'){
-        $oop2_sql = " SELECT bom.com_idx
+    // echo $bom1_sql;exit;
+    $bom1 = sql_fetch($bom1_sql);
+
+    if($bom1['oop_onlythis_yn'] == 0 && $bom1['bom_press_type'] == '2_2'){
+        $bom2_sql = " SELECT bom.com_idx
                     , bom.bom_idx
                     , bom.bom_name
                     , bom_part_no
@@ -68,17 +70,17 @@ if($result_arr['message'] == 'ok'){
                     , bom_weight
             FROM {$g5['bom_item_table']} boi
                 INNER JOIN {$g5['bom_table']} bom ON bom.bom_idx = boi.bom_idx
-                WHERE  boi.bom_idx_child = '{$oop['mtr_idx']}'
-                    AND bom.bom_idx != '{$oop['bom_idx']}'
+                WHERE  boi.bom_idx_child = '{$bom1['mtr_idx']}'
+                    AND bom.bom_idx != '{$bom1['bom_idx']}'
                 LIMIT 1
         ";
-        // print_r2($oop2_sql); 
-        $bom2 = sql_fetch($oop2_sql);
+        // print_r2($bom2_sql); 
+        $bom2 = sql_fetch($bom2_sql);
     }
-    //여기까지 2_2타입의 다른 BOM데이터추출까지 작업했다 아래부터 작업 이어가세요.
 
-    $sql = " INSERT INTO {$g5['item_table']} SET
-                com_idx = '{$oop['com_idx']}'
+    //press_type상관없이 본제품만 생성할것인가
+    /*
+    com_idx = '{$oop['com_idx']}'
                 , mms_idx = '{$getData[0]['mms_idx']}'
                 , bom_idx = '{$oop['bom_idx']}'
                 , oop_idx = '{$getData[0]['oop_idx']}'
@@ -87,33 +89,41 @@ if($result_arr['message'] == 'ok'){
                 , itm_weight = '{$oop['itm_weight']}'
                 , itm_heat = '{$mtr['mtr_heat']}'
                 , itm_status = 'finish'
-    ";
-
+    */
     if(!$test){
-        $sql .= "
-            , itm_date = '".substr(G5_TIME_YMDHIS,0,10)."'
-            , itm_reg_dt = '".G5_TIME_YMDHIS."'
-            , itm_update_dt = '".G5_TIME_YMDHIS."'
-        ";
-        sql_query($sql,1);
-        $mtr_idx = sql_insert_id();
-        $result_arr['mtr_idx'] = $mtr_idx;
-    }
-    else{
-        $start_date = $oop['orp_start_date'].' '.substr(G5_TIME_YMDHIS,-8);
-        for($i=0;$i<$getData[0]['number'];$i++){
-            $date_plus = strtotime($start_date."+".($i*5)." second");
-            $start_date = date('Y-m-d H:i:s',$date_plus);
-            $date_minus = strtotime($start_date."-2 days");
-            $start_dt = date('Y-m-d H:i:s',$date_minus);
-            $sql_plus = $sql;
-            $sql_plus .= "
-                , mtr_input_date = '{$oop['orp_start_date']}'
-                , mtr_reg_dt = '{$start_dt}'
-                , mtr_update_dt = '{$start_dt}'
+        if($bom1['oop_onlythis_yn']
+            || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '0_1'
+            || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '1_1'
+            || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '2_1'){
+            $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES 
+            ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".substr(G5_TIME_YMDHIS,0,10)."', '".G5_TIME_YMDHIS."', '".G5_TIME_YMDHIS."' )
             ";
-            sql_query($sql_plus,1);
         }
+        //press_type 규정에 반영하여 생성할것인가
+        else {
+            if($bom1['bom_press_type'] == '2_2'){
+                $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES 
+                ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".substr(G5_TIME_YMDHIS,0,10)."', '".G5_TIME_YMDHIS."', '".G5_TIME_YMDHIS."' )
+    
+                , ( '{$bom2['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom2['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom2['bom_part_no']}', '".addslashes($bom2['bom_name'])."', '{$bom2['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".substr(G5_TIME_YMDHIS,0,10)."', '".G5_TIME_YMDHIS."', '".G5_TIME_YMDHIS."' )
+                ";
+            }
+            else {
+                $tp_arr = explode('_',$bom1['bom_press_type']);
+                $cp_num = $tp_arr[1]; //복제갯수
+                $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES ";
+                $sql_loop = '';
+                for($i=0;$i<$cp_num;$i++){
+                    $sql_loop .= (($i==0)?'':',')." ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".substr(G5_TIME_YMDHIS,0,10)."', '".G5_TIME_YMDHIS."', '".G5_TIME_YMDHIS."' ) ";
+                }
+                $sql = $sql.$sql_loop;
+            }
+        }
+        sql_query($sql,1);
+    }
+    //테스트(데이터생성)모드일때
+    else{
+        include_once('./insert.php');
     }   
 }
 
