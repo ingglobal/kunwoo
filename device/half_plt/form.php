@@ -56,7 +56,7 @@ $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
 $sql = " SELECT *
             , ( SELECT COUNT(oop_idx) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS cut_total
-            , ( SELECT COUNT(plt_idx) FROM {$g5['pallet_table']} WHERE oop_idx = oop.oop_idx AND plt_status NOT IN('delete','del','trash','cancel') ) AS plt_c
+            , ( SELECT COUNT(plt_idx) FROM {$g5['pallet_table']} WHERE oop_idx = oop.oop_idx AND plt_type = 'half' AND plt_status NOT IN('delete','del','trash','cancel') ) AS plt_c
     {$sql_common} {$sql_search} {$sql_group} {$sql_order}
     LIMIT {$from_record}, {$rows}
 ";
@@ -76,7 +76,7 @@ include('../head_menu.php');
 $data_str = "
 [ token ] : {$g5['setting']['set_api_token']}
 [ oop_idx ] : g5_1_order_out_practice 테이블의 oop_idx를 넘겨주세요.
-[ heat ] : g5_1_material 테이블의 조건mtr_type='half' AND mtr_status NOT IN('delete','del','trash','cancel') group by mtr_heat를 조회해서 존재하는 히트넘버중에 한 개를 선택해서 넘겨주세요. 
+[ heat ] : g5_1_material 테이블의 조건 해당 oop_idx AND mtr_type='half' AND mtr_status NOT IN('delete','del','trash','cancel') group by mtr_heat를 조회해서 존재하는 히트넘버중에 한 개를 선택해서 넘겨주세요. 
 [ plt_barcode ] : 년월일카운트_mmsidx_CUT_oopidx_bompartno_수량 ( 221109004_71_C_123_A1234-F1234_100 )
 [ plt_cnt ] : 해당 PLT에 들어있는 수량
 ";
@@ -140,7 +140,7 @@ echo nl2br($sql);
                 //히트넘버 선택박스 구성
                 $hsql = " SELECT mtr_heat FROM {$g5['material_table']}
                             WHERE mtr_type = 'half'
-                                AND mtr_status = 'stock'
+                                AND mtr_status IN ('stock', 'finish')
                                 AND oop_idx = '{$row['oop_idx']}'
                             GROUP BY mtr_heat ";
                 $hres = sql_query($hsql,1);

@@ -137,7 +137,7 @@ echo nl2br($sql);
                 //히트넘버 선택박스 구성
                 $hsql = " SELECT mtr_heat FROM {$g5['material_table']}
                             WHERE mtr_type = 'half'
-                                AND mtr_status = 'stock'
+                                AND mtr_status IN ('stock', 'finish')
                                 AND oop_idx = '{$row['oop_idx']}'
                             GROUP BY mtr_heat ";
                 $hres = sql_query($hsql,1);

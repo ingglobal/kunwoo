@@ -28,17 +28,21 @@ if(!$test && !$getData[0]['plt_barcode']){
 if(!$getData[0]['heat']){
     $result_arr = array("code"=>499,"message"=>"heat error");
 }
+//선택bom_idx가 없으면 에러
+if(!$getData[0]['bom_idx']){
+    $result_arr = array("code"=>599,"message"=>"bom_idx error");
+}
 //plt_cnt가 없으면 에러 (test모드에서는 PLT갯수, 아닐경우 PLT안에 수량)
 if(!$getData[0]['plt_cnt']){
-    $result_arr = array("code"=>599,"message"=>"plt_cnt error");
+    $result_arr = array("code"=>699,"message"=>"plt_cnt error");
 }
-//test모드의 경우 cut_total이 없으면 에러
-if($test && !$getData[0]['cut_total']){
-    $result_arr = array("code"=>699,"message"=>"cut_total error");
+//test모드의 경우 itm_total이 없으면 에러
+if($test && !$getData[0]['itm_total']){
+    $result_arr = array("code"=>799,"message"=>"itm_total error");
 }
-//test모드의 경우 cut_total이 plt_cnt보다 작으면 에러
-if($test && $getData[0]['cut_total'] < $getData[0]['plt_cnt']){
-    $result_arr = array("code"=>799,"message"=>"cut_total less than plt_cnt error");
+//test모드의 경우 itm_total이 plt_cnt보다 작으면 에러
+if($test && $getData[0]['itm_total'] < $getData[0]['plt_cnt']){
+    $result_arr = array("code"=>899,"message"=>"itm_total less than plt_cnt error");
 }
 //테스트 버전에서 문제가 있으면 경고창 표시하고 이전페이지로 이동
 if($test && $result_arr['message'] != 'ok'){
@@ -65,37 +69,33 @@ if($result_arr['message'] == 'ok'){
     */
     
     //생산계획(oop_idx)의 제품정보를 호출 
-    $cut_sql = " SELECT oop_idx
-                        , orp.com_idx
-                        , orp.orp_start_date
-                        , orp.cut_mms_idx
+    $bom_sql = " SELECT bom.com_idx
                         , bom.bom_idx
                         , bom.bom_part_no
                         , bom.bom_std
+                        , bom.bom_press_type
                         , bom.com_idx_customer
-                        , cut.bom_idx AS cut_idx
-                        , cut.bom_part_no AS cut_part_no
-                        , cut.bom_std AS cut_std
-                        , com.com_name AS com_customer_name
-                    FROM {$g5['order_out_practice_table']} oop
-                        LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
-                        LEFT JOIN {$g5['bom_table']} bom ON oop.bom_idx = bom.bom_idx
-                        LEFT JOIN {$g5['bom_item_table']} boi ON oop.bom_idx = boi.bom_idx
-                        LEFT JOIN {$g5['bom_table']} cut ON boi.bom_idx_child = cut.bom_idx
+                    FROM {$g5['bom_table']} bom
                         LEFT JOIN {$g5['company_table']} com ON bom.com_idx_customer = com.com_idx
-                    WHERE oop.oop_idx = '{$getData[0]['oop_idx']}'
+                    WHERE  bom.bom_idx = '{$getData[0]['bom_idx']}'
     ";
-    $cut = sql_fetch($cut_sql);
-    // echo $cut_sql."<br>";
-    // print_r2($cut);exit;
+    $bom = sql_fetch($bom_sql);
+
+    // g5_1_item테이블에 등록된 해당 oop_idx AND 해당 bom_idx AND ('stock','finish')의 총 갯수
+    $orp = sql_fetch(" SELECT forge_mms_idx FROM {$g5['order_out_practice_table']} oop
+        LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx 
+        WHERE oop.oop_idx = '{$getData[0]['oop_idx']}' AND oop_status NOT IN ('delete','del','trash') ");
+    
+    // echo $bom_sql."<br>";
+    // print_r2($bom);exit;
     $sql = " INSERT INTO {$g5['pallet_table']} SET
-                com_idx = '{$cut['com_idx']}'
+                com_idx = '{$bom['com_idx']}'
                 , oop_idx = '{$getData[0]['oop_idx']}'
-                , bom_idx = '{$cut['cut_idx']}'
-                , bom_part_no = '{$cut['cut_part_no']}'
-                , bom_std = '".addslashes($cut['cut_std'])."'
+                , bom_idx = '{$getData[0]['bom_idx']}'
+                , bom_part_no = '{$bom['bom_part_no']}'
+                , bom_std = '".addslashes($bom['bom_std'])."'
                 , plt_heat = '{$getData[0]['heat']}'
-                , plt_type = 'half'
+                , plt_type = 'forge'
                 , plt_status = 'pending'
     ";
     //날짜 데이터 입력
@@ -110,7 +110,7 @@ if($result_arr['message'] == 'ok'){
     }
     else{
         $start_date = $cut['orp_start_date'].' '.substr(G5_TIME_YMDHIS,-8);
-        $date_minus = strtotime($start_date."-1 days");
+        $date_minus = strtotime($start_date."+1 days");
         $start_dt = date('Y-m-d H:i:s',$date_minus);
         $sql .= " , plt_date = '".substr($start_dt,0,10)."'
                   , plt_reg_dt = '{$start_dt}'
@@ -122,19 +122,21 @@ if($result_arr['message'] == 'ok'){
         $plt_num_chk_sql = sql_fetch(" SELECT COUNT(*) AS cnt FROM {$g5['pallet']}
             WHERE plt_date = '{$tmp_date}' 
                 AND oop_idx = '{$getData[0]['oop_idx']}'
+                AND bom_idx = '{$getData[0]['bom_idx']}'
+                AND plt_type = 'forge'
                 AND plt_status NOT IN ('delete','del','trash','cancel')
         ");
         $pltnum = $plt_num_chk_sql['cnt'];
 
-        $rest_cnt = $getData[0]['cut_total'] % $getData[0]['plt_cnt'];
-        $per_cnt = ($getData[0]['cut_total'] - $rest_cnt) / $getData[0]['plt_cnt'];
+        $rest_cnt = $getData[0]['itm_total'] % $getData[0]['plt_cnt'];
+        $per_cnt = ($getData[0]['itm_total'] - $rest_cnt) / $getData[0]['plt_cnt'];
         $rest_num = $rest_cnt;
         
         for($i=0;$i<$getData[0]['plt_cnt'];$i++){
             $in_cnt = ($rest_num > 0) ? $per_cnt + 1 : $per_cnt;
             $bcd_cnt = sprintf("%03d",$pltnum+$i+1);
             //바코드 생성
-            $plt_brc = $bcd_date.$bcd_cnt.'_'.$cut['cut_mms_idx'].'_C_'.$getData[0]['oop_idx'].'_'.$cut['cut_part_no'].'_'.$in_cnt;
+            $plt_brc = $bcd_date.$bcd_cnt.'_'.$orp['forge_mms_idx'].'_F_'.$getData[0]['oop_idx'].'_'.$bom['bom_part_no'].'_'.$in_cnt;
             $sql_init = $sql;
             $sql_add = " , plt_barcode = '{$plt_brc}'
                          , plt_count = '{$in_cnt}'
@@ -146,7 +148,7 @@ if($result_arr['message'] == 'ok'){
         }   
     }
 }
-// ex÷t;
+// exit;
 //테스트페이지로부터 호출되었으면 테스트 폼페이지로 이동
 if($test){
     goto_url('./form.php?'.$qstr.'&oop_idx='.$oop_idx);

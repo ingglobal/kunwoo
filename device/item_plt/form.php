@@ -2,9 +2,9 @@
 include_once('./_common.php');
 
 if ($member['mb_level'] < 3)
-    goto_url(G5_BBS_URL."/login.php?url=".urlencode(G5_URL."/device/half_plt/form.php"));
+    goto_url(G5_BBS_URL."/login.php?url=".urlencode(G5_URL."/device/item_plt/form.php"));
 
-$g5['title'] = '절단재PLT등록';
+$g5['title'] = '단조품PLT등록';
 add_stylesheet('<link rel="stylesheet" href="'.G5_DEVICE_URL.'/_css/default.css">', 0);
 include_once(G5_PATH.'/head.sub.php');
 
@@ -56,7 +56,9 @@ $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
 $sql = " SELECT *
             , ( SELECT COUNT(oop_idx) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS cut_total
-            , ( SELECT COUNT(plt_idx) FROM {$g5['pallet_table']} WHERE oop_idx = oop.oop_idx AND plt_status NOT IN('delete','del','trash','cancel') ) AS plt_c
+            , ( SELECT COUNT(oop_idx) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND bom_idx = bom.bom_idx AND itm_status NOT IN('delete','del','trash','cancel') ) AS bom_total
+            , ( SELECT COUNT(oop_idx) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND itm_status NOT IN('delete','del','trash','cancel') ) AS itm_total
+            , ( SELECT COUNT(plt_idx) FROM {$g5['pallet_table']} WHERE oop_idx = oop.oop_idx AND plt_type = 'forge' AND plt_status NOT IN('delete','del','trash','cancel') ) AS plt_c
     {$sql_common} {$sql_search} {$sql_group} {$sql_order}
     LIMIT {$from_record}, {$rows}
 ";
@@ -67,17 +69,23 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_DEVICE_URL.'/'.$g5['dir_name']
 include('../head_menu.php'); 
 ?>
 <div id="snd_div">
-<strong>[API URL] : http://kunwoo.epcs.co.kr/device/half_plt/index.php</strong><br>
-<strong>[API TEST] : http://kunwoo.epcs.co.kr/device/half_plt/form.php</strong><br>
+<strong>[API URL] : http://kunwoo.epcs.co.kr/device/item_plt/index.php</strong><br>
+<strong>[API TEST] : http://kunwoo.epcs.co.kr/device/item_plt/form.php</strong><br>
 <strong>[제품확인] : http://kunwoo.epcs.co.kr/device/index.php</strong><br><br>
 <h5>[API에 넘겨줄 데이터]</h5>
 <p>
 <?php
 $data_str = "
+@@@ 주의 @@@
+타수유형 2_2의 경우는 서로 다른 bom_idx로 등록되기 때문에 
+생산계획에 표시되지 않는 또다른 bom_idx도 표시되어야 합니다.
+
 [ token ] : {$g5['setting']['set_api_token']}
 [ oop_idx ] : g5_1_order_out_practice 테이블의 oop_idx를 넘겨주세요.
-[ heat ] : g5_1_material 테이블의 조건mtr_type='half' AND mtr_status NOT IN('delete','del','trash','cancel') group by mtr_heat를 조회해서 존재하는 히트넘버중에 한 개를 선택해서 넘겨주세요. 
-[ plt_barcode ] : 년월일카운트_mmsidx_CUT_oopidx_bompartno_수량 ( 221109004_71_C_123_A1234-F1234_100 )
+[ heat ] : g5_1_material 테이블의 조건 해당 oop_idx AND mtr_type='half' AND mtr_status NOT IN('delete','del','trash','cancel') group by mtr_heat를 조회해서 존재하는 히트넘버중에 한 개를 선택해서 넘겨주세요. 
+[ bom_idx ] : 타수유형(2_2)의 경우 같은 oop_idx로 서로다른 bom_idx가 2종류로 g5_1_item 테이블에 등록되어 있을겁니다. 그러니 itm_status IN ('ing','finish','delivery') , 해당 oop_idx, GROUP BY bom_idx로 조회해서 
+추출되는 bom_idx중에 한 개를 선택해서 넘겨주세요.(선택박스의 텍스트는 bom_std로 표시하는게 좋을듯 싶습니다.)
+[ plt_barcode ] : 년월일카운트_mmsidx_FORGE_oopidx_bompartno_수량 ( 221109004_71_F_123_A1234-F1234_100 )
 [ plt_cnt ] : 해당 PLT에 들어있는 수량
 ";
 echo nl2br($data_str);
@@ -116,9 +124,11 @@ echo nl2br($sql);
                     </th>
                     <th scope="col">시작일<br><span>(orp_start_date)</span></th>
                     <th scope="col">지시량<br><span>(oop_cnt)</span></th>
-                    <th scope="col">재고량<br><span>[cut_total]</span></th>
+                    <th scope="col">재고량<br><span>[itm_total]</span></th>
+                    <th scope="col">타수유형<br><span>(bom_press_type)</span></th>
                     <th scope="col">계획설비<br><span>(mms_idx)</span></th>
                     <th scope="col">히트넘버선택</th>
+                    <th scope="col">제품선택</th>
                     <th scope="col">PLT갯수</th>
                     <th scope="col">PLT수량</th>
                     <th scope="col">생성</th>
@@ -140,7 +150,7 @@ echo nl2br($sql);
                 //히트넘버 선택박스 구성
                 $hsql = " SELECT mtr_heat FROM {$g5['material_table']}
                             WHERE mtr_type = 'half'
-                                AND mtr_status = 'stock'
+                                AND mtr_status IN ('stock', 'finish')
                                 AND oop_idx = '{$row['oop_idx']}'
                             GROUP BY mtr_heat ";
                 $hres = sql_query($hsql,1);
@@ -155,6 +165,25 @@ echo nl2br($sql);
                 }
                 else{
                     $heat_slt= '<b style="color:red;">히트넘버 없음</b>';
+                }
+
+                // 제품명 선택박스 구성
+                $isql = " SELECT itm.bom_idx, bom.bom_name, bom.bom_part_no, bom.bom_std FROM {$g5['item_table']} itm
+                    LEFT JOIN {$g5['bom_table']} bom ON itm.bom_idx = bom.bom_idx
+                    WHERE itm_status IN ('ing','finish','delivery')
+                        AND itm.oop_idx = '{$row['oop_idx']}'
+                    GROUP BY itm.bom_idx ";
+                $ires = sql_query($isql,1);
+                $sbom_slt = '';
+                $sbom_opt = '';
+                for($j=0;$irow=sql_fetch_array($ires);$j++){
+                    $sbom_opt .= '<option value="'.$irow['bom_idx'].'">'.$irow['bom_std'].'</option>';
+                }
+                if($sbom_opt){
+                    $sbom_slt .= '<select>'.$sbom_opt.'</select>';
+                }
+                else{
+                    $sbom_slt= '<b style="color:red;">제품규격 없음</b>';
                 }
 				?>
 
@@ -177,16 +206,23 @@ echo nl2br($sql);
                 </td>
                 <td class="td_start_date"><?=substr($row['orp_start_date'],5,5)?></td>
                 <td class="td_oop_cnt"><?=number_format($row['oop_count'])?></td>
-                <td class="td_cut_total" total="<?=$row['cut_total']?>"><?=number_format($row['cut_total'])?></td>
-                <td class="td_cut_mms"><?php echo (($g5['trms']['cut_idx_arr'][$row['cut_mms_idx']])?$g5['trms']['cut_idx_arr'][$row['cut_mms_idx']]:'외주절단')?></td><!-- 계획설비 -->
+                <td class="td_itm_total" total="<?=$row['bom_total']?>" total2="<?=($row['itm_total']-$row['bom_total'])?>">
+                    <?=number_format($row['bom_total'])?>
+                    <?php if($row['bom_press_type'] == '2_2'){ ?>
+                    <br>(<?=number_format($row['itm_total'] - $row['bom_total'])?>)
+                    <?php } ?>
+                </td>
+                <td class="td_bom_press_type"><?=$g5['set_bom_press_type_value'][$bom['bom_press_type']]?></td>
+                <td class="td_forge_mms"><?php echo (($g5['trms']['forge_idx_arr'][$row['forge_mms_idx']])?$g5['trms']['forge_idx_arr'][$row['forge_mms_idx']]:'외주단조')?></td><!-- 계획설비 -->
                 <td class="td_heat"><?=$heat_slt?></td>
+                <td class="td_sbom"><?=$sbom_slt?></td>
                 <td class="td_plt_num">
                     <input type="text" name="" value="" class="frm_input" style="text-align:right;width:50px;" onkeyup="javascript:chk_number(this)">
                 </td>
                 <td class="td_plt_c" style="text-align:right;"><?=(($row['plt_c'])?number_format($row['plt_c']):'')?></td>
                 <td class="td_plt_reg">
                     <?php if($heat_opt){ ?>
-                        <button type="button" oop_idx="<?=$row['oop_idx']?>" class="btn btn_reg">등록</button>
+                        <button type="button" oop_idx="<?=$row['oop_idx']?>" bom_idx="<?=$row['bom_idx']?>" class="btn btn_reg">등록</button>
                     <?php } ?>
                 </td>
                 <td class="td_mtr_detail"><a href="./form.php?oop_idx=<?=$row['oop_idx']?>" class="btn btn_detail">상세</a></td>
@@ -194,7 +230,7 @@ echo nl2br($sql);
             <?php
             }
             if ($i == 0)
-            echo "<tr><td colspan='10' class=\"empty_table\">자료가 없습니다.</td></tr>";
+            echo "<tr><td colspan='12' class=\"empty_table\">자료가 없습니다.</td></tr>";
             ?>
             </tbody>
         </table>
@@ -218,7 +254,7 @@ echo nl2br($sql);
                     LEFT JOIN {$g5['order_out_practice_table']} oop ON plt.oop_idx = oop.oop_idx
                     LEFT JOIN {$g5['bom_table']} bom ON plt.bom_idx = bom.bom_idx
                     LEFT JOIN {$g5['company_table']} com ON bom.com_idx_customer = com.com_idx
-                 WHERE oop.oop_idx = '{$oop_idx}' AND plt_type = 'half' ORDER BY plt_idx DESC LIMIT 25 ";
+                 WHERE oop.oop_idx = '{$oop_idx}' AND plt_type = 'forge' ORDER BY plt_idx DESC LIMIT 25 ";
         // echo $sql;
         $result = sql_query($sql,1);
         //전체카운트
@@ -226,7 +262,7 @@ echo nl2br($sql);
                 INNER JOIN {$g5['order_out_practice_table']} oop ON plt.oop_idx = oop.oop_idx
                 INNER JOIN {$g5['bom_table']} bom ON plt.bom_idx = bom.bom_idx
                 LEFT JOIN {$g5['company_table']} com ON bom.com_idx_customer = com.com_idx
-            WHERE oop.oop_idx = '{$oop_idx}' AND plt_type = 'half' ORDER BY plt_idx 
+            WHERE oop.oop_idx = '{$oop_idx}' AND plt_type = 'forge' ORDER BY plt_idx 
         ";
         $crow = sql_fetch($csql);
         $tcount = $crow['cnt'];
@@ -297,16 +333,21 @@ echo nl2br($sql);
 $('.btn_reg').on('click',function(){
     //oop_idx
     //token
-    var cut_total = $(this).parent().siblings('.td_cut_total').attr('total');
+    var itm_idx = $(this).attr('bom_idx');
+    var total = $(this).parent().siblings('.td_itm_total').attr('total');
+    var total2 = $(this).parent().siblings('.td_itm_total').attr('total2');
+    var bom_idx = $(this).parent().siblings('.td_sbom').find('select').val();
+
+    var itm_total = (itm_idx == bom_idx)?total:total2;
     var heat = $(this).parent().siblings('.td_heat').find('select').val();
     var plt_cnt = $(this).parent().siblings('.td_plt_num').find('input').val();
     
-    if(!cut_total){
+    if(!itm_total){
         alert('해당제품의 재고수량이 없습니다.');
         return false;
     }
 
-    if(Number(cut_total) < Number(plt_cnt)){
+    if(Number(itm_total) < Number(plt_cnt)){
         alert('해당제품의 재고수량이 PLT의 수량보다 작으면 안됩니다.');
     }
 
@@ -315,11 +356,16 @@ $('.btn_reg').on('click',function(){
         return false;
     }
 
+    if(bom_idx == ''){
+        alert('제품을 선택하셔야 합니다.');
+        return false;
+    }
+
     if(plt_cnt == ''){
         alert('등록할 PLT갯수를 입력해 주세요.');
         return false;
     }
-    form_reg($(this).attr('oop_idx'),cut_total,heat,plt_cnt,'<?=$g5['setting']['set_api_token']?>');
+    form_reg($(this).attr('oop_idx'),itm_total,heat,bom_idx,plt_cnt,'<?=$g5['setting']['set_api_token']?>');
 });
 
 // 숫자만 입력
@@ -330,12 +376,13 @@ function chk_number(object){
 }
 
 // 절단재 재고 등록 함수
-function form_reg(oop_idx,cut_total,heat,plt_cnt,token){
+function form_reg(oop_idx,itm_total,heat,bom_idx,plt_cnt,token){
     var info = {
         'test' : 1
         ,'oop_idx' : oop_idx
-        ,'cut_total' : cut_total
+        ,'itm_total' : itm_total
         ,'heat' : heat
+        ,'bom_idx' : bom_idx
         ,'plt_cnt' : plt_cnt
         ,'token' : token
     };

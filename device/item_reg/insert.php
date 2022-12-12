@@ -48,4 +48,13 @@ for($j=0;$j<$getData[0]['number'];$j++){
         }
     }
     sql_query($sql,1);
+
+    $half_sql = " UPDATE {$g5['material_table']} SET mtr_status = 'finish'
+        WHERE oop_idx = '{$getData[0]['oop_idx']}'
+            AND mtr_type = 'half'
+            AND mtr_status = 'stock'
+        ORDER BY mtr_idx
+        LIMIT 1
+    ";
+    sql_query($half_sql);
 }

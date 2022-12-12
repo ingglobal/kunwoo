@@ -47,7 +47,7 @@ if($result_arr['message'] == 'ok'){
     }
 
     //oop_idx의 절단재 정보를 추출
-    $oop_sql = " SELECT oop.com_idx AS com_idx
+    $oop_sql = " SELECT orp.com_idx AS com_idx
                     , oop.bom_idx AS bom_idx_parent
                     , orp.orp_start_date AS orp_start_date
                     , cut.bom_idx AS mtr_idx

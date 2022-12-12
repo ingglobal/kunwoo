@@ -122,6 +122,7 @@ if($result_arr['message'] == 'ok'){
         $plt_num_chk_sql = sql_fetch(" SELECT COUNT(*) AS cnt FROM {$g5['pallet']}
             WHERE plt_date = '{$tmp_date}' 
                 AND oop_idx = '{$getData[0]['oop_idx']}'
+                AND plt_type = 'half'
                 AND plt_status NOT IN ('delete','del','trash','cancel')
         ");
         $pltnum = $plt_num_chk_sql['cnt'];
@@ -146,7 +147,7 @@ if($result_arr['message'] == 'ok'){
         }   
     }
 }
-// ex÷t;
+// exit;
 //테스트페이지로부터 호출되었으면 테스트 폼페이지로 이동
 if($test){
     goto_url('./form.php?'.$qstr.'&oop_idx='.$oop_idx);
