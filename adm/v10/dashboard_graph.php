@@ -367,7 +367,7 @@ $(document).on('click','button[type=submit], #div_shift a, #div_code a',function
         navigator_type = frm.find('select[name=graph_type]').val() || '<?=$graph_type?>';
     }
     chr_id = mms_idx+'_'+dta_group+'_'+shf_no+'_'+dta_code;
-    var dta_url = '//bogwang.epcs.co.kr/device/json/error'+dta_file+'.php?token=1099de5drf09&mms_idx='+mms_idx+'&dta_group='+dta_group+'&shf_no='+shf_no+'&dta_code='+dta_code+'&dta_item='+dta_item+'&dta_unit='+dta_unit+'&st_date='+st_date+'&st_time='+st_time+'&en_date='+en_date+'&en_time='+en_time;
+    var dta_url = '//kunwoo.epcs.co.kr/device/json/error'+dta_file+'.php?token=1099de5drf09&mms_idx='+mms_idx+'&dta_group='+dta_group+'&shf_no='+shf_no+'&dta_code='+dta_code+'&dta_item='+dta_item+'&dta_unit='+dta_unit+'&st_date='+st_date+'&st_time='+st_time+'&en_date='+en_date+'&en_time='+en_time;
     dta_loading('show');
 
     console.log(dta_url);
@@ -399,7 +399,7 @@ $(document).on('click','button[type=submit], #div_shift a, #div_code a',function
             // 검색 버튼 클릭할 때만 교대 및 코드를 하단에 뿌려줌
             if( tag_name == 'BUTTON' ) {
                 // 교대수를 불러와서 표시
-                var dta_shift_url = '//bogwang.epcs.co.kr/device/json/error.code.php?token=1099de5drf09&mms_idx='+mms_idx+'&dta_group='+dta_group+'&dta_groupby=shf_no&st_date='+st_date_new+'&st_time='+st_time_new+'&en_date='+en_date_new+'&en_time='+en_time_new;
+                var dta_shift_url = '//kunwoo.epcs.co.kr/device/json/error.code.php?token=1099de5drf09&mms_idx='+mms_idx+'&dta_group='+dta_group+'&dta_groupby=shf_no&st_date='+st_date_new+'&st_time='+st_time_new+'&en_date='+en_date_new+'&en_time='+en_time_new;
                 // console.log(dta_shift_url);
                 var dta_shift_dom = '';
                 $.getJSON(dta_shift_url,{"aj":"list"},function(res) {
@@ -422,7 +422,7 @@ $(document).on('click','button[type=submit], #div_shift a, #div_code a',function
                 });
 
                 // 코드를 불러와서 표시
-                var dta_code_url = '//bogwang.epcs.co.kr/device/json/error.code.php?token=1099de5drf09&mms_idx='+mms_idx+'&dta_group='+dta_group+'&dta_groupby=dta_code&st_date='+st_date_new+'&st_time='+st_time_new+'&en_date='+en_date_new+'&en_time='+en_time_new;
+                var dta_code_url = '//kunwoo.epcs.co.kr/device/json/error.code.php?token=1099de5drf09&mms_idx='+mms_idx+'&dta_group='+dta_group+'&dta_groupby=dta_code&st_date='+st_date_new+'&st_time='+st_time_new+'&en_date='+en_date_new+'&en_time='+en_time_new;
                 // console.log(dta_code_url);
                 var dta_code_dom = '';
                 $.getJSON(dta_code_url,{"aj":"list"},function(res) {

@@ -120,7 +120,7 @@ function createChart(cid,seriesOptions) {
 }
 
 Highcharts.getJSON(
-    'http://bogwang.epcs.co.kr/device/json/temperature.php?token=1099de5drf09&mms_idx=1&dta_group=mea&dta_type=1&dta_no=0&start_date=2020-04-23&start_time=20:30:00&end_date=2020-04-23&end_time=21:59:59',
+    'http://kunwoo.epcs.co.kr/device/json/temperature.php?token=1099de5drf09&mms_idx=1&dta_group=mea&dta_type=1&dta_no=0&start_date=2020-04-23&start_time=20:30:00&end_date=2020-04-23&end_time=21:59:59',
     function(data) {
         var seriesOptions = [];
         seriesOptions[0] = {
@@ -132,7 +132,7 @@ Highcharts.getJSON(
 );
 
 Highcharts.getJSON(
-    'http://bogwang.epcs.co.kr/device/json/temperature.php?token=1099de5drf09&mms_idx=1&dta_group=mea&dta_type=1&dta_no=0&start_date=2020-04-23&start_time=20:30:00&end_date=2020-04-23&end_time=21:59:59',
+    'http://kunwoo.epcs.co.kr/device/json/temperature.php?token=1099de5drf09&mms_idx=1&dta_group=mea&dta_type=1&dta_no=0&start_date=2020-04-23&start_time=20:30:00&end_date=2020-04-23&end_time=21:59:59',
     function(data) {
         var seriesOptions = [];
         // console.log(data);
@@ -169,7 +169,7 @@ Highcharts.getJSON(
 );
 
 Highcharts.getJSON(
-    'http://bogwang.epcs.co.kr/device/json/temperature.php?token=1099de5drf09&mms_idx=1&dta_group=mea&dta_type=1&dta_no=0&start_date=2020-04-23&start_time=20:30:00&end_date=2020-04-23&end_time=21:59:59',
+    'http://kunwoo.epcs.co.kr/device/json/temperature.php?token=1099de5drf09&mms_idx=1&dta_group=mea&dta_type=1&dta_no=0&start_date=2020-04-23&start_time=20:30:00&end_date=2020-04-23&end_time=21:59:59',
     function(data) {
         var seriesOptions = [];
         seriesOptions[0] = {

@@ -8,15 +8,15 @@
 // token, mms_idx, dta_group, shf_no, dta_code, dta_item(minute), dta_unit(10)
 // dta_value_type(count), graph_type(spline)
 // st_date, st_time, en_date, en_time
-// 디폴트(실측정): http://bogwang.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=1&dta_group=err
+// 디폴트(실측정): http://kunwoo.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=1&dta_group=err
 // 조건을 바꾸어 보세요.
-// http://bogwang.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=1&dta_group=err&shf_no=1&dta_code=M0101&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&end_date=2020-04-30&end_time=23:59:59
+// http://kunwoo.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=1&dta_group=err&shf_no=1&dta_code=M0101&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&end_date=2020-04-30&end_time=23:59:59
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-// 디폴트(카운터그룹핑): http://bogwang.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=1&dta_group=err&dta_value_type=count
+// 디폴트(카운터그룹핑): http://kunwoo.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=1&dta_group=err&dta_value_type=count
 // 조건검색: &dta_value_type=count&shf_no=1&dta_code=M0101&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&end_date=2020-04-30&end_time=23:59:59
-// http://bogwang.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=1&dta_group=err&dta_value_type=count&shf_no=1&dta_code=M0101&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&end_date=2020-04-30&end_time=23:59:59
+// http://kunwoo.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=1&dta_group=err&dta_value_type=count&shf_no=1&dta_code=M0101&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&end_date=2020-04-30&end_time=23:59:59
 // 조건을 바꾸어 보세요.
-// http://bogwang.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=2&dta_group=err&shf_no=1&dta_code=M0101&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&end_date=2020-04-30&end_time=23:59:59
+// http://kunwoo.epcs.co.kr/device/json/error.php?token=1099de5drf09&mms_idx=2&dta_group=err&shf_no=1&dta_code=M0101&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&end_date=2020-04-30&end_time=23:59:59
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

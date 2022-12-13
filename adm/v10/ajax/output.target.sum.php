@@ -2,7 +2,7 @@
 // 생산 목표(more than daily)
 // token, mms_idx, dta_item(daily, weekly, monthly, yearly)
 // st_date, en_date => two values must be not existed.
-// http://bogwang.epcs.co.kr/adm/v10/ajax/output.target.sum.php?token=1099de5drf09&mms_idx=1&dta_item=daily&st_date=2020-03-27&en_date=2020-04-25
+// http://kunwoo.epcs.co.kr/adm/v10/ajax/output.target.sum.php?token=1099de5drf09&mms_idx=1&dta_item=daily&st_date=2020-03-27&en_date=2020-04-25
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

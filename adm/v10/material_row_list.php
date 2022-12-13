@@ -18,6 +18,7 @@ $where = array();
 // 디폴트 검색조건 (used 제외)
 $where[] = " mtr_status NOT IN ('delete','del','trash','cancel','used') ";
 $where[] = " mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " mtr.mtr_type = 'material' ";
 
 // 검색어 설정
 if ($stx != "") {

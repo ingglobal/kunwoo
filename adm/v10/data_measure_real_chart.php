@@ -426,7 +426,7 @@ $(document).on('click','#fsearch button[type=submit]',function(e){
     dta_loading('show');
 
     dta_name = dta_types[dta_type]+dta_no;
-    var dta_url = '//bogwang.epcs.co.kr/device/json/measure'+dta_file+'.php?token=1099de5drf09&mms_idx='+mms_idx+'&shf_no='+shf_no+'&dta_type='+dta_type+'&dta_no='+dta_no+'&dta_item='+dta_item+'&dta_unit='+dta_unit+'&st_date='+st_date+'&st_time='+st_time+'&en_date='+en_date+'&en_time='+en_time;
+    var dta_url = '//kunwoo.epcs.co.kr/device/json/measure'+dta_file+'.php?token=1099de5drf09&mms_idx='+mms_idx+'&shf_no='+shf_no+'&dta_type='+dta_type+'&dta_no='+dta_no+'&dta_item='+dta_item+'&dta_unit='+dta_unit+'&st_date='+st_date+'&st_time='+st_time+'&en_date='+en_date+'&en_time='+en_time;
     // console.log(dta_url);
 
     Highcharts.getJSON(

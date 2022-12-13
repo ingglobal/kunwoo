@@ -201,16 +201,16 @@ function success(data) {
 
 //setTimeout(function(){
     Highcharts.getJSON(
-        'http://bogwang.epcs.co.kr/device/json/temperature.php?token=1099de5drf09&mms_idx=1&dta_group=mea&dta_type=1&dta_no=0&start_date=2020-04-23&start_time=10:00:00&end_date=2020-04-23&end_time=23:59:59',
+        'http://kunwoo.epcs.co.kr/device/json/temperature.php?token=1099de5drf09&mms_idx=1&dta_group=mea&dta_type=1&dta_no=0&start_date=2020-04-23&start_time=10:00:00&end_date=2020-04-23&end_time=23:59:59',
         success
     );
 //},500);
 // Highcharts.getJSON(
-//     'http://bogwang.epcs.co.kr/device/json/msft-c1.json',
+//     'http://kunwoo.epcs.co.kr/device/json/msft-c1.json',
 //     success
 // );
 // Highcharts.getJSON(
-//     'http://bogwang.epcs.co.kr/device/json/aapl-c1.json',
+//     'http://kunwoo.epcs.co.kr/device/json/aapl-c1.json',
 //     success
 // );
 

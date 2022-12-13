@@ -2,8 +2,8 @@
 // 측정 자료: 실측 데이터 추출
 // token, mms_idx, dta_type, dta_no, shf_no
 // st_date, st_time, en_date, en_time
-// 디폴트(실측정): http://bogwang.epcs.co.kr/device/json/measure.real.php?token=1099de5drf09&mms_idx=1
-// http://bogwang.epcs.co.kr/device/json/measure.real.php?token=1099de5drf09&mms_idx=1&dta_type=1&dta_no=0&st_date=2020-04-23&st_time=10:18:49&en_date=2020-04-23&en_time=21:13:09
+// 디폴트(실측정): http://kunwoo.epcs.co.kr/device/json/measure.real.php?token=1099de5drf09&mms_idx=1
+// http://kunwoo.epcs.co.kr/device/json/measure.real.php?token=1099de5drf09&mms_idx=1&dta_type=1&dta_no=0&st_date=2020-04-23&st_time=10:18:49&en_date=2020-04-23&en_time=21:13:09
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

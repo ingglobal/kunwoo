@@ -189,7 +189,7 @@ for($i=0;$i<sizeof($arr);$i++) {
                 $replace = array (  $towhom_li[$j]['r_name'], $arr[$i]['wr_subject']
                                     ,$mms['mms_name'], $arr[$i]['wr_3']
                                     ,$arr[$i]['maintain_spare_time'], conv_content($arr[$i]['wr_content'],2)
-                                    ,G5_TIME_YMD, "http://bogwang.epcs.co.kr"
+                                    ,G5_TIME_YMD, "http://kunwoo.epcs.co.kr"
                                 );
                                 // print_r2($replace);
 

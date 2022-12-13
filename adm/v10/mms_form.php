@@ -19,7 +19,7 @@ if ($w == '') {
 	$com = get_table_meta('company','com_idx',$mms['com_idx']);
 	$mms['mms_sort'] = 1;
     $mms['mms_set_output'] = $mms['mms_set_error'] = 'shift';
-    $mms['mms_data_url'] = 'bogwang.epcs.co.kr/device/json';
+    $mms['mms_data_url'] = 'kunwoo.epcs.co.kr/device/json';
     $mms['mms_output_yn'] = 'Y';
     $mms['mms_status'] = 'ok';
 	$html_title = '추가';

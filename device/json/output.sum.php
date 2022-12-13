@@ -6,9 +6,9 @@
 // dta_value_type(sum)
 // st_date, en_date
 // dta_defect = 0(정상상품만), dta_defect = 1(불량상품만), dta_defect = 0,1(정상,불량 모두다)
-// 디폴트: http://bogwang.epcs.co.kr/device/json/output.sum.php?token=1099de5drf09&mms_idx=1
+// 디폴트: http://kunwoo.epcs.co.kr/device/json/output.sum.php?token=1099de5drf09&mms_idx=1
 // 조건을 바꾸어 보세요.
-// http://bogwang.epcs.co.kr/device/json/output.sum.php?token=1099de5drf09&mms_idx=1&dta_item=daily&st_date=2020-05-01&en_date=2020-05-31
+// http://kunwoo.epcs.co.kr/device/json/output.sum.php?token=1099de5drf09&mms_idx=1&dta_item=daily&st_date=2020-05-01&en_date=2020-05-31
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

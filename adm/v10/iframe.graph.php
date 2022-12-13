@@ -317,7 +317,7 @@ var graphs2 = [], seriesOptions = [], data_series = [], graph_type = 'spline', g
 // graphs attr in in chart div
 // 변수가 바뀌면 graph_id를 바꿔줘야 합니다. 테스트하려면 주석 해제 후 [확인]만 하면 됩니다.
 // graphs[0] = {
-//     dta_data_url: "bogwang.epcs.co.kr/device/json",
+//     dta_data_url: "kunwoo.epcs.co.kr/device/json",
 //     dta_json_file: "measure",
 //     dta_group: "mea",
 //     mms_idx: 7,
@@ -335,7 +335,7 @@ var graphs2 = [], seriesOptions = [], data_series = [], graph_type = 'spline', g
 //     graph_id: 'bWVhc3VyZV9tZWFfN18xXzBfMF8wXzAsMV8wXw'
 // };
 // graphs[1] = {
-//     dta_data_url: "bogwang.epcs.co.kr/device/json",
+//     dta_data_url: "kunwoo.epcs.co.kr/device/json",
 //     dta_json_file: "output",
 //     dta_group: "product",
 //     mms_idx: 7,
@@ -957,7 +957,7 @@ $(function(e) {
     if(!$mbd_idx) {
     ?>
         $.ajax({
-            url:'//korsuji.epcs.co.kr/device/json/output.default.php',
+            url:'//kunwoo.epcs.co.kr/device/json/output.default.php',
             data:{"token":"1099de5drf09","mms_idx":"<?=$mms_idx?>"},
             dataType:'json', timeout:10000, beforeSend:function(){}, success:function(res){
                 // console.log(res);

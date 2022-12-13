@@ -3,8 +3,8 @@
 // token, mms_idx, dta_group, shf_no, dta_mmi_no, dta_item(minute), dta_unit(10)
 // st_date, st_time, en_date, en_time
 // dta_defect = 0(정상상품만), dta_defect = 1(불량상품만), dta_defect = 0,1(정상,불량 모두다)
-// 디폴트(카운터그룹핑): http://bogwang.epcs.co.kr/device/json/item.php?token=1099de5drf09&mms_idx=1
-// http://bogwang.epcs.co.kr/device/json/item.php?token=1099de5drf09&mms_idx=1&shf_no=1&dta_mmi_no=1&dta_item=minute&dta_unit=10&&st_date=2020-05-01&st_time=10:00:00&end_date=2020-05-31&end_time=23:59:59
+// 디폴트(카운터그룹핑): http://kunwoo.epcs.co.kr/device/json/item.php?token=1099de5drf09&mms_idx=1
+// http://kunwoo.epcs.co.kr/device/json/item.php?token=1099de5drf09&mms_idx=1&shf_no=1&dta_mmi_no=1&dta_item=minute&dta_unit=10&&st_date=2020-05-01&st_time=10:00:00&end_date=2020-05-31&end_time=23:59:59
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

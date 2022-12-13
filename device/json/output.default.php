@@ -1,7 +1,7 @@
 <?php
 // 생산 자료: 디폴트 (초기 시간 설정)
 // token, mms_idx
-// http://bogwang.epcs.co.kr/device/json/output.default.php?token=1099de5drf09&mms_idx=2
+// http://kunwoo.epcs.co.kr/device/json/output.default.php?token=1099de5drf09&mms_idx=2
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

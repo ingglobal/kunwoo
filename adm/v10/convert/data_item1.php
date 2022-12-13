@@ -1,5 +1,5 @@
 <?php
-// 실행주소: http://http://bogwang.epcs.co.kr/adm/v10/convert/data_item1.php
+// 실행주소: http://http://kunwoo.epcs.co.kr/adm/v10/convert/data_item1.php
 include_once('./_common.php');
 
 $demo = 0;  // 데모모드 = 1 (실행모드 = 0)

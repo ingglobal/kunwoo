@@ -2,8 +2,8 @@
 // 가동 자료: 그룹핑
 // token, mms_idx, dta_group, shf_no, dta_mmi_no, dta_item(minute), dta_unit(10)
 // st_date, st_time, en_date, en_time
-// 디폴트(카운터그룹핑): http://bogwang.epcs.co.kr/device/json/run.php?token=1099de5drf09&mms_idx=7
-// http://bogwang.epcs.co.kr/device/json/run.php?token=1099de5drf09&mms_idx=7&dta_group=run&shf_no=1&dta_mmi_no=1&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&en_date=2020-04-30&en_time=23:59:59
+// 디폴트(카운터그룹핑): http://kunwoo.epcs.co.kr/device/json/run.php?token=1099de5drf09&mms_idx=7
+// http://kunwoo.epcs.co.kr/device/json/run.php?token=1099de5drf09&mms_idx=7&dta_group=run&shf_no=1&dta_mmi_no=1&dta_item=minute&dta_unit=10&&st_date=2020-04-29&st_time=10:00:00&en_date=2020-04-30&en_time=23:59:59
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

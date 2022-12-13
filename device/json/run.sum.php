@@ -6,9 +6,9 @@
 // token, mms_idx, dta_group, shf_no, dta_mmi_no, dta_item(minute)
 // dta_value_type(sum)
 // st_date, en_date
-// 디폴트: http://bogwang.epcs.co.kr/device/json/run.sum.php?token=1099de5drf09&mms_idx=7
+// 디폴트: http://kunwoo.epcs.co.kr/device/json/run.sum.php?token=1099de5drf09&mms_idx=7
 // 조건을 바꾸어 보세요.
-// http://bogwang.epcs.co.kr/device/json/run.sum.php?token=1099de5drf09&mms_idx=7&dta_item=daily&st_date=2020-06-01&en_date=2020-06-30
+// http://kunwoo.epcs.co.kr/device/json/run.sum.php?token=1099de5drf09&mms_idx=7&dta_item=daily&st_date=2020-06-01&en_date=2020-06-30
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

@@ -743,7 +743,7 @@ $(function(e) {
 
     // 날짜 디폴트 입력
     $.ajax({
-        url:'//bogwang.epcs.co.kr/device/json/output.default.php',
+        url:'//kunwoo.epcs.co.kr/device/json/output.default.php',
         data:{"token":"1099de5drf09","mms_idx":"<?=$mms_idx?>"},
         dataType:'json', timeout:10000, beforeSend:function(){}, success:function(res){
             // console.log(res);

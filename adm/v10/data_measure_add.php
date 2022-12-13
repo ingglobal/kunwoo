@@ -409,7 +409,7 @@ $(function() {
             // 목표 ---------------------------------------------
             // 중복값은 선언할 필요 없음
             dta_json_file = 'output.target';
-            dta_data_url = 'bogwang.epcs.co.kr/adm/v10/ajax';
+            dta_data_url = 'kunwoo.epcs.co.kr/adm/v10/ajax';
             graph_type = 'spline';
             graph_line = 'shortdot';    // 점선
 

@@ -61,7 +61,7 @@ include_once('./_head.php');
     </div>
     <div class="div_icon"><i class="fa fa-bar-chart"></i></div>
     <div class="div_content">
-        <b>접속 URL</b> http://bogwang.epcs.co.kr/device/output/
+        <b>접속 URL</b> http://kunwoo.epcs.co.kr/device/output/
         <ul>
         <li><b>token</b> Token값 (부여받은 토큰값)</li>
         <li><b>list</b> 생산데이터 배열 (여러개 입력가능, 배열 항목은 아래 참조)</li>
@@ -91,7 +91,7 @@ include_once('./_head.php');
     </div>
     <div class="div_icon"><i class="fa fa-line-chart"></i></div>
     <div class="div_content">
-        <b>접속 URL</b> http://bogwang.epcs.co.kr/device/measure/
+        <b>접속 URL</b> http://kunwoo.epcs.co.kr/device/measure/
         <ul>
         <li><b>token</b> Token값 (부여받은 토큰값)</li>
         <li><b>list</b> 측정데이터 배열 (여러개 입력가능)</li>

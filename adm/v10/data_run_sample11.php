@@ -275,7 +275,7 @@ $(document).on('click','.div_dta_type a',function(e){
     $(this).attr('chr_id',chr_id);
 
     Highcharts.getJSON(
-        '//bogwang.epcs.co.kr/device/json/measure.php?token=1099de5drf09&mms_idx='+mms_idx+'&dta_type='+dta_type+'&dta_no='+dta_no+'&start_date=2020-04-23&start_time=19:00:00&end_date=2020-04-23&end_time=23:59:59',
+        '//kunwoo.epcs.co.kr/device/json/measure.php?token=1099de5drf09&mms_idx='+mms_idx+'&dta_type='+dta_type+'&dta_no='+dta_no+'&start_date=2020-04-23&start_time=19:00:00&end_date=2020-04-23&end_time=23:59:59',
         function(data) {
             seriesOptions[chr_idx] = {
                 name: dat_name,

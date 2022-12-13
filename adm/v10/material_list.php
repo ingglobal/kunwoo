@@ -9,20 +9,19 @@ include_once('./_head.php');
 include_once('./_top_menu_mtr.php');
 echo $g5['container_sub_title'];
 
-$sql_common = " FROM {$g5['material_table']} AS mtr
-                    LEFT JOIN {$g5['bom_table']} AS bom ON mtr.bom_part_no = bom.bom_part_no
+$sql_common = " FROM {$g5['material_table']} mtr
 ";
 
 $where = array();
 // 디폴트 검색조건 (used 제외)
 $where[] = " mtr_status NOT IN ('delete','trash','used') ";
-$where[] = " mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
-$where[] = " mtr.mtr_type = 'material' ";
+$where[] = " com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " mtr_type = 'material' ";
 
 // 검색어 설정
 if ($stx != "") {
     switch ($sfl) {
-		case ( $sfl == 'mtr.mtr_heat_no' ) :
+		case ( $sfl == 'mtr_heat' ) :
 			$where[] = " {$sfl} = '".trim($stx)."' ";
             break;
         default :
@@ -31,25 +30,15 @@ if ($stx != "") {
     }
 }
 
-if($mtr_input2_date){
-    $where[] = " mtr_input_date = '".$mtr_input2_date."' ";
-    $qstr .= $qstr.'&mtr_input_date='.$mtr_input2_date;
-}
-//if($mtr2_status) $where[] = " mtr_status = '".$mtr2_status."' ";
 // 최종 WHERE 생성
 if ($where)
     $sql_search = ' WHERE '.implode(' AND ', $where);
 
-$sql_group = " GROUP BY mtr.mtr_heat ";
+$sql_group = " GROUP BY mtr_heat ";
 
 if (!$sst) {
     $sst = "mtr_heat";
     $sod = "desc";
-}
-
-if (!$sst2) {
-    $sst2 = ", mtr.mtr_idx";
-    $sod2 = "";
 }
 
 $sql_order = " ORDER BY {$sst} {$sod} {$sst2} {$sod2} ";
@@ -64,15 +53,33 @@ $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
 if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
-$sql = " SELECT * 
-            , ROW_NUMBER() OVER (ORDER BY mtr.mtr_heat) AS mtr_num
-            , COUNT(mtr.mtr_weight) AS cnt
-            , SUM(mtr.mtr_weight) AS mtr_sum_weight
-            , ( SELECT SUM(mtr_weight) FROM {$g5['material_table']} WHERE mtr_type = 'half' AND mtr_status NOT IN ('delete','del','trash','cancel') GROUP BY mtr_heat ) AS cut_sum_weight
+
+$sql = " SELECT mtr_heat
+            , ROW_NUMBER() OVER (ORDER BY mtr_heat) AS mtr_num
+            , COUNT(mtr_idx) AS cnt
+            , SUM(mtr_weight) AS mtr_sum_weight
+            , ( SELECT 
+                    IF(ROUND(SUM(mtr_weight)) IS NOT NULL,ROUND(SUM(mtr_weight)),0) 
+                FROM {$g5['material_table']} 
+                    WHERE mtr_type = 'half' 
+                        AND mtr_status NOT IN ('delete','del','trash','cancel') 
+                        AND mtr_heat = mtr.mtr_heat 
+                    ORDER BY mtr_heat 
+            ) AS cut_sum_weight
+            , ( ROUND( SUM(mtr_weight) - 
+                (SELECT IF(ROUND(SUM(mtr_weight)) IS NOT NULL,ROUND(SUM(mtr_weight)),0) 
+                FROM {$g5['material_table']} 
+                WHERE mtr_type = 'half' 
+                    AND mtr_status NOT IN ('delete','del','trash','cancel') 
+                    AND mtr_heat = mtr.mtr_heat 
+                ORDER BY mtr_heat
+                    ) 
+                )
+            ) AS mtr_left_weight
         {$sql_common} {$sql_search} {$sql_group} {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
-// print_r3($sql);
+// print_r2($sql);exit;
 $result = sql_query($sql,1);
 
 $listall = '<a href="'.$_SERVER['SCRIPT_NAME'].'" class="ov_listall">전체목록</a>';
@@ -116,12 +123,12 @@ echo $g5['container_sub_title'];
     <form id="fsearch" name="fsearch" class="local_sch01 local_sch" method="get">
         <label for="sfl" class="sound_only">검색대상</label>
         <select name="sfl" id="sfl">
-            <option value="mtr.mtr_heat"<?php echo get_selected($_GET['sfl'], "mtr.mtr_heat"); ?>>히트넘버</option>
+            <option value="mtr_heat"<?php echo get_selected($_GET['sfl'], "mtr_heat"); ?>>히트넘버</option>
         </select>
         <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
         <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
         <script>
-        $('#sfl').val('<?=(($sfl)?$sfl:'mtr.mtr_heat')?>');
+        $('#sfl').val('<?=(($sfl)?$sfl:'mtr_heat')?>');
         </script>
         <input type="submit" class="btn_submit" value="검색">
     </form>
@@ -169,7 +176,7 @@ $('.data_blank').on('click',function(e){
         <th scope="col">번호</th>
         <th scope="col">히트넘버</th>
         <th scope="col">번들갯수</th>
-        <th scope="col">입고무게(kg)</th>
+        <th scope="col">입고총무게(kg)</th>
         <th scope="col">절단재고무게(kg)</th>
         <th scope="col">남은자재무게(kg)</th>
     </tr>
@@ -193,7 +200,7 @@ $('.data_blank').on('click',function(e){
         <td class="td_cnt"><?=$row['cnt']?></td>
         <td class="td_mtr_sum_weight" style="text-align:right;"><?=number_format($row['mtr_sum_weight'])?></td>
         <td class="td_cut_sum_weight" style="text-align:right;"><?=number_format($row['cut_sum_weight'])?></td>
-        <td class="td_left_sum_weight" style="text-align:right;"><?=number_format($row['mtr_sum_weight'] - $row['cut_sum_weight'])?></td>
+        <td class="td_left_sum_weight" style="text-align:right;"><?=number_format(($row['mtr_sum_weight'] - $row['cut_sum_weight'] < 0)?0:$row['mtr_sum_weight'] - $row['cut_sum_weight'])?></td>
     </tr>
     <?php
     }

@@ -14,7 +14,7 @@ $group_array = array('mea','mea');
 <form id="form01" action="./form2.php">
 
 <h1>교대 및 목표수량 동기화</h1>
-<h2>실제 URL: <a href="http://bogwang.epcs.co.kr/device/shift/list/" target="_blank">http://bogwang.epcs.co.kr/device/shift/list/</a></h2>
+<h2>실제 URL: <a href="http://kunwoo.epcs.co.kr/device/shift/list/" target="_blank">http://kunwoo.epcs.co.kr/device/shift/list/</a></h2>
 Token(암호코드)
 <table>
 	<tr><td>토큰값</td><td><input type="text" name="token" value="1099de5drf09"></td></tr>

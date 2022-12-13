@@ -263,21 +263,21 @@ var graph_name = "Graph";
 $(function() {
     $(".btn_test").click(function() {
         // window.opener.tests[0] = {
-            // dta_data_url: "bogwang.epcs.co.kr/device/json",
+            // dta_data_url: "kunwoo.epcs.co.kr/device/json",
             // dta_no: 0
         // };
         // window.opener.tests[1] = {
-            // dta_data_url: "bogwang.epcs.co.kr/device/json1",
+            // dta_data_url: "kunwoo.epcs.co.kr/device/json1",
             // dta_no: 1
         // };
 
 var tests =[];
 tests[0] = {
-    dta_data_url: "bogwang.epcs.co.kr/device/json",
+    dta_data_url: "kunwoo.epcs.co.kr/device/json",
     dta_no: 0,
 };
 tests[1] = {
-    dta_data_url: "bogwang.epcs.co.kr/device/json",
+    dta_data_url: "kunwoo.epcs.co.kr/device/json",
     dta_no: 1,
 };
 $("#chart1", opener.document).attr("tests",JSON.stringify(tests) );
@@ -429,7 +429,7 @@ $("#chart1", opener.document).attr("tests",JSON.stringify(tests) );
             // 목표 ---------------------------------------------
             // 중복값은 선언할 필요 없음
             dta_json_file = "output.target";
-            dta_data_url = "bogwang.epcs.co.kr/adm/v10/ajax";
+            dta_data_url = "kunwoo.epcs.co.kr/adm/v10/ajax";
             graph_type = "spline";
             graph_line = "shortdot";    // 점선
             graph_name = encodeURIComponent("목표");

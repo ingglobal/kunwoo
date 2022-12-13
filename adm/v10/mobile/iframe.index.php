@@ -312,7 +312,7 @@ for($i=0;$row=sql_fetch_array($rs);$i++) {
             // for loop as many times as graph count.
             for($j=0;$j<sizeof($row['data']);$j++) {
                 // echo 'console.log("'.$row['data'][$j]['id']['dta_data_url'].'");';
-                // in case for http://demo.bogwang.epcs.co.kr
+                // in case for http://demo.kunwoo.epcs.co.kr
                 if( preg_match("/demo\./",G5_URL) ) {
                     $row['data'][$j]['id']['dta_data_url'] = (!preg_match("/demo\./",$row['data'][$j]['id']['dta_data_url'])) ? 'demo.'.$row['data'][$j]['id']['dta_data_url']
                                                                 : $row['data'][$j]['id']['dta_data_url'];

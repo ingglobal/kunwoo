@@ -258,7 +258,7 @@ $maxarr = array($targetmax,$datamax,$accmax);
 
 
 // data 호출 URL 
-$json_url = 'http://bogwang.epcs.co.kr/device/json/data.php?token=1099de5drf09&mms_idx='.$mms_idx
+$json_url = 'http://kunwoo.epcs.co.kr/device/json/data.php?token=1099de5drf09&mms_idx='.$mms_idx
                 .'&dta_group='.$dta_group.'&dta_type='.$dta_type.'&dta_no='.$dta_no.'&dta_value_type='.$dta_value_type
                 .'&start_date='.$st_date.'&start_time='.$st_time.'&end_date='.$en_date.'&end_time='.$en_time;
 //echo $json_url;

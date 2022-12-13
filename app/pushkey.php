@@ -1,7 +1,7 @@
 <?php
 // 푸시값 입력
 // id, pushkey
-// http://bogwang.epcs.co.kr/app/pushkey.php?id=jamesjoa&pushkey=abcd12345
+// http://kunwoo.epcs.co.kr/app/pushkey.php?id=jamesjoa&pushkey=abcd12345
 // http://localhost/icmms/app/pushkey.php?id=jamesjoa&pushkey=abcd12345
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');

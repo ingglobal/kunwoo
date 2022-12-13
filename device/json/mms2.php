@@ -2,7 +2,7 @@
 // MMS 관련 정보
 // token, mms_idx
 // localhost/icmms/device/json/mms.php?token=1099de5drf09&mms_idx=1
-// http://bogwang.epcs.co.kr/device/json/mms.php?token=1099de5drf09&mms_idx=1
+// http://kunwoo.epcs.co.kr/device/json/mms.php?token=1099de5drf09&mms_idx=1
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');
 if(isset($_SERVER['HTTP_ORIGIN'])){

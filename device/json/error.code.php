@@ -3,7 +3,7 @@
 // dta_groupby = shf_no, dta_code, shf_no_dat_code
 // token, mms_idx, dta_group
 // st_date, st_time, en_date, en_time
-// http://bogwang.epcs.co.kr/device/json/error.code.php?token=1099de5drf09&mms_idx=1&dta_group=err&st_date=2020-02-29&st_time=00:00:00&end_date=2020-04-30&end_time=23:59:59
+// http://kunwoo.epcs.co.kr/device/json/error.code.php?token=1099de5drf09&mms_idx=1&dta_group=err&st_date=2020-02-29&st_time=00:00:00&end_date=2020-04-30&end_time=23:59:59
 // 조건을 바꾸어 보세요.
 header("Content-Type: text/plain; charset=utf-8");
 include_once('./_common.php');

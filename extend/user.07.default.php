@@ -591,7 +591,7 @@ $seconds_text = array(
 );
 
 // default data_url
-$g5['set_data_url'] = 'bogwang.epcs.co.kr';
+$g5['set_data_url'] = 'kunwoo.epcs.co.kr';
 
 
 // BOM구성 표시

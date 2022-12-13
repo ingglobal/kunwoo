@@ -107,8 +107,8 @@ else
 
 
 //한국수지만을 위한 추가내용(완제품 등록/수정/삭제)시 자동으로 (반제품 등록/수정/삭제)처리가 동반되도록하는 기능 (다른 업체에서는 주석 또는 삭제 해야함)
-// if(preg_match('/korsuji/i',$config['cf_title']) || preg_match('/한국수지/',$config['cf_title']) || preg_match('/korea\ssuji/i',$config['cf_title'])){
-//     include_once('./bom_form_korsuji_update.php');
+// if(preg_match('/kunwoo/i',$config['cf_title']) || preg_match('/한국수지/',$config['cf_title']) || preg_match('/korea\ssuji/i',$config['cf_title'])){
+//     include_once('./bom_form_kunwoo_update.php');
 // }
 
 

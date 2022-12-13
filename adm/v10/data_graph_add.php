@@ -298,11 +298,11 @@ $(function() {
     $(".btn_test").click(function() {
         var tests =[];
         tests[0] = {
-            dta_data_url: "bogwang.epcs.co.kr/device/json",
+            dta_data_url: "kunwoo.epcs.co.kr/device/json",
             dta_no: 0,
         };
         tests[1] = {
-            dta_data_url: "bogwang.epcs.co.kr/device/json",
+            dta_data_url: "kunwoo.epcs.co.kr/device/json",
             dta_no: 1,
         };
         $("#chart1", opener.document).attr("tests",JSON.stringify(tests) );
