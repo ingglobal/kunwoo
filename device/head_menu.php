@@ -17,4 +17,5 @@ ul{list-style:none;padding:0;margin:0;}
     <li class="nav_li"><a href="<?php echo G5_DEVICE_URL ?>/half_plt/form.php" class="<?=($g5['dir_name'] == 'half_plt')?' focus':''?>">절단PLT등록</a></li>
     <li class="nav_li"><a href="<?php echo G5_DEVICE_URL ?>/item_reg/form.php" class="<?=($g5['dir_name'] == 'item_reg')?' focus':''?>">단조품등록</a></li>
     <li class="nav_li"><a href="<?php echo G5_DEVICE_URL ?>/item_plt/form.php" class="<?=($g5['dir_name'] == 'item_plt')?' focus':''?>">단조품PLT등록</a></li>
+    <li class="nav_li"><a href="<?php echo G5_DEVICE_URL ?>/jprod_plt/form.php" class="<?=($g5['dir_name'] == 'jprod_plt')?' focus':''?>">완제품PLT등록</a></li>
 </ul>
