@@ -9,26 +9,23 @@ include_once('./_head.php');
 include_once('./_top_menu_half.php');
 
 
-$sql_common = " FROM {$g5['material_table']} AS itm
-                    LEFT JOIN {$g5['bom_table']} AS bom ON itm.bom_idx = bom.bom_idx
-                    LEFT JOIN {$g5['order_out_practice_table']} AS oop ON itm.oop_idx = oop.oop_idx
-                    LEFT JOIN {$g5['order_practice_table']} AS orp ON oop.orp_idx = orp.orp_idx
+$sql_common = " FROM {$g5['material_table']} mtr
+                    LEFT JOIN {$g5['bom_table']} bom ON mtr.bom_idx = bom.bom_idx
+                    LEFT JOIN {$g5['order_out_practice_table']} oop ON mtr.oop_idx = oop.oop_idx
+                    LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
 ";
 
 $where = array();
 // 디폴트 검색조건 (used 제외)
-$where[] = " itm.mtr_status NOT IN ('delete','trash','used') AND itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " mtr.mtr_status NOT IN ('delete','trash','used') AND mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 // 검색어 설정
 if ($stx != "") {
     switch ($sfl) {
-		case ( $sfl == 'bom_idx' || $sfl == 'mtr_idx' || $sfl == 'mtr_borcode' || $sfl == 'mtr_lot' || $sfl == 'mtr_defect_type' || $sfl == 'trm_idx_location' ) :
+		case ( $sfl == 'mtr.bom_idx' || $sfl == 'mtr_idx' || $sfl == 'mtr_heat' || $sfl == 'mtr_lot' || $sfl == 'mtr_bundle' ) :
 			$where[] = " {$sfl} = '".trim($stx)."' ";
             break;
-		case ( $sfl == 'bct_id' ) :
-			$where[] = " {$sfl} LIKE '".trim($stx)."%' ";
-            break;
-        default :
+		default :
 			$where[] = " $sfl LIKE '%".trim($stx)."%' ";
             break;
     }
@@ -73,8 +70,25 @@ $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
 if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
-$sql = "SELECT *
-        , ROW_NUMBER() OVER (PARTITION BY mtr_input_date, itm.bom_part_no ORDER BY mtr_reg_dt) AS mtr_num
+$sql = "SELECT mtr_idx
+            , orp.orp_idx
+            , mtr.oop_idx
+            , mtr.bom_idx
+            , mtr_name
+            , mtr.bom_part_no
+            , bom.bom_std
+            , mtr.mtr_input_date
+            , mtr.mms_idx
+            , mtr.mtr_weight
+            , mtr.mtr_heat
+            , mtr.mtr_lot
+            , mtr.mtr_bundle
+            , mtr.mtr_defect
+            , mtr.mtr_defect_type
+            , mtr.mtr_status
+            , mtr.mtr_reg_dt
+            , mtr.mtr_update_dt
+            , ROW_NUMBER() OVER (PARTITION BY mtr_input_date, mtr.bom_part_no ORDER BY mtr_reg_dt) AS mtr_num
         {$sql_common} {$sql_search} {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
@@ -90,7 +104,7 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
 .td_mtr_name {text-align:left !important;}
 .td_mtr_part_no, .td_com_name, .td_mtr_maker
-,.td_mtr_items, .td_mtr_items_title {text-align:left !important;}
+,.td_mtr_items, .td_mtr_items_title, .td_mtr_std, .td_mtr_bundle {text-align:left !important;}
 .span_mtr_price {margin-left:20px;}
 .span_mtr_price b, .span_bit_count b {color:#737132;font-weight:normal;}
 #modal01 table ol {padding-right: 20px;text-indent: -12px;padding-left: 12px;}
@@ -213,13 +227,12 @@ $('.data_blank').on('click',function(e){
         <th scope="col">ID</th>
         <th scope="col"><?php echo subject_sort_link('mtr_name') ?>품명</a></th>
         <th scope="col">파트넘버</th>
+        <th scope="col">규격</th>
         <th scope="col">통계일</th>
-        <th scope="col">설비라인</th>
-        <th scope="col">시간구간</th>
-        <th scope="col">바코드</th>
-        <th scope="col">품별순서</th>
+        <th scope="col">설비명</th>
+        <th scope="col">히트넘버</th>
+        <th scope="col">번들넘버</th>
         <th scope="col">무게(kg)</th>
-        <th scope="col">용융기투입일시</th>
         <th scope="col">등록일시</th>
         <th scope="col">상태</th>
         <th scope="col">관리</th>
@@ -231,7 +244,6 @@ $('.data_blank').on('click',function(e){
     <?php
     for ($i=0; $row=sql_fetch_array($result); $i++) {
         // print_r2($row);
-
         $s_mod = '<a href="./half_form.php?'.$qstr.'&amp;w=u&amp;mtr_idx='.$row['mtr_idx'].'" class="btn btn_03">수정</a>';
 
         // history there items form the last. It is not gooe to see if many are being seen.
@@ -264,11 +276,11 @@ $('.data_blank').on('click',function(e){
         <td class="td_mtr_idx"><?=$row['mtr_idx']?></td><!-- ID -->
         <td class="td_mtr_name"><?=$row['mtr_name']?></td><!-- 품명 -->
         <td class="td_mtr_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
+        <td class="td_mtr_std"><?=$row['bom_std']?></td><!-- 규격 -->
         <td class="td_mtr_date"><?=$row['mtr_input_date']?></td><!-- 통계일 -->
-        <td class="td_mtr_line"><?=$g5['line_name'][$row['trm_idx_location']]?></td><!-- 설비라인 -->
-        <td class="td_mtr_shift"><?=$row['mtr_shift']?></td><!-- 작업구간 -->
-        <td class="td_mtr_barcode" style="text-align:left;"><?=$row['mtr_barcode']?></td><!-- 바코드 -->
-        <td class="td_mtr_num" style="text-align:right;"><?=$row['mtr_num']?></td><!-- 품별순서 -->
+        <td class="td_mtr_mms"><?=$g5['trms']['cut_idx_arr'][$row['mms_idx']]?></td><!-- 설비라인 -->
+        <td class="td_mtr_heat" style="text-align:left;"><?=$row['mtr_heat']?></td><!-- 히트넘버 -->
+        <td class="td_mtr_bundle"><?=$row['mtr_bundle']?></td><!-- 번들넘버 -->
         <td class="td_mtr_weight" style="text-align:right;">
             <?php if($is_admin){ ?>
                 <input type="text" name="mtr_weight[<?=$row['mtr_idx']?>]" value="<?=$row['mtr_weight']?>" class="frm_input" style="width:70px;text-align:right;">
@@ -277,14 +289,6 @@ $('.data_blank').on('click',function(e){
                 <?=$row['mtr_weight']?>
             <?php } ?>
         </td><!-- 무게 -->
-        <td class="td_mtr_melt_dt">
-            <?php if($is_admin){ ?>
-                <input type="text" name="mtr_melt_dt[<?=$row['mtr_idx']?>]" value="<?=$row['mtr_melt_dt']?>" class="frm_input" style="width:160px;text-align:center;">
-            <?php } else { ?>
-                <input type="hidden" name="mtr_melt_dt[<?=$row['mtr_idx']?>]" value="<?=$row['mtr_melt_dt']?>">
-                <?=(($row['mtr_melt_dt']!='0000-00-00 00:00:00')?substr($row['mtr_melt_dt'],0,19):'-')?>
-            <?php } ?>
-        </td><!-- 용융기투입일시 -->
         <td class="td_mtr_reg_dt">
             <?php if($is_admin){ ?>
                 <input type="text" name="mtr_reg_dt[<?=$row['mtr_idx']?>]" value="<?=$row['mtr_reg_dt']?>" class="frm_input" style="width:160px;text-align:center;">

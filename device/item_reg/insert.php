@@ -15,25 +15,26 @@
         }
 */
 $start_date = $bom1['orp_start_date'].' '.substr(G5_TIME_YMDHIS,-8);
+$start_date_add = $start_date;
 for($j=0;$j<$getData[0]['number'];$j++){
-    $date_plus = strtotime($start_date."+".($j*5)." second");
+    $date_plus = strtotime($start_date_add."+3 second");
     $start_date = date('Y-m-d H:i:s',$date_plus);
-
+    $start_dt_10 = substr($start_date,0,10);
     if($bom1['oop_onlythis_yn']
         || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '0_1'
         || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '1_1'
         || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '2_1'){
         $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES 
-        ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".substr($start_date,0,10)."', '".$start_date."', '".$start_date."' )
+        ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
         ";
     }
     //press_type 규정에 반영하여 생성할것인가
     else {
         if($bom1['bom_press_type'] == '2_2'){
             $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES 
-            ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".substr($start_date,0,10)."', '".$start_date."', '".$start_date."' )
+            ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
 
-            , ( '{$bom2['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom2['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom2['bom_part_no']}', '".addslashes($bom2['bom_name'])."', '{$bom2['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".substr($start_date,0,10)."', '".$start_date."', '".$start_date."' )
+            , ( '{$bom2['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom2['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom2['bom_part_no']}', '".addslashes($bom2['bom_name'])."', '{$bom2['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
             ";
         }
         else {
@@ -42,7 +43,7 @@ for($j=0;$j<$getData[0]['number'];$j++){
             $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES ";
             $sql_loop = '';
             for($i=0;$i<$cp_num;$i++){
-                $sql_loop .= (($i==0)?'':',')." ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".substr($start_date,0,10)."', '".$start_date."', '".$start_date."' ) ";
+                $sql_loop .= (($i==0)?'':',')." ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' ) ";
             }
             $sql = $sql.$sql_loop;
         }
@@ -57,4 +58,6 @@ for($j=0;$j<$getData[0]['number'];$j++){
         LIMIT 1
     ";
     sql_query($half_sql);
+
+    $start_date_add = $start_date;
 }

@@ -101,18 +101,21 @@ if($result_arr['message'] == 'ok'){
     }
     else{
         $start_date = $oop['orp_start_date'].' '.substr(G5_TIME_YMDHIS,-8);
+        $start_date_add = $start_date;
         for($i=0;$i<$getData[0]['number'];$i++){
-            $date_plus = strtotime($start_date."+".($i*5)." second");
+            $date_plus = strtotime($start_date_add."+5 second");
             $start_date = date('Y-m-d H:i:s',$date_plus);
-            $date_minus = strtotime($start_date."-2 days");
+            $date_minus = strtotime($start_date_add."-2 days");
             $start_dt = date('Y-m-d H:i:s',$date_minus);
+            $start_dt_10 = substr($start_dt,0,10);
             $sql_plus = $sql;
             $sql_plus .= "
-                , mtr_input_date = '{$oop['orp_start_date']}'
-                , mtr_reg_dt = '{$start_dt}'
-                , mtr_update_dt = '{$start_dt}'
+            , mtr_input_date = '{$start_dt_10}'
+            , mtr_reg_dt = '{$start_dt}'
+            , mtr_update_dt = '{$start_dt}'
             ";
             sql_query($sql_plus,1);
+            $start_date_add = $start_date;
         }
     }   
 }

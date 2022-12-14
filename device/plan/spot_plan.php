@@ -151,7 +151,10 @@ $sql = " SELECT oop.oop_idx
 $result = sql_query($sql,1);
 $total_count = $result->num_rows;
 // print_r2($result);
+// print_r2($forge_arr);
 for($row=0;$row=sql_fetch_array($result);$row++){
+    // echo ''.$row['cut_mms_idx'].','.$row['forge_mms_idx'].','.$row['oop_count'];
+    // echo $row['forge_mms_idx']."<br>";
     // print_r2($row);
     if($row['forge_mms_idx'] && $row['oop_count']) //각 단조설비별로 분류
         array_push($forge_arr[$row['forge_mms_idx']]['orp_arr'][$row['orp_start_date']],$row);
