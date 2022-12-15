@@ -1,9 +1,10 @@
 <?php
-$sub_menu = "   ";
+// $sub_menu = "   ";
+$sub_menu = "917100";
 include_once('./_common.php');
 
 auth_check($auth[$sub_menu],"r");
-
+// echo 5;exit;
 $g5['title'] = '설비(iMMS)관리';
 include_once('./_top_menu_mms.php');
 include_once('./_head.php');

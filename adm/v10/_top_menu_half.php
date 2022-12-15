@@ -12,8 +12,9 @@ if($member['mb_manager_yn']) {
 ${'active_'.$g5['file_name']} = ' btn_top_menu_active';
 $g5['container_sub_title'] = '
 <h2 id="container_sub_title">
+	<a href="./half_oop_list.php" class="btn_top_menu '.$active_half_oop_list.'">절단품데이터(생산별)</a>
+	<a href="./half_raw_list.php" class="btn_top_menu '.$active_half_raw_list.'">절단품재고로우데이터</a>
 	<a href="./half_list.php" class="btn_top_menu '.$active_half_list.'">절단품재고(품번별)</a>
-	<a href="./half_row_list.php" class="btn_top_menu '.$active_half_row_list.'">절단품재고로우데이터</a>
 	'.$sub_title_term_list.'
 </h2>
 ';

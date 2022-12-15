@@ -571,37 +571,37 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 			</td>
 		</tr>
 		<tr>
-			<th scope="row">자재불량타입</th>
+			<th scope="row">반제품불량타입</th>
 			<td colspan="3">
-				<?php echo help('shape=형상불량, tera=찢어짐, scratch=긁힘, etc=기타'); ?>
+				<?php echo help('3030=error_size,3070=error_dent,3090=error_bend,3150=error_worker,4010=error_material,4020=error_cut,5010=error_subcontractor,3190=error_etc'); ?>
 				<input type="text" name="set_mtr_defect_type" value="<?php echo $g5['setting']['set_mtr_defect_type']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">반제품상태</th>
 			<td colspan="3">
-				<?php echo help('pending=대기,finish=생산완료,melt=용융기투입,compounding=컴파운딩,merge=병합,scrap=폐기,trash=삭제,error_inhomogeneity=이질불량,error_foreign=이물질불량,error_etc=기타불량'); ?>
+				<?php echo help('pending=대기,stock=절단완료,finish=사용완료,trash=삭제,error_size=치수불량,error_dent=타흔불량,error_bend=벤딩불량,error_worker=과실불량,error_material=원소재불량,error_cut=절단불량,error_subcontractor=외주불량,error_etc=기타불량'); ?>
 				<input type="text" name="set_half_status" value="<?php echo $g5['setting']['set_half_status']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">반제품상태중 양품상태</th>
 			<td colspan="3">
-				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) finish'); ?>
+				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) stock,finish'); ?>
 				<input type="text" name="set_half_status_ok" value="<?php echo $g5['setting']['set_half_status_ok']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">반제품상태중 불량품상태</th>
 			<td colspan="3">
-				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) error_inhomogeneity,error_foreign,error_etc'); ?>
+				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) error_size,error_dent,error_bend,error_worker,error_material,error_cut,error_subcontractor,error_etc'); ?>
 				<input type="text" name="set_half_status_ng" value="<?php echo $g5['setting']['set_half_status_ng']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">반제품상태중 불량품상태2</th>
 			<td colspan="3">
-				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) 1=error_inhomogeneity,2=error_foreign,3=error_etc'); ?>
+				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) 3030=error_size,3070=error_dent,3090=error_bend,3150=error_worker,4010=error_material,4020=error_cut,5010=error_subcontractor,3190=error_etc'); ?>
 				<input type="text" name="set_half_status_ng2" value="<?php echo $g5['setting']['set_half_status_ng2']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
@@ -622,7 +622,7 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 		<tr>
 			<th scope="row">완제품상태</th>
 			<td colspan="3">
-				<?php echo help('pending=대기,finish=생산완료,delivery=출하,compounding=컴파운딩,merge=병합,scrap=폐기,trash=삭제,error_color=색상불량,error_properties=물성불량,error_etc=기타불량'); ?>
+				<?php echo help('pending=대기,finish=생산완료,delivery=출하,scrap=폐기,trash=삭제,error_fold=접힘불량,error_unformed=결육불량,error_size=치수불량,error_position=정치불량,error_crack=크랙불량,error_dent=타흔불량,error_breakaway=형이탈불량,error_bend=벤딩불량,error_overheat=과열불량,error_scale=스케일불량,error_layer=덧살불량,error_worker=과실불량,error_triming=트리밍불량,error_sita=시타불량,error_material=원소재불량,error_cut=절단불량,error_mold=금형불량,error_equipment=장비불량,error_after=후처리불량,error_subcontractor=외주불량,error_replace=대체불량,error_dev=개발불량,error_heat=열처리불량,error_lose=로스불량,error_etc=기타불량'); ?>
 				<input type="text" name="set_itm_status" value="<?php echo $g5['setting']['set_itm_status']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
@@ -636,21 +636,21 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 		<tr>
 			<th scope="row">완제품상태중 불량품상태</th>
 			<td colspan="3">
-				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) error_color,error_properties,error_etc'); ?>
+				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) error_fold,error_unformed,error_size,error_position,error_crack,error_breakaway,error_dent,error_bend,error_overheat,error_scale,error_layer,error_worker,error_trim,error_sita,error_material,error_cut,error_mold,error_equipment,error_after,error_subcontractor,error_claim,error_replace,error_dev,error_heat,error_lose,error_etc'); ?>
 				<input type="text" name="set_itm_status_ng" value="<?php echo $g5['setting']['set_itm_status_ng']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">완제품상태중 불량품상태2</th>
 			<td colspan="3">
-				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) 1=error_color,2=error_properties,3=error_etc'); ?>
+				<?php echo help('영문상태값만 쉽표로 구분해서 입력하세요. 예) 3010=error_fold,3020=error_unformed,3030=error_size,3040=error_position,3050=error_crack,3060=error_breakaway,3070=error_dent,3090=error_bend,3100=error_overheat,3110=error_scale,3120=error_layer,3150=error_worker,3170=error_trim,3180=error_sita,4010=error_material,4020=error_cut,3200=error_mold,3230=error_equipment,3210=error_after,5010=error_subcontractor,5020=error_claim,5030=error_replace,5040=error_dev,5050=error_heat,5060=error_lose,3190=error_etc'); ?>
 				<input type="text" name="set_itm_status_ng2" value="<?php echo $g5['setting']['set_itm_status_ng2']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
 		<tr>
 			<th scope="row">파렛트상태</th>
 			<td colspan="3">
-				<?php echo help('pending=대기,finish=생산완료,delivery=출하,trash=삭제'); ?>
+				<?php echo help('pending=대기,finish=적재완료,delivery=출하,trash=삭제'); ?>
 				<input type="text" name="set_plt_status" value="<?php echo $g5['setting']['set_plt_status']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>

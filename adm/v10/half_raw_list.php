@@ -4,7 +4,7 @@ include_once('./_common.php');
 
 auth_check($auth[$sub_menu], 'r');
 
-$g5['title'] = '반제품재고관리';
+$g5['title'] = '절단품로우데이터';
 include_once('./_head.php');
 include_once('./_top_menu_half.php');
 
@@ -17,12 +17,14 @@ $sql_common = " FROM {$g5['material_table']} mtr
 
 $where = array();
 // 디폴트 검색조건 (used 제외)
-$where[] = " mtr.mtr_status NOT IN ('delete','trash','used') AND mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " mtr.mtr_status NOT IN ('delete','trash','used') ";
+$where[] = " mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " mtr.mtr_type = 'half' ";
 
 // 검색어 설정
 if ($stx != "") {
     switch ($sfl) {
-		case ( $sfl == 'mtr.bom_idx' || $sfl == 'mtr_idx' || $sfl == 'mtr_heat' || $sfl == 'mtr_lot' || $sfl == 'mtr_bundle' ) :
+		case ( $sfl == 'mtr.bom_idx' || $sfl == 'mtr.mtr_heat' || $sfl == 'mtr.oop_idx' || $sfl == 'mtr.mtr_bundle' ) :
 			$where[] = " {$sfl} = '".trim($stx)."' ";
             break;
 		default :
@@ -43,9 +45,9 @@ if($mtr2_status){
     $where[] = " mtr_status = '".$mtr2_status."' ";
     $qstr .= $qstr.'&mtr_status='.$mtr_status;
 }
-if($trm_idx_location){
-    $where[] = " trm_idx_location = '".$trm_idx_location."' ";
-    $qstr .= $qstr.'&trm_idx_location='.$trm_idx_location;
+if($cut_mms_idx){
+    $where[] = " mtr.mms_idx = '".(($cut_mms_idx == '-1')?0:$cut_mms_idx)."' ";
+    $qstr .= $qstr.'&cut_mms_idx='.$cut_mms_idx;
 }
 
 
@@ -54,7 +56,8 @@ if ($where)
     $sql_search = ' WHERE '.implode(' AND ', $where);
 
 if (!$sst) {
-    $sst = "mtr_reg_dt";
+    // $sst = "mtr_reg_dt";
+    $sst = "mtr_idx";
     $sod = "desc";
 }
 
@@ -103,6 +106,8 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 .td_chk{position:relative;}
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
 .td_mtr_name {text-align:left !important;}
+.sp_pno{color:skyblue;font-size:0.85em;}
+.sp_std{color:#e87eee;font-size:0.85em;}
 .td_mtr_part_no, .td_com_name, .td_mtr_maker
 ,.td_mtr_items, .td_mtr_items_title, .td_mtr_std, .td_mtr_bundle {text-align:left !important;}
 .span_mtr_price {margin-left:20px;}
@@ -133,6 +138,10 @@ echo $g5['container_sub_title'];
 <select name="sfl" id="sfl">
     <option value="mtr_name"<?php echo get_selected($_GET['sfl'], "mtr_name"); ?>>품명</option>
     <option value="bom.bom_part_no"<?php echo get_selected($_GET['sfl'], "bom_part_no"); ?>>품번</option>
+    <option value="bom.bom_std"<?php echo get_selected($_GET['sfl'], "bom_std"); ?>>규격</option>
+    <option value="mtr.oop_idx"<?php echo get_selected($_GET['sfl'], "oop_idx"); ?>>생산계획ID</option>
+    <option value="mtr.mtr_heat"<?php echo get_selected($_GET['sfl'], "mtr_heat"); ?>>히트넘버</option>
+    <option value="mtr.mtr_bundle"<?php echo get_selected($_GET['sfl'], "mtr_bundle"); ?>>번들넘버</option>
 </select>
 <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
 <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
@@ -140,9 +149,10 @@ echo $g5['container_sub_title'];
     <option value="">::작업구간::</option>
     <?php ;//$g5['set_mtr_shift2_value_options']?>
 </select-->
-<select name="trm_idx_location" id="trm_idx_location">
-    <option value="">::라인선택::</option>
-    <?=$line_form_options?>
+<select name="cut_mms_idx" id="cut_mms_idx">
+    <option value="">::절단설비선택::</option>
+    <?=$g5['cut_options']?>
+    <option value="-1">외주절단</option>
 </select>
 <select name="mtr2_status" id="mtr2_status">
     <option value="">::상태선택::</option>
@@ -151,16 +161,15 @@ echo $g5['container_sub_title'];
 <?php
 // $mtr_static_date = ($mtr_static_date) ? $mtr_static_date : G5_TIME_YMD;
 ?>
-<label for="mtr_static_date"><strong class="sound_only">입고일 필수</strong>
-<i class="fa fa-times" aria-hidden="true"></i>
-<input type="text" name="mtr_static_date" value="<?php echo $mtr_static_date ?>" placeholder="통계일" id="mtr_static_date" readonly class="frm_input readonly" style="width:95px;">
-</label>
 <script>
 <?php
 $sfl = ($sfl == '') ? 'mtr_name' : $sfl;
 ?>
-<?php if($trm_idx_location){ ?>
-    $('#trm_idx_location').val('<?=$trm_idx_location?>');
+<?php if($sfl){ ?>
+    $('#sfl').val('<?=$sfl?>');
+<?php } ?>
+<?php if($cut_mms_idx){ ?>
+    $('#cut_mms_idx').val('<?=$cut_mms_idx?>');
 <?php } ?>
 <?php if($mtr2_status){ ?>
     $('#mtr2_status').val('<?=$mtr2_status?>');
@@ -212,6 +221,8 @@ $('.data_blank').on('click',function(e){
 <input type="hidden" name="sod" value="<?php echo $sod ?>">
 <input type="hidden" name="sfl" value="<?php echo $sfl ?>">
 <input type="hidden" name="stx" value="<?php echo $stx ?>">
+<input type="hidden" name="cut_mms_idx" value="<?php echo $cut_mms_idx ?>">
+<input type="hidden" name="mtr2_status" value="<?php echo $mtr2_status ?>">
 <input type="hidden" name="page" value="<?php echo $page ?>">
 <input type="hidden" name="token" value="">
 
@@ -226,16 +237,15 @@ $('.data_blank').on('click',function(e){
         </th>
         <th scope="col">ID</th>
         <th scope="col"><?php echo subject_sort_link('mtr_name') ?>품명</a></th>
-        <th scope="col">파트넘버</th>
-        <th scope="col">규격</th>
-        <th scope="col">통계일</th>
+        <th scope="col">생산계획ID</th>
         <th scope="col">설비명</th>
         <th scope="col">히트넘버</th>
         <th scope="col">번들넘버</th>
         <th scope="col">무게(kg)</th>
         <th scope="col">등록일시</th>
+        <th scope="col">수정일시</th>
         <th scope="col">상태</th>
-        <th scope="col">관리</th>
+        <!-- <th scope="col">관리</th> -->
     </tr>
     <tr>
     </tr>
@@ -274,10 +284,16 @@ $('.data_blank').on('click',function(e){
             <div class="chkdiv_btn" chk_no="<?=$i?>"></div>
         </td>
         <td class="td_mtr_idx"><?=$row['mtr_idx']?></td><!-- ID -->
-        <td class="td_mtr_name"><?=$row['mtr_name']?></td><!-- 품명 -->
-        <td class="td_mtr_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
-        <td class="td_mtr_std"><?=$row['bom_std']?></td><!-- 규격 -->
-        <td class="td_mtr_date"><?=$row['mtr_input_date']?></td><!-- 통계일 -->
+        <td class="td_mtr_name">
+            <b><?=$row['mtr_name']?></b>
+            <?php if($row['bom_part_no']){ ?>
+            <br><span class="sp_pno">[ <?=$row['bom_part_no']?> ]</span>
+            <?php } ?>
+            <?php if($row['bom_std']){ ?>
+            <br><span class="sp_std">[ <?=$row['bom_std']?> ]</span>
+            <?php } ?>
+        </td><!-- 품명 -->
+        <td class="td_oop_idx"><?=$row['oop_idx']?></td><!-- 생산계획ID -->
         <td class="td_mtr_mms"><?=$g5['trms']['cut_idx_arr'][$row['mms_idx']]?></td><!-- 설비라인 -->
         <td class="td_mtr_heat" style="text-align:left;"><?=$row['mtr_heat']?></td><!-- 히트넘버 -->
         <td class="td_mtr_bundle"><?=$row['mtr_bundle']?></td><!-- 번들넘버 -->
@@ -297,19 +313,22 @@ $('.data_blank').on('click',function(e){
                 <?=substr($row['mtr_reg_dt'],0,19)?>
             <?php } ?>
         </td><!-- 등록일시 -->
+        <td class="td_mtr_update_dt">
+            <?php if($is_admin){ ?>
+                <input type="text" name="mtr_update_dt[<?=$row['mtr_idx']?>]" value="<?=$row['mtr_update_dt']?>" class="frm_input" style="width:160px;text-align:center;">
+            <?php } else { ?>
+                <?=substr($row['mtr_update_dt'],0,19)?>
+            <?php } ?>
+        </td><!-- 수정일시 -->
         <td class="td_mtr_status td_mtr_status_<?=$row['mtr_idx']?>">
             <input type="hidden" name="mtr_status[<?php echo $row['mtr_idx'] ?>]" class="mtr_status_<?php echo $row['mtr_idx'] ?>" value="<?php echo $row['mtr_status']?>">
             <input type="text" value="<?php echo $g5['set_half_status'][$row['mtr_status']]?>" readonly class="tbl_input readonly mtr_status_name_<?php echo $row['mtr_idx'] ?>" style="width:170px;text-align:center;">
         </td><!-- 상태 -->
-        <td class="td_mng">
-            <?=($row['mtr_type']!='half')?$s_bom:''?><!-- 자재가 아닌 경우만 BOM 버튼 -->
-			<?=$s_mod?>
-		</td>
     </tr>
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='14' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='11' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>
@@ -327,7 +346,7 @@ $('.data_blank').on('click',function(e){
 
 </form>
 
-<?php echo get_paging(G5_IS_MOBILE ? $config['cf_mobile_pages'] : $config['cf_write_pages'], $page, $total_page, '?'.$qstr.'&amp;page='); ?>
+<?php echo get_paging(G5_IS_MOBILE ? $config['cf_mobile_pages'] : $config['cf_write_pages'], $page, $total_page, '?'.$qstr.'&adm;cut_mms_idx='.$cut_mms_idx.'&amp;mtr2_status='.$mtr2_status.'&amp;page='); ?>
 
 <div id="modal01" title="엑셀 파일 업로드" style="display:none;">
     <form name="form02" id="form02" action="./item_excel_upload.php" onsubmit="return form02_submit(this);" method="post" enctype="multipart/form-data">

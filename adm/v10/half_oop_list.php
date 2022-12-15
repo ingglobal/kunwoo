@@ -4,21 +4,22 @@ include_once('./_common.php');
 
 auth_check($auth[$sub_menu], 'r');
 
-$g5['title'] = '절단품재고관리(제품별 생산일순서)';
+$g5['title'] = '절단품재고관리(생산별)';
 include_once('./_head.php');
 include_once('./_top_menu_half.php');
 
 
-$sql_common = " FROM {$g5['material_table']} AS mtr
-                    LEFT JOIN {$g5['bom_table']} AS bom ON mtr.bom_idx = bom.bom_idx
-                    LEFT JOIN {$g5['bom_category_table']} AS bct ON bom.bct_id = bct.bct_id
-                    LEFT JOIN {$g5['order_out_practice_table']} AS oop ON mtr.oop_idx = oop.oop_idx
-                    LEFT JOIN {$g5['order_practice_table']} AS orp ON oop.orp_idx = orp.orp_idx
+$sql_common = " FROM {$g5['material_table']} mtr
+                    LEFT JOIN {$g5['bom_table']} bom ON mtr.bom_idx = bom.bom_idx
+                    LEFT JOIN {$g5['order_out_practice_table']} oop ON mtr.oop_idx = oop.oop_idx
+                    LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
 ";
 
 $where = array();
 // 디폴트 검색조건 (used 제외)
-$where[] = " mtr.mtr_status NOT IN ('delete','del','trash') AND mtr.mtr_type = 'half' AND mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " mtr.mtr_status NOT IN ('delete','del','trash') ";
+$where[] = " mtr.mtr_type = 'half' ";
+$where[] = " mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 // 검색어 설정
 if ($stx != "") {
@@ -45,19 +46,19 @@ if ($where)
     $sql_search = ' WHERE '.implode(' AND ', $where);
 
 // $sql_group = " GROUP BY mtr.bom_idx, mtr_input_date ";
-$sql_group = " GROUP BY mtr.bom_idx ";
+$sql_group = " GROUP BY mtr.oop_idx ";
 
 if (!$sst) {
-    $sst = "mtr_reg_dt";
+    $sst = "orp_start_date";
     $sod = "desc";
 }
 
-// if (!$sst2) {
-//     $sst2 = ", mtr_reg_dt";
-//     $sod2 = "desc";
-// }
+if (!$sst2) {
+    $sst2 = ", oop.oop_idx";
+    $sod2 = "desc";
+}
 
-$sql_order = " ORDER BY {$sst} {$sod} ";
+$sql_order = " ORDER BY {$sst} {$sod} {$sst2} {$sod2} ";
 
 // $sql = " SELECT COUNT(DISTINCT mtr.bom_idx, mtr_input_date) as cnt {$sql_common} {$sql_search} ";
 $sql = " SELECT COUNT(c.bom_idx) AS cnt FROM (
@@ -73,10 +74,25 @@ if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
 
-$sql = "SELECT *
-              ,ROW_NUMBER() OVER (ORDER BY mtr_reg_dt) AS mtr_num
+$sql = "SELECT mtr.mtr_name
+              ,oop.oop_idx
+              ,oop.orp_idx
+              ,mtr.bom_part_no
+              ,bom.bom_std
+              ,orp.orp_start_date
+              ,ROW_NUMBER() OVER (ORDER BY orp_start_date, oop.oop_idx) AS mtr_num
               ,ROUND(SUM(mtr.mtr_weight)) AS sum
               ,COUNT(*) AS cnt
+
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_size') ) AS error_size
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_dent') ) AS error_dent
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_bend') ) AS error_bend
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_worker') ) AS error_worker
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_material') ) AS error_material
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_cut') ) AS error_cut
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_subcontractor') ) AS error_subcontractor
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_etc') ) AS error_etc
+
               ,( SELECT ROUND(SUM(mtr_weight)) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('stock') ) AS sum
               ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('stock') ) AS cnt
         {$sql_common} {$sql_search} {$sql_group}  {$sql_order}
@@ -92,8 +108,10 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 .tbl_head01 thead tr th{position:sticky;top:100px;z-index:100;}
 .td_chk{position:relative;}
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
-.td_mtr_name, .td_mtr_std {text-align:left !important;}
-.td_mtr_part_no, .td_com_name, .td_mtr_maker
+.td_mtr_name {text-align:left !important;}
+.sp_pno{color:skyblue;font-size:0.85em;}
+.sp_std{color:#e87eee;font-size:0.85em;}
+.td_com_name, .td_mtr_maker
 ,.td_mtr_items, .td_mtr_items_title {text-align:left !important;}
 .span_mtr_price {margin-left:20px;}
 .span_mtr_price b, .span_bit_count b {color:#737132;font-weight:normal;}
@@ -183,9 +201,8 @@ $('.data_blank').on('click',function(e){
     <tr>
         <th scope="col">번호</th>
         <!-- <th scope="col">카테고리</th> -->
-        <th scope="col"><?php echo subject_sort_link('mtr_name') ?>품명</a></th>
-        <th scope="col">파트넘버</th>
-        <th scope="col">규격</th>
+        <th scope="col"><?php echo subject_sort_link('mtr_name') ?>품명/품번/규격</a></th>
+        <th scope="col">생산시작일</th>
         <th scope="col">재고무게(kg)</th>
         <th scope="col">재고갯수</th>
     </tr>
@@ -195,56 +212,31 @@ $('.data_blank').on('click',function(e){
     <tbody>
     <?php
     for ($i=0; $row=sql_fetch_array($result); $i++) {
-        // print_r2($row);
-        //print_r3($row);
-        if($row['bct_id']){
-            $cat_tree = category_tree_array($row['bct_id']);
-            $row['bct_name_tree'] = '';
-            for($k=0;$k<count($cat_tree);$k++){
-                $cat_str = sql_fetch(" SELECT bct_desc FROM {$g5['bom_category_table']} WHERE bct_id = '{$cat_tree[$k]}' ");
-                $row['bct_name_tree'] .= ($k == 0) ? $cat_str['bct_desc'] : ' > '.$cat_str['bct_desc'];
-            }
-        }
 
         $s_mod = '<a href="./half_form.php?'.$qstr.'&amp;w=u&amp;mtr_idx='.$row['mtr_idx'].'" class="btn btn_03">수정</a>';
-
-        // history there items form the last. It is not gooe to see if many are being seen.
-        $row['mtr_histories'] = explode("\n",$row['mtr_history']);
-        // print_r2($row['mtr_histories']);
-        if(sizeof($row['mtr_histories']) > 2) {
-            $row['mtr_history_array'][0] = "...";
-            $x=1;
-            for($j=sizeof($row['mtr_histories'])-2;$j<sizeof($row['mtr_histories']);$j++) {
-                $row['mtr_history_array'][$x] = $row['mtr_histories'][$j];
-                $x++;
-            }
-        }
-        else {
-            $row['mtr_history_array'] = $row['mtr_histories'];
-        }
-
-
 
         $bg = 'bg'.($i%2);
     ?>
 
     <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['mtr_idx'] ?>">
         <td class="td_mtr_num"><?=$row['mtr_num']?></td><!-- 번호 -->
-        <!-- <td class="td_mtr_cat" style="text-align:left;color:orange;">
-            <?php ;//if($row['bct_name_tree']){ ?>
-            <span class="sp_cat"><?=$row['bct_name_tree']?></span>
-            <?php ;//} ?>    
-        </td> -->
-        <td class="td_mtr_name"><?=$row['mtr_name']?></td><!-- 품명 -->
-        <td class="td_mtr_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
-        <td class="td_mtr_std"><?=$row['bom_std']?></td><!-- 규격 -->
+        <td class="td_mtr_name">
+            <b><?=$row['mtr_name']?></b>
+            <?php if($row['bom_part_no']){ ?>
+            <br><span class="sp_pno">[ <?=$row['bom_part_no']?> ]</span>
+            <?php } ?>
+            <?php if($row['bom_std']){ ?>
+            <br><span class="sp_std">[ <?=$row['bom_std']?> ]</span>
+            <?php } ?>
+        </td><!-- 품명 -->
+        <td class="td_orp_start_date"><?=$row['orp_start_date']?></td><!-- 생산시작일 -->
         <td class="td_mtr_sum"><?=(($row['sum'])?$row['sum']:0)?></td><!-- 재고무게(kg) -->
         <td class="td_mtr_cnt"><?=$row['cnt']?></td><!-- 재고개수 -->
     </tr>
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='6' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='7' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>

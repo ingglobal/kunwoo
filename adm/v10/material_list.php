@@ -177,7 +177,7 @@ $('.data_blank').on('click',function(e){
         <th scope="col">히트넘버</th>
         <th scope="col">번들갯수</th>
         <th scope="col">입고총무게(kg)</th>
-        <th scope="col">절단재고무게(kg)</th>
+        <th scope="col">절단재무게(kg)</th>
         <th scope="col">남은자재무게(kg)</th>
     </tr>
     <tr>

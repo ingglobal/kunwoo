@@ -9,7 +9,6 @@ if (!count($_POST['chk'])) {
 }
 
 // print_r2($_POST);
-// echo $is_admin;
 // exit;
 auth_check($auth[$sub_menu], 'w');
 
@@ -34,7 +33,7 @@ if ($_POST['act_button'] == "선택수정") {
                     ,mtr_weight = '".$_POST['mtr_weight'][$mtr_idx_v]."'
                     ,mtr_input_date = '".substr($_POST['mtr_reg_dt'][$mtr_idx_v],0,10)."'
                     ,mtr_reg_dt = '".$_POST['mtr_reg_dt'][$mtr_idx_v]."'
-                    ,mtr_update_dt = '".(($is_admin)?$_POST['mtr_update_dt'][$mtr_idx_v]:G5_TIME_YMDHIS)."'
+                    ,mtr_update_dt = '".$_POST['mtr_reg_dt'][$mtr_idx_v]."'
                 WHERE mtr_idx = '".$mtr_idx_v."' AND mtr_type = 'half'
         ";
         // echo $sql.'<br>';
@@ -58,6 +57,6 @@ if ($msg)
 
 update_item_sum2(); //item 변경사항을 반영하기 위해 item_sum테이블 업데이트함    
 // exit;
-$qstr .= '&cut_mms_idx='.$cut_mms_idx.'&mtr2_status='.$mtr2_status; // 추가로 확장해서 넘겨야 할 변수들
+$qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 넘겨야 할 변수들
 goto_url('./half_row_list.php?'.$qstr);
 ?>

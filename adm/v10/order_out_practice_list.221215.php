@@ -199,6 +199,20 @@ echo $g5['container_sub_title'];
                 <?=$g5['set_oop_status_value_options']?>
             </select>
         </label>
+        <label for="o_cut_mb" class="slt_label">
+            <span>절단담당<i class="fa fa-times data_blank" aria-hidden="true"></i></span>
+            <select name="o_cut_mb" id="o_cut_mb">
+                <option value="">-선택-</option>
+                <?=$g5['cut_mb_options']?>
+            </select>
+        </label>
+        <label for="o_forge_mb" class="slt_label">
+            <span>단조담당<i class="fa fa-times data_blank" aria-hidden="true"></i></span>
+            <select name="o_forge_mb" id="o_forge_mb">
+                <option value="">-선택-</option>
+                <?=$g5['forge_mb_options']?>
+            </select>
+        </label>
         <input type="button" id="slt_input" onclick="slet_input(document.getElementById('form01'));" value="선택항목 일괄입력" class="btn btn_02">
     </p>
 </div>
@@ -549,11 +563,19 @@ function slet_input(f){
     }
 
     var o_status = document.getElementById('o_status').value;
+    var o_cut_mb = document.getElementById('o_cut_mb').value;
+    var o_forge_mb = document.getElementById('o_forge_mb').value;
 
     for(var idx in chk_idx){
         //console.log(idx);continue;
         if(o_status){
             $('.td_oop_status_'+chk_idx[idx]).find('.oop_status').val(o_status);
+        }
+        if(o_cut_mb){
+            $('.td_cut_mb_'+chk_idx[idx]).find('.cut_mb_id').val(o_cut_mb);
+        }
+        if(o_forge_mb){
+            $('.td_forge_mb_'+chk_idx[idx]).find('.forge_mb_id').val(o_forge_mb);
         }
     }
 }
