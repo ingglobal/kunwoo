@@ -84,17 +84,19 @@ $sql = "SELECT mtr.mtr_name
               ,ROUND(SUM(mtr.mtr_weight)) AS sum
               ,COUNT(*) AS cnt
 
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_size') ) AS error_size
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_dent') ) AS error_dent
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_bend') ) AS error_bend
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_worker') ) AS error_worker
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_material') ) AS error_material
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_cut') ) AS error_cut
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_subcontractor') ) AS error_subcontractor
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_etc') ) AS error_etc
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_size') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_size
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_dent') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_dent
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_bend') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_bend
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_worker') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_worker
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_material') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_material
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_cut') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_cut
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_subcontractor') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_subcontractor
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_etc') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_etc
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('error_scrap') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS error_scrap
 
-              ,( SELECT ROUND(SUM(mtr_weight)) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('stock') ) AS sum
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('stock') ) AS cnt
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('stock') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS stock
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('finish') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS finish
+              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status NOT IN ('delete','del','trash') AND oop_idx = oop.oop_idx AND mtr_type = 'half' ) AS total
         {$sql_common} {$sql_search} {$sql_group}  {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
@@ -103,8 +105,14 @@ $result = sql_query($sql,1);
 
 $listall = '<a href="'.$_SERVER['SCRIPT_NAME'].'" class="ov_listall">전체목록</a>';
 $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 넘겨야 할 변수들
+// print_r2($g5['set_half_status_value']);
+// print_r2($g5['set_half_status_ng_array']);
 ?>
 <style>
+#half_data{position:relative;}
+#half_data #form02{position:absolute;right:0;top:-47px;}
+.b_fromto,.b_cnt{position:relative;top:2px;margin-right:5px;}
+
 .tbl_head01 thead tr th{position:sticky;top:100px;z-index:100;}
 .td_chk{position:relative;}
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
@@ -164,7 +172,7 @@ $('#mtr2_status').val('<?=$mtr2_status?>');
 </form>
 
 <div class="local_desc01 local_desc" style="display:no ne;">
-    <p>생산일에 따른 반제품별 재고조회 페이지입니다.</p>
+    <p>생산계획ID별 따른 반제품 재고조회 페이지입니다.</p>
 </div>
 
 <script>
@@ -184,6 +192,76 @@ $('.data_blank').on('click',function(e){
     }
 });
 </script>
+<div id="half_data">
+    <form name="form02" id="form02" action="./half_reg_update.php" onsubmit="return form02_submit(this);" method="post" autocomplete="off">
+        <strong style="position:relative;top:3px;">절단품재고 추가/변경:</strong>
+        <input type="hidden" name="sst" value="<?php echo $sst ?>">
+        <input type="hidden" name="sod" value="<?php echo $sod ?>">
+        <input type="hidden" name="sst2" value="<?php echo $sst2 ?>">
+        <input type="hidden" name="sod2" value="<?php echo $sod2 ?>">
+        <input type="hidden" name="sfl" value="<?php echo $sfl ?>">
+        <input type="hidden" name="stx" value="<?php echo $stx ?>">
+        <input type="hidden" name="page" value="<?php echo $page ?>">
+        <input type="hidden" name="token" value="">
+        <input type="text" name="oop_idx" value="" class="frm_input oop_select" link="./oop_mtr_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="생산계획ID">
+        <input type="text" name="bom_part_no" value="" class="frm_input oop_select" link="./oop_mtr_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="품목코드">
+        <input type="hidden" name="bom_idx" value="">
+        <input type="text" name="bom_name" value="" class="frm_input oop_select" link="./oop_mtr_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="품명" style="width:300px;">
+        <select name="plus_modify" class="plus_modify">
+            <option value="plus">추가하기</option>
+            <option value="modify">변경하기</option>
+        </select>
+        <span class="sp_from">
+            <select name="from_status" class="from_status">
+                <option value="">::기존상태::</option>
+                <?=$g5['set_half_status_value_options']?>
+            </select><b class="b_fromto b_from">(을)를</b>
+        </span>
+        <span>
+            <select name="to_status" class="to_status">
+                <option value="">::목표상태::</option>
+                <?=$g5['set_half_status_value_options']?>
+                <!-- <option value="trash">삭제</option> -->
+            </select><b class="b_fromto b_to">(으)로</b>
+        </span>
+        <input type="text" name="count" class="frm_input count" value="" style="width:60px;text-align:right;" placeholder="갯수"><b class="b_cnt">개</b>
+        <input type="submit" value="적용" class="btn_submit btn">
+        <a href="javascript:" class="btn btn_04 btn_no">취소</a>
+    </form>
+</div>
+<script>
+$('.sp_from').hide();
+$('.plus_modify').on('change',function(){
+    if($(this).val()=='plus'){
+        $('.sp_from').hide();
+    }
+    else if($(this).val()=='modify'){
+        $('.sp_from').show();
+    }
+});
+//숫자만 입력
+$('.count').on('keyup',function(){
+    $(this).val($(this).val().replace(/[^0-9|-]/g,""));
+});
+//생산계획선택
+$('.oop_select').on('click',function(e){
+    e.preventDefault();
+    var href = $(this).attr('link');
+    var winOrpSelect = window.open(href, "winOrpSelect", "left=300,top=150,width=650,height=700,scrollbars=1");
+    winOrpSelect.focus();
+    return false;
+});
+//취소
+$('.btn_no').on('click',function(){
+    $('input[name="oop_idx"],input[name="bom_part_no"],input[name="bom_idx"],input[name="bom_name"]').val('');
+    $('.plus_modify').val('plus');
+    $('.from_status,.to_status').val('');
+    $('.sp_from').hide();
+    $('.count').val('');
+});
+</script>
+
+
 <form name="form01" id="form01" action="./half_list_update.php" onsubmit="return form01_submit(this);" method="post">
 <input type="hidden" name="sst" value="<?php echo $sst ?>">
 <input type="hidden" name="sod" value="<?php echo $sod ?>">
@@ -200,11 +278,17 @@ $('.data_blank').on('click',function(e){
     <thead>
     <tr>
         <th scope="col">번호</th>
-        <!-- <th scope="col">카테고리</th> -->
+        <th scope="col">생산계획ID</th>
         <th scope="col"><?php echo subject_sort_link('mtr_name') ?>품명/품번/규격</a></th>
         <th scope="col">생산시작일</th>
-        <th scope="col">재고무게(kg)</th>
-        <th scope="col">재고갯수</th>
+        <?php foreach($g5['set_half_status_ng_array'] as $ng_name){ ?>
+        <th scope="col">
+            <?=$g5['set_half_status_value'][$ng_name]?>
+        </th>
+        <?php } ?>
+        <th scope="col" style="color:orange;">절단상태</th>
+        <th scope="col" style="color:pink;">사용갯수</th>
+        <th scope="col" style="color:skyblue;">총생산갯수</th>
     </tr>
     <tr>
     </tr>
@@ -220,6 +304,7 @@ $('.data_blank').on('click',function(e){
 
     <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['mtr_idx'] ?>">
         <td class="td_mtr_num"><?=$row['mtr_num']?></td><!-- 번호 -->
+        <td class="td_oop_idx"><?=$row['oop_idx']?></td><!-- 생산계회ID -->
         <td class="td_mtr_name">
             <b><?=$row['mtr_name']?></b>
             <?php if($row['bom_part_no']){ ?>
@@ -230,13 +315,17 @@ $('.data_blank').on('click',function(e){
             <?php } ?>
         </td><!-- 품명 -->
         <td class="td_orp_start_date"><?=$row['orp_start_date']?></td><!-- 생산시작일 -->
-        <td class="td_mtr_sum"><?=(($row['sum'])?$row['sum']:0)?></td><!-- 재고무게(kg) -->
-        <td class="td_mtr_cnt"><?=$row['cnt']?></td><!-- 재고개수 -->
+        <?php foreach($g5['set_half_status_ng_array'] as $ng_name){ ?>
+        <td class="td_mtr_cnt"><?=$row[$ng_name]?></td><!-- 재고개수 -->
+        <?php } ?>
+        <td class="td_mtr_stock" style="color:orange;"><?=$row['stock']?></td><!-- 절단완료 -->
+        <td class="td_mtr_finish" style="color:pink;"><?=$row['finish']?></td><!-- 사용완료개수 -->
+        <td class="td_mtr_total" style="color:skyblue;"><?=$row['total']?></td><!-- 총생산갯수 -->
     </tr>
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='7' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='16' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>
@@ -255,60 +344,12 @@ $('.data_blank').on('click',function(e){
 
 <?php echo get_paging(G5_IS_MOBILE ? $config['cf_mobile_pages'] : $config['cf_write_pages'], $page, $total_page, '?'.$qstr.'&amp;page='); ?>
 
-<div id="modal01" title="엑셀 파일 업로드" style="display:none;">
-    <form name="form02" id="form02" action="./item_excel_upload.php" onsubmit="return form02_submit(this);" method="post" enctype="multipart/form-data">
-        <table>
-        <tbody>
-        <tr>
-            <td style="line-height:130%;padding:10px 0;">
-                <ol>
-                    <li>엑셀은 97-2003통합문서만 등록가능합니다. (*.xls파일로 저장)</li>
-                    <li>엑셀은 하단에 탭으로 여러개 있으면 등록 안 됩니다. (한개의 독립 문서이어야 합니다.)</li>
-                </ol>
-            </td>
-        </tr>
-        <tr>
-            <td style="padding:15px 0;">
-                <input type="file" name="file_excel" onfocus="this.blur()">
-            </td>
-        </tr>
-        <tr>
-            <td style="padding:15px 0;">
-                <button type="submit" class="btn btn_01">확인</button>
-            </td>
-        </tr>
-        </tbody>
-        </table>
-    </form>
-</div>
-
 
 <script>
 $("input[name*=_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99" });
 
 $('label[for="mtr_input_date"] i').on('click',function(){
     $(this).siblings('input').val('');
-});
-
-// 엑셀등록 버튼
-$( "#btn_excel_upload" ).on( "click", function() {
-    $( "#modal01" ).dialog( "open" );
-});
-$( "#modal01" ).dialog({
-    autoOpen: false
-    , position: { my: "right-10 top-10", of: "#btn_excel_upload"}
-});
-
-
-// 마우스 hover 설정
-$(".tbl_head01 tbody tr").on({
-    mouseenter: function () {
-        $('tr[tr_id='+$(this).attr('tr_id')+']').find('td').css('background','#0b1938');
-
-    },
-    mouseleave: function () {
-        $('tr[tr_id='+$(this).attr('tr_id')+']').find('td').css('background','unset');
-    }
 });
 
 
@@ -329,12 +370,34 @@ function form01_submit(f)
 }
 
 function form02_submit(f) {
-    if (!f.file_excel.value) {
-        alert('엑셀 파일(.xls)을 입력하세요.');
+    if (!f.oop_idx.value || !f.bom_part_no.value || !f.bom_name.value || !f.bom_idx.value) {
+        alert('생산계획을 선택해 주세요.');
         return false;
     }
-    else if (!f.file_excel.value.match(/\.xls$|\.xlsx$/i) && f.file_excel.value) {
-        alert('엑셀 파일만 업로드 가능합니다.');
+
+    if(f.plus_modify.value == 'plus'){
+        if(!f.to_status.value){
+            alert('목표상태를 선택해 주세요.')
+            return false;
+        }
+    }
+    else if(f.plus_modify.value == 'modify'){
+        if(!f.from_status.value){
+            alert('기존상태를 선택해 주세요.')
+            return false;
+        }
+        if(!f.to_status.value){
+            alert('목표상태를 선택해 주세요.')
+            return false;
+        }
+        if(f.from_status.value == f.to_status.value){
+            alert('기존상태값과 목표상태값이 동일합니다.');
+            return false;
+        }
+    }
+
+    if(!f.count.value){
+        alert('갯수를 입력해 주세요.');
         return false;
     }
 
