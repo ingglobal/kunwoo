@@ -689,8 +689,10 @@ for($k=0;$trow=sql_fetch_array($termres);$k++){
                     ,'mms_name' => $tmp_mmsf['mms_name']
                     ,'mms_model' => $tmp_mmsf['mms_model']
                     ,'mms_model' => $tmp_mmsf['mms_model']
+                    ,'mms_sort' => $tmp_mmsf['mms_sort']
                 ));
                 $g5['trms']['forge_idx_arr'][$tmp_mmsf['mms_idx']] = $tmp_mmsf['mms_name'];
+                $g5['trms']['forge_idx_sort'][$tmp_mmsf['mms_idx']] = $tmp_mmsf['mms_sort'];
                 $g5['trms']['forge_val_arr'][$tmp_mmsf['mms_name']] = $tmp_mmsf['mms_idx'];
             }
         }

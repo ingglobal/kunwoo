@@ -1,5 +1,5 @@
 <?php
-$sub_menu = "945113";
+$sub_menu = "945115";
 include_once('./_common.php');
 
 // print_r2($auth);exit;
@@ -48,17 +48,14 @@ $_POST['from_status'] => stock
 $_POST['to_status'] => finish
 $_POST['count'] => 20
 
-$_POST['cut_mms_idx']
-$_POST['bom_idx_parent']
-$_POST['mtr_weight']
-$_POST['mtr_heat']
-$_POST['mtr_lot']
-$_POST['mtr_bundle']
+$_POST['forge_mms_idx']
+$_POST['itm_weight']
+$_POST['itm_heat']
 */
 if($plus_modify == 'plus'){
-    $sql = " INSERT INTO {$g5['material_table']}
-    (com_idx,mms_idx,bom_idx,bom_idx_parent,oop_idx,bom_part_no,mtr_name,mtr_weight,mtr_type,mtr_heat,mtr_lot,mtr_bundle,mtr_status,mtr_input_date,mtr_reg_dt,mtr_update_dt) VALUES ";
-    $vals = " ('{$_SESSION['ss_com_idx']}','{$cut_mms_idx}','{$bom_idx}','{$bom_idx_parent}','{$oop_idx}','{$bom_part_no}','{$bom_name}','{$mtr_weight}','half','{$mtr_heat}','{$mtr_lot}','{$mtr_bundle}','{$to_status}','".G5_TIME_YMD."','".G5_TIME_YMDHIS."','".G5_TIME_YMDHIS."') ";
+    $sql = " INSERT INTO {$g5['item_table']}
+    (com_idx,mms_idx,bom_idx,oop_idx,bom_part_no,itm_name,itm_weight,itm_heat,itm_status,itm_date,itm_reg_dt,itm_update_dt) VALUES ";
+    $vals = " ('{$_SESSION['ss_com_idx']}','{$cut_mms_idx}','{$bom_idx}','{$oop_idx}','{$bom_part_no}','{$bom_name}','{$itm_weight}','{$itm_heat}','{$to_status}','".G5_TIME_YMD."','".G5_TIME_YMDHIS."','".G5_TIME_YMDHIS."') ";
     for($i=0;$i<$count;$i++){
         $sql .= ($i==0)?$vals:','.$vals;
     }
@@ -67,11 +64,10 @@ else if($plus_modify == 'modify'){
     $condition = " WHERE oop_idx = '{$oop_idx}'
                     AND bom_part_no = '{$bom_part_no}'
                     AND bom_idx = '{$bom_idx}'
-                    AND mtr_type = 'half'
-                    AND mtr_status = '{$from_status}' ";
+                    AND itm_status = '{$from_status}' ";
 
     //변경할 기존 절단재 재고가 있는지 확인
-    $exist = sql_fetch(" SELECT COUNT(*) AS cnt FROM {$g5['material_table']}
+    $exist = sql_fetch(" SELECT COUNT(*) AS cnt FROM {$g5['item_table']}
             {$condition} ");
 
     if(!$exist['cnt']) 
@@ -79,12 +75,12 @@ else if($plus_modify == 'modify'){
 
     $mod_cnt = ($exist['cnt'] < $count) ? $exist['cnt'] : $count;
 
-    $sql = " UPDATE {$g5['material_table']} SET mtr_status = '{$to_status}'
+    $sql = " UPDATE {$g5['item_table']} SET itm_status = '{$to_status}'
         {$condition} 
         LIMIT {$mod_cnt}
     ";
 }
 sql_query($sql,1);
 
-// $qstr .= '&cut_mms_idx='.$cut_mms_idx.'&mtr2_status='.$mtr2_status; // 추가로 확장해서 넘겨야 할 변수들
-goto_url('./half_oop_list.php?'.$qstr);
+// $qstr .= '&forge_mms_idx='.$forge_mms_idx; // 추가로 확장해서 넘겨야 할 변수들
+goto_url('./item_oop_list.php?'.$qstr);

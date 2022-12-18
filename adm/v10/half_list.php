@@ -72,13 +72,10 @@ $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
 if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
-
 $sql = "SELECT *
-              ,ROW_NUMBER() OVER (ORDER BY mtr_reg_dt) AS mtr_num
-              ,ROUND(SUM(mtr.mtr_weight)) AS sum
-              ,COUNT(*) AS cnt
-              ,( SELECT ROUND(SUM(mtr_weight)) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('stock') ) AS sum
-              ,( SELECT COUNT(mtr_idx) FROM {$g5['material_table']} WHERE bom_idx = mtr.bom_idx AND mtr_status IN ('stock') ) AS cnt
+              ,ROW_NUMBER() OVER (ORDER BY mtr_reg_dt) AS mtr_num 
+              ,ROUND(SUM( CASE WHEN mtr.mtr_status = 'stock' THEN mtr.mtr_weight END )) AS sum_weight
+              ,COUNT( CASE WHEN mtr.mtr_status = 'stock' THEN 1 END ) AS total
         {$sql_common} {$sql_search} {$sql_group}  {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
@@ -126,13 +123,7 @@ echo $g5['container_sub_title'];
 </select>
 <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
 <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
-<?php
-// $mtr_input_date = ($mtr_input_date) ? $mtr_input_date : G5_TIME_YMD;
-?>
-<!-- <label for="mtr_input_date" class="slt_label"><strong class="sound_only">통계일 필수</strong>
-<i class="fa fa-times" aria-hidden="true"></i>
-<input type="text" name="mtr_input_date" value="<?php //echo $mtr_input_date ?>" placeholder="통계일" id="mtr_input_date" readonly class="frm_input readonly" style="width:95px;"> -->
-</label>
+
 <script>
 <?php
 $sfl = ($sfl == '') ? 'mtr_name' : $sfl;
@@ -183,6 +174,7 @@ $('.data_blank').on('click',function(e){
     <tr>
         <th scope="col">번호</th>
         <!-- <th scope="col">카테고리</th> -->
+        <th scope="col">BomID</th>
         <th scope="col"><?php echo subject_sort_link('mtr_name') ?>품명</a></th>
         <th scope="col">파트넘버</th>
         <th scope="col">규격</th>
@@ -235,16 +227,17 @@ $('.data_blank').on('click',function(e){
             <span class="sp_cat"><?=$row['bct_name_tree']?></span>
             <?php ;//} ?>    
         </td> -->
+        <td class="td_bom_idx"><?=$row['bom_idx']?></td><!-- BomID -->
         <td class="td_mtr_name"><?=$row['mtr_name']?></td><!-- 품명 -->
         <td class="td_mtr_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
         <td class="td_mtr_std"><?=$row['bom_std']?></td><!-- 규격 -->
-        <td class="td_mtr_sum"><?=(($row['sum'])?$row['sum']:0)?></td><!-- 재고무게(kg) -->
-        <td class="td_mtr_cnt"><?=$row['cnt']?></td><!-- 재고개수 -->
+        <td class="td_mtr_sum"><?=(($row['sum_weight'])?$row['sum_weight']:0)?></td><!-- 재고무게(kg) -->
+        <td class="td_mtr_cnt"><?=$row['total']?></td><!-- 재고개수 -->
     </tr>
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='6' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='7' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>

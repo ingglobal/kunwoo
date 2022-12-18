@@ -8,8 +8,6 @@ if($member['mb_level']<4)
 $sql_common = " FROM {$g5['order_out_practice_table']} oop
                     LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
                     LEFT JOIN {$g5['bom_table']} bom ON oop.bom_idx = bom.bom_idx
-                    LEFT JOIN {$g5['bom_item_table']} boi ON bom.bom_idx = boi.bom_idx
-                    LEFT JOIN {$g5['bom_table']} bom2 ON boi.bom_idx_child = bom2.bom_idx
 ";
 
 
@@ -22,7 +20,7 @@ $where[] = " orp.com_idx = '".$_SESSION['ss_com_idx']."' ";
 // 검색어 설정
 if ($stx != "") {
     switch ($sfl) {
-		case ( $sfl == 'oop.oop_idx' || $sfl == 'bom2.bom_part_no' || $sfl == 'bom.bom_part_no' ) :
+		case ( $sfl == 'oop.oop_idx' || $sfl == 'bom.bom_part_no' ) :
 			$where[] = " {$sfl} = '".trim($stx)."' ";
             break;
 		default :
@@ -60,17 +58,14 @@ $from_record = ($page - 1) * $rows; // 시작 열을 구함
 //mms_idx,bom_idx_parent,mtr_weight,mtr_heat,mtr_lot,mtr_bundle
 $sql = "SELECT oop.oop_idx
             ,orp.orp_start_date
-            ,orp.cut_mms_idx
+            ,orp.forge_mms_idx
             ,oop.bom_idx
             ,oop.oop_count
+            ,bom.bom_press_type
             ,bom.bom_part_no
             ,bom.bom_name
             ,bom.bom_std
-            ,bom2.bom_idx AS cut_idx
-            ,bom2.bom_part_no AS cut_part_no
-            ,bom2.bom_name AS cut_name
-            ,bom2.bom_std AS cut_std
-            ,bom2.bom_weight AS cut_weight
+            ,bom.bom_weight
         {$sql_common} {$sql_search} {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
@@ -109,9 +104,6 @@ include_once('./_head.sub.php');
             <option value="bom.bom_part_no"<?php echo get_selected($_GET['sfl'], "bom.bom_part_no"); ?>>완제품품번</option>
             <option value="bom.bom_std"<?php echo get_selected($_GET['sfl'], "bom.bom_std"); ?>>완제품규격</option>
             <option value="bom.bom_name"<?php echo get_selected($_GET['sfl'], "bom.bom_name"); ?>>완제품명</option>
-            <option value="bom2.bom_part_no"<?php echo get_selected($_GET['sfl'], "bom2.bom_part_no"); ?>>절단품품번</option>
-            <option value="bom2.bom_std"<?php echo get_selected($_GET['sfl'], "bom2.bom_std"); ?>>절단품규격</option>
-            <option value="bom2.bom_name"<?php echo get_selected($_GET['sfl'], "bom2.bom_name"); ?>>절단품품명</option>
         </select>
         <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
         <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input" style="width:160px;">
@@ -126,9 +118,9 @@ include_once('./_head.sub.php');
         <tr>
             <th scope="col"><?php echo subject_sort_link('oop_idx') ?>생산계획ID</a></th>
             <th scope="col">완제품정보</th>
-            <th scope="col">절단품정보</th>
             <th scope="col">생산시작일</th>
-            <th scope="col">절단외주여부</th>
+            <th scope="col">타수유형</th>
+            <th scope="col">단조외주여부</th>
             <th scope="col">선택</th>
         </tr>
         </thead>
@@ -136,18 +128,13 @@ include_once('./_head.sub.php');
         <?php
         for ($i=0; $row=sql_fetch_array($result); $i++) {
             $bg = 'bg'.($i%2);
-            $cut_heat = '';
-            $cut_lot = '';
-            $cut_bundle = '';
-            if($row['cut_mms_idx']){
-                $mtr = sql_fetch(" SELECT mtr_heat,mtr_lot,mtr_bundle FROM {$g5['material_table']}
+            $itm_heat = '';
+            if($row['forge_mms_idx']){
+                $itm = sql_fetch(" SELECT itm_heat FROM {$g5['item_table']}
                 WHERE oop_idx = '{$row['oop_idx']}'
-                    AND mtr_type = 'half'
-                    AND mtr_type NOT IN('trash','delete','del')
-                ORDER BY mtr_reg_dt DESC LIMIT 1 ");
-                $cut_heat = $mtr['mtr_heat'];
-                $cut_lot = $mtr['mtr_lot'];
-                $cut_bundle = $mtr['mtr_bundle'];
+                    AND itm_type NOT IN('trash','delete','del')
+                ORDER BY itm_reg_dt DESC LIMIT 1 ");
+                $itm_heat = $itm['itm_heat'];
             }
         ?>
         <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['bom_idx'] ?>">
@@ -157,39 +144,32 @@ include_once('./_head.sub.php');
                 <?php if($row['bom_part_no']){ ?><br><span class="sp_pno">[ <?=$row['bom_part_no']?> ]</span><?php } ?>
                 <?php if($row['bom_std']){ ?><br><span class="sp_std">[ <?=$row['bom_std']?> ]</span><?php } ?>
             </td><!-- 완제품정보 -->
-            <td class="td_cut_name">
-                <b><?=$row['cut_name']?></b>
-                <?php if($row['cut_part_no']){ ?><br><span class="sp_pno">[ <?=$row['cut_part_no']?> ]</span><?php } ?>
-                <?php if($row['cut_std']){ ?><br><span class="sp_std">[ <?=$row['cut_std']?> ]</span><?php } ?>
-            </td><!-- 절단품정보 -->
             <td class="td_orp_start_date">
                 <?=substr($row['orp_start_date'],2,8)?>
                 <?php if($row['oop_count']){ ?>
                     <br>(<?=number_format($row['oop_count'])?>)
                 <?php } ?>
             </td>
-            <td class="td_cut_mms_idx">
-                <?php if(!$row['cut_mms_idx']){ ?>외주절단<?php } ?>
+            <td class="td_bom_press_type"><?=$g5['set_bom_press_type_value'][$row['bom_press_type']]?></td>
+            <td class="td_forge_mms_idx">
+                <?php if(!$row['forge_mms_idx']){ ?>외주단조<?php } ?>
             </td>
             <td class="td_mng td_mng_s">
                 <button type="button" class="btn btn_03 btn_select"
                     oop_idx="<?=$row['oop_idx']?>"
-                    mms_idx="<?=$row['cut_mms_idx']?>"
+                    mms_idx="<?=$row['forge_mms_idx']?>"
                     bom_idx="<?=$row['bom_idx']?>"
-                    cut_part_no="<?=$row['cut_part_no']?>"
-                    cut_idx="<?=$row['cut_idx']?>"
-                    cut_name="<?=$row['cut_name']?>"
-                    cut_weight="<?=$row['cut_weight']?>"
-                    cut_heat="<?=$cut_heat?>"
-                    cut_lot="<?=$cut_lot?>"
-                    cut_bundle="<?=$cut_bundle?>"
+                    bom_name="<?=$row['bom_name']?>"
+                    bom_part_no="<?=$row['bom_part_no']?>"
+                    bom_weight="<?=$row['bom_weight']?>"
+                    itm_heat="<?=$itm_heat?>"
                 >선택</button>
             </td>
         </tr>
         <?php
         }
         if($i ==0)
-            echo '<tr><td colspan="5" class="empty_table">검색된 자료가 없습니다.</td></tr>';
+            echo '<tr><td colspan="6" class="empty_table">검색된 자료가 없습니다.</td></tr>';
         ?>
         </tbody>
         </table>
@@ -212,26 +192,20 @@ $('.btn_select').click(function(e){
     var oop_idx = $(this).attr('oop_idx');
     var mms_idx = $(this).attr('mms_idx');
     var bom_idx = $(this).attr('bom_idx');
-    var cut_part_no = $(this).attr('cut_part_no');
-    var cut_idx = $(this).attr('cut_idx');
-    var cut_name = $(this).attr('cut_name');
-    var cut_weight = $(this).attr('cut_weight');
-    var cut_heat = $(this).attr('cut_heat');
-    var cut_lot = $(this).attr('cut_lot');
-    var cut_bundle = $(this).attr('cut_bundle');
+    var bom_name = $(this).attr('bom_name');
+    var bom_part_no = $(this).attr('bom_part_no');
+    var bom_weight = $(this).attr('bom_weight');
+    var itm_heat = $(this).attr('itm_heat');
     // alert(fname);return false;
-    if(fname == 'half_oop_list'){
+    if(fname == 'item_oop_list'){
         // alert(oop_idx);return false;
         $("input[name=oop_idx]", opener.document).val( oop_idx );
-        $("input[name=cut_mms_idx]", opener.document).val( mms_idx );
-        $("input[name=mtr_weight]", opener.document).val( cut_weight );
-        $("input[name=mtr_heat]", opener.document).val( cut_heat );
-        $("input[name=mtr_lot]", opener.document).val( cut_lot );
-        $("input[name=mtr_bundle]", opener.document).val( cut_bundle );
-        $("input[name=bom_idx_parent]", opener.document).val( bom_idx );
-        $("input[name=bom_part_no]", opener.document).val( cut_part_no );
-        $("input[name=bom_idx]", opener.document).val( cut_idx );
-        $("input[name=bom_name]", opener.document).val( cut_name );
+        $("input[name=forge_mms_idx]", opener.document).val( mms_idx );
+        $("input[name=itm_weight]", opener.document).val( bom_weight );
+        $("input[name=itm_heat]", opener.document).val( itm_heat );
+        $("input[name=bom_part_no]", opener.document).val( bom_part_no );
+        $("input[name=bom_idx]", opener.document).val( bom_idx );
+        $("input[name=bom_name]", opener.document).val( bom_name );
     }
     
 

@@ -25,7 +25,7 @@ $where[] = " plt_status NOT IN ('del','delete','trash') ";
 // 검색어 설정
 if ($stx != "") {
     switch ($sfl) {
-		case ( $sfl == 'plt_idx' ) :
+		case ( $sfl == 'plt_idx' || $sfl == 'oop_idx' ) :
 			$where[] = " {$sfl} = '".trim($stx)."' ";
             break;
         case ( $sfl == 'bom_part_no' ) :
@@ -80,6 +80,8 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 <style>
 .tbl_head01 thead tr th{position:sticky;top:100px;z-index:100;}
 .td_bom_name {text-align:left !important;}
+.sp_pno{color:skyblue;font-size:0.85em;}
+.sp_std{color:#e87eee;font-size:0.85em;}
 .td_bom_part_no {text-align:left !important;}
 .td_plt_count{text-align:right !important;}
 
@@ -105,6 +107,7 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
         <option value="plt_idx"<?php echo get_selected($_GET['sfl'], "plt_idx"); ?>>파렛트ID</option>
         <option value="plt_barcode"<?php echo get_selected($_GET['sfl'], "plt_barcode"); ?>>파렛트바코드</option>
         <option value="bom_part_no"<?php echo get_selected($_GET['sfl'], "bom_part_no"); ?>>품번</option>
+        <option value="oop_idx"<?php echo get_selected($_GET['sfl'], "oop_idx"); ?>>생산계획ID</option>
     </select>
     <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
     <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
@@ -115,10 +118,10 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
             <?=$g5['set_plt_status_value_options']?>
         </select>
     </label>
-    <label for="orp_start_date" class="sch_label">
+    <!-- <label for="orp_start_date" class="sch_label">
         <span>등록일<i class="fa fa-times data_blank" aria-hidden="true"></i></span>
         <input type="text" name="plt_reg_dt" value="<?php echo $plt_reg_dt ?>" id="plt_reg_dt" readonly class="frm_input readonly" placeholder="등록일" style="width:100px;" autocomplete="off">
-    </label>
+    </label> -->
     <input type="submit" class="btn_submit" value="검색">
 </form>
 
@@ -157,9 +160,8 @@ $('.data_blank').on('click',function(e){
     <thead>
     <tr>
         <th scope="col">파렛트ID</th>
-        <th scope="col">카테고리</th>
         <th scope="col">품명</th>
-        <th scope="col">품번</th>
+        <th scope="col">생산계획ID</th>
         <th scope="col">파렛트바코드</th>
         <th scope="col">적재수량</th>
         <th scope="col">등록일시</th>
@@ -188,19 +190,21 @@ $('.data_blank').on('click',function(e){
     ?>
     <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['orp_idx'] ?>">
         <td class="td_plt_idx"><?=$row['plt_idx']?></td>
-        <td class="td_plt_idx_parent"><?=$row['plt_idx_parent']?></td>
         <td class="td_bom_name">
-            <?php if($row['bct_name_tree']){ ?>
-                <span class="sp_cat"><?=$row['bct_name_tree']?></span><br>
+            <b><?=$row['bom_name']?></b>
+            <?php if($row['bom_part_no']){ ?>
+                <br><span class="sp_pno">[ <?=$row['bom_part_no']?> ]</span>
             <?php } ?>
-            <?=$row['bom_name']?>
+            <?php if($row['bom_std']){ ?>
+                <br><span class="sp_std">[ <?=$row['bom_std']?> ]</span>
+            <?php } ?>
         </td><!-- 품명 -->
-        <td class="td_bom_part_no"><?=$row['bom_part_no']?></td><!-- 품번 -->
+        <td class="td_oop_idx"><?=$row['oop_idx']?></td>
         <td class="td_plt_barcode" style="text-align:left;"><?=$row['plt_barcode']?></td><!-- 파렛트바코드 -->
         <td class="td_plt_count"><?=number_format($row['plt_count'])?></td><!-- 적재수량 -->
         <td class="td_plt_reg_dt"><?=$row['plt_reg_dt']?></td>
         <td class="td_plt_update_dt"><?=$row['plt_update_dt']?></td>
-        <td class="td_plt_status"><?=$g5['set_plt_status'][$row['plt_status']]?></td><!-- 상태 -->
+        <td class="td_plt_status"><?=$g5['set_plt_status_value'][$row['plt_status']]?></td><!-- 상태 -->
     </tr>
     <?php
     }

@@ -1,30 +1,29 @@
 <?php
-$sub_menu = "945113";
+$sub_menu = "945115";
 include_once('./_common.php');
 
 auth_check($auth[$sub_menu], 'r');
 
-$g5['title'] = '절단품재고관리(생산별)';
+$g5['title'] = '완제품재고관리(생산별)';
 include_once('./_head.php');
-include_once('./_top_menu_half.php');
+include_once('./_top_menu_itm.php');
 
 
-$sql_common = " FROM {$g5['material_table']} mtr
-                    LEFT JOIN {$g5['bom_table']} bom ON mtr.bom_idx = bom.bom_idx
-                    LEFT JOIN {$g5['order_out_practice_table']} oop ON mtr.oop_idx = oop.oop_idx
+$sql_common = " FROM {$g5['item_table']} itm
+                    LEFT JOIN {$g5['bom_table']} bom ON itm.bom_idx = bom.bom_idx
+                    LEFT JOIN {$g5['order_out_practice_table']} oop ON itm.oop_idx = oop.oop_idx
                     LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
 ";
 
 $where = array();
 // 디폴트 검색조건 (used 제외)
-$where[] = " mtr.mtr_status NOT IN ('delete','del','trash') ";
-$where[] = " mtr.mtr_type = 'half' ";
-$where[] = " mtr.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " itm.itm_status NOT IN ('delete','del','trash') ";
+$where[] = " itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 // 검색어 설정
 if ($stx != "") {
     switch ($sfl) {
-		case ( $sfl == 'bom_idx' || $sfl == 'mtr_idx' || $sfl == 'mtr_borcode' || $sfl == 'mtr_lot' || $sfl == 'mtr_defect_type' || $sfl == 'trm_idx_location' ) :
+		case ( $sfl == 'bom_idx' || $sfl == 'itm_idx' || $sfl == 'itm_borcode' || $sfl == 'itm_lot' || $sfl == 'itm_defect_type' || $sfl == 'trm_idx_location' ) :
 			$where[] = " {$sfl} = '".trim($stx)."' ";
             break;
 		case ( $sfl == 'bct_id' ) :
@@ -37,16 +36,16 @@ if ($stx != "") {
 }
 
 if($mtr_date){
-    $where[] = " mtr_input_date = '".$mtr_input_date."' ";
-    $qstr .= $qstr.'&mtr_input_date='.$mtr_input_date;
+    $where[] = " itm_date = '".$itm_date."' ";
+    $qstr .= $qstr.'&itm_date='.$itm_date;
 }
 
 // 최종 WHERE 생성
 if ($where)
     $sql_search = ' WHERE '.implode(' AND ', $where);
 
-// $sql_group = " GROUP BY mtr.bom_idx, mtr_input_date ";
-$sql_group = " GROUP BY mtr.oop_idx ";
+// $sql_group = " GROUP BY itm.bom_idx, itm_date ";
+$sql_group = " GROUP BY itm.oop_idx ";
 
 if (!$sst) {
     $sst = "orp_start_date";
@@ -60,9 +59,9 @@ if (!$sst2) {
 
 $sql_order = " ORDER BY {$sst} {$sod} {$sst2} {$sod2} ";
 
-// $sql = " SELECT COUNT(DISTINCT mtr.bom_idx, mtr_input_date) as cnt {$sql_common} {$sql_search} ";
+// $sql = " SELECT COUNT(DISTINCT itm.bom_idx, itm_date) as cnt {$sql_common} {$sql_search} ";
 $sql = " SELECT COUNT(c.bom_idx) AS cnt FROM (
-            SELECT mtr.bom_idx {$sql_common} {$sql_search} {$sql_group}
+            SELECT itm.bom_idx {$sql_common} {$sql_search} {$sql_group}
         ) c ";
 $row = sql_fetch($sql,1);
 $total_count = $row['cnt'];
@@ -74,26 +73,46 @@ if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
 
-$sql = "SELECT mtr.mtr_name
+$sql = "SELECT itm.itm_name
               ,oop.oop_idx
               ,oop.orp_idx
-              ,mtr.bom_part_no
+              ,itm.bom_part_no
               ,bom.bom_std
               ,orp.orp_start_date
-              ,ROW_NUMBER() OVER (ORDER BY orp_start_date, oop.oop_idx) AS mtr_num
-              ,ROUND(SUM(mtr.mtr_weight)) AS sum
+              ,ROW_NUMBER() OVER (ORDER BY orp_start_date, oop.oop_idx) AS itm_num
+              ,ROUND(SUM(itm.itm_weight)) AS sum
               ,COUNT(*) AS cnt
-              ,COUNT( CASE WHEN mtr_status = 'error_size' THEN 1 END ) AS error_size
-              ,COUNT( CASE WHEN mtr_status = 'error_dent' THEN 1 END ) AS error_dent
-              ,COUNT( CASE WHEN mtr_status = 'error_bend' THEN 1 END ) AS error_bend
-              ,COUNT( CASE WHEN mtr_status = 'error_worker' THEN 1 END ) AS error_worker
-              ,COUNT( CASE WHEN mtr_status = 'error_material' THEN 1 END ) AS error_material
-              ,COUNT( CASE WHEN mtr_status = 'error_cut' THEN 1 END ) AS error_cut
-              ,COUNT( CASE WHEN mtr_status = 'error_subcontractor' THEN 1 END ) AS error_subcontractor
-              ,COUNT( CASE WHEN mtr_status = 'error_etc' THEN 1 END ) AS error_etc
-              ,COUNT( CASE WHEN mtr_status = 'error_scrap' THEN 1 END ) AS error_scrap
-              ,COUNT( CASE WHEN mtr_status = 'stock' THEN 1 END ) AS stock
-              ,COUNT( CASE WHEN mtr_status = 'finish' THEN 1 END ) AS finish
+              ,COUNT( CASE WHEN itm_status = 'error_size' THEN 1 END ) AS error_size
+              ,COUNT( CASE WHEN itm_status = 'error_dent' THEN 1 END ) AS error_dent
+              ,COUNT( CASE WHEN itm_status = 'error_bend' THEN 1 END ) AS error_bend
+              ,COUNT( CASE WHEN itm_status = 'error_worker' THEN 1 END ) AS error_worker
+              ,COUNT( CASE WHEN itm_status = 'error_material' THEN 1 END ) AS error_material
+              ,COUNT( CASE WHEN itm_status = 'error_cut' THEN 1 END ) AS error_cut
+              ,COUNT( CASE WHEN itm_status = 'error_subcontractor' THEN 1 END ) AS error_subcontractor
+
+              ,COUNT( CASE WHEN itm_status = 'error_fold' THEN 1 END ) AS error_fold
+              ,COUNT( CASE WHEN itm_status = 'error_unformed' THEN 1 END ) AS error_unformed
+              ,COUNT( CASE WHEN itm_status = 'error_position' THEN 1 END ) AS error_position
+              ,COUNT( CASE WHEN itm_status = 'error_crack' THEN 1 END ) AS error_crack
+              ,COUNT( CASE WHEN itm_status = 'error_breakaway' THEN 1 END ) AS error_breakaway
+              ,COUNT( CASE WHEN itm_status = 'error_overheat' THEN 1 END ) AS error_overheat
+              ,COUNT( CASE WHEN itm_status = 'error_scale' THEN 1 END ) AS error_scale
+              ,COUNT( CASE WHEN itm_status = 'error_layer' THEN 1 END ) AS error_layer
+              ,COUNT( CASE WHEN itm_status = 'error_trim' THEN 1 END ) AS error_trim
+              ,COUNT( CASE WHEN itm_status = 'error_sita' THEN 1 END ) AS error_sita
+              ,COUNT( CASE WHEN itm_status = 'error_mold' THEN 1 END ) AS error_mold
+              ,COUNT( CASE WHEN itm_status = 'error_equipment' THEN 1 END ) AS error_equipment
+              ,COUNT( CASE WHEN itm_status = 'error_after' THEN 1 END ) AS error_after
+              ,COUNT( CASE WHEN itm_status = 'error_claim' THEN 1 END ) AS error_claim
+              ,COUNT( CASE WHEN itm_status = 'error_replace' THEN 1 END ) AS error_replace
+              ,COUNT( CASE WHEN itm_status = 'error_dev' THEN 1 END ) AS error_dev
+              ,COUNT( CASE WHEN itm_status = 'error_heat' THEN 1 END ) AS error_heat
+              ,COUNT( CASE WHEN itm_status = 'error_lose' THEN 1 END ) AS error_lose
+
+              ,COUNT( CASE WHEN itm_status = 'error_etc' THEN 1 END ) AS error_etc
+              ,COUNT( CASE WHEN itm_status = 'error_scrap' THEN 1 END ) AS error_scrap
+              ,COUNT( CASE WHEN itm_status = 'finish' THEN 1 END ) AS finish
+              ,COUNT( CASE WHEN itm_status = 'delivery' THEN 1 END ) AS delivery
         {$sql_common} {$sql_search} {$sql_group}  {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
@@ -106,7 +125,7 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 // print_r2($g5['set_half_status_ng_array']);
 ?>
 <style>
-#half_data{position:relative;padding-bottom:10px;}
+#itm_data{position:relative;padding-bottom:10px;}
 /*
 #half_data #form02{position:absolute;right:0;top:-47px;}
 */
@@ -115,22 +134,22 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 .tbl_head01 thead tr th{position:sticky;top:100px;z-index:100;}
 .td_chk{position:relative;}
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
-.td_mtr_name {text-align:left !important;}
+.td_itm_name {text-align:left !important;}
 .sp_pno{color:skyblue;font-size:0.85em;}
 .sp_std{color:#e87eee;font-size:0.85em;}
-.td_com_name, .td_mtr_maker
-,.td_mtr_items, .td_mtr_items_title {text-align:left !important;}
-.span_mtr_price {margin-left:20px;}
-.span_mtr_price b, .span_bit_count b {color:#737132;font-weight:normal;}
+.td_com_name, .td_itm_maker
+,.td_itm_items, .td_itm_items_title {text-align:left !important;}
+.span_itm_price {margin-left:20px;}
+.span_itm_price b, .span_bit_count b {color:#737132;font-weight:normal;}
 #modal01 table ol {padding-right: 20px;text-indent: -12px;padding-left: 12px;}
 #modal01 form {overflow:hidden;}
 .ui-dialog .ui-dialog-titlebar-close span {
     display: unset;
     margin: -8px 0 0 -8px;
 }
-.td_mtr_history {width:190px !important;}
-label[for="mtr_static_date"]{position:relative;}
-label[for="mtr_static_date"] i{position:absolute;top:-10px;right:0px;z-index:2;cursor:pointer;}
+.td_itm_history {width:190px !important;}
+label[for="itm_static_date"]{position:relative;}
+label[for="itm_static_date"] i{position:absolute;top:-10px;right:0px;z-index:2;cursor:pointer;}
 .slt_label{position:relative;display:inline-block;}
 .slt_label i{position:absolute;top:-7px;right:0px;z-index:2;}
 </style>
@@ -145,34 +164,29 @@ echo $g5['container_sub_title'];
 <form id="fsearch" name="fsearch" class="local_sch01 local_sch" method="get">
 <label for="sfl" class="sound_only">검색대상</label>
 <select name="sfl" id="sfl">
-    <option value="mtr_name"<?php echo get_selected($_GET['sfl'], "mtr_name"); ?>>품명</option>
+    <option value="itm_name"<?php echo get_selected($_GET['sfl'], "itm_name"); ?>>품명</option>
     <option value="bom.bom_part_no"<?php echo get_selected($_GET['sfl'], "bom_part_no"); ?>>품번</option>
     <option value="bom.bom_std"<?php echo get_selected($_GET['sfl'], "bom_std"); ?>>규격</option>
     <option value="oop.oop_idx"<?php echo get_selected($_GET['sfl'], "oop_idx"); ?>>생산계획    ID</option>
 </select>
 <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
 <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
-<?php
-// $mtr_input_date = ($mtr_input_date) ? $mtr_input_date : G5_TIME_YMD;
-?>
-<!-- <label for="mtr_input_date" class="slt_label"><strong class="sound_only">통계일 필수</strong>
-<i class="fa fa-times" aria-hidden="true"></i>
-<input type="text" name="mtr_input_date" value="<?php //echo $mtr_input_date ?>" placeholder="통계일" id="mtr_input_date" readonly class="frm_input readonly" style="width:95px;"> -->
+
 </label>
 <script>
 <?php
-$sfl = ($sfl == '') ? 'mtr_name' : $sfl;
+$sfl = ($sfl == '') ? 'itm_name' : $sfl;
 ?>
 $('#sfl').val('<?=$sfl?>');
 $('#shift').val('<?=$shift?>');
-$('#mtr2_status').val('<?=$mtr2_status?>');
+$('#itm2_status').val('<?=$itm2_status?>');
 </script>
 <input type="submit" class="btn_submit" value="검색">
 
 </form>
 
 <div class="local_desc01 local_desc" style="display:no ne;">
-    <p>생산계획ID별 따른 반제품 재고조회 페이지입니다.</p>
+    <p>생산계획ID별 따른 완제품 재고조회 페이지입니다.</p>
 </div>
 
 <script>
@@ -193,9 +207,9 @@ $('.data_blank').on('click',function(e){
 });
 //mms_idx,bom_idx_parent,mtr_weight,mtr_heat,mtr_lot,mtr_bundle
 </script>
-<div id="half_data">
-    <form name="form02" id="form02" action="./half_reg_update.php" onsubmit="return form02_submit(this);" method="post" autocomplete="off">
-        <strong style="position:relative;top:3px;">절단품재고 추가/변경:</strong>
+<div id="itm_data">
+    <form name="form02" id="form02" action="./item_reg_update.php" onsubmit="return form02_submit(this);" method="post" autocomplete="off">
+        <strong style="position:relative;top:3px;">완제품재고 추가/변경:</strong>
         <input type="hidden" name="sst" value="<?php echo $sst ?>">
         <input type="hidden" name="sod" value="<?php echo $sod ?>">
         <input type="hidden" name="sst2" value="<?php echo $sst2 ?>">
@@ -205,16 +219,13 @@ $('.data_blank').on('click',function(e){
         <input type="hidden" name="page" value="<?php echo $page ?>">
         <input type="hidden" name="token" value="">
         
-        <input type="hidden" name="cut_mms_idx" value="">
-        <input type="hidden" name="bom_idx_parent" value="">
-        <input type="hidden" name="mtr_weight" value="">
-        <input type="hidden" name="mtr_heat" value="">
-        <input type="hidden" name="mtr_lot" value="">
-        <input type="hidden" name="mtr_bundle" value="">
-        <input type="text" name="oop_idx" value="" class="frm_input oop_select" link="./oop_mtr_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="생산계획ID">
-        <input type="text" name="bom_part_no" value="" class="frm_input oop_select" link="./oop_mtr_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="품목코드">
+        <input type="hidden" name="forge_mms_idx" value="">
+        <input type="hidden" name="itm_weight" value="">
+        <input type="hidden" name="itm_heat" value="">
+        <input type="text" name="oop_idx" value="" class="frm_input oop_select" link="./oop_itm_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="생산계획ID">
+        <input type="text" name="bom_part_no" value="" class="frm_input oop_select" link="./oop_itm_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="품목코드">
         <input type="hidden" name="bom_idx" value="">
-        <input type="text" name="bom_name" value="" class="frm_input oop_select" link="./oop_mtr_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="품명" style="width:300px;">
+        <input type="text" name="bom_name" value="" class="frm_input oop_select" link="./oop_itm_select.php?fname=<?=$g5['file_name']?>" readonly placeholder="품명" style="width:300px;">
         <select name="plus_modify" class="plus_modify">
             <option value="plus">추가하기</option>
             <option value="modify">변경하기</option>
@@ -222,13 +233,13 @@ $('.data_blank').on('click',function(e){
         <span class="sp_from">
             <select name="from_status" class="from_status">
                 <option value="">::기존상태::</option>
-                <?=$g5['set_half_status_value_options']?>
+                <?=$g5['set_itm_status_value_options']?>
             </select><b class="b_fromto b_from">(을)를</b>
         </span>
         <span>
             <select name="to_status" class="to_status">
                 <option value="">::목표상태::</option>
-                <?=$g5['set_half_status_value_options']?>
+                <?=$g5['set_itm_status_value_options']?>
                 <!-- <option value="trash">삭제</option> -->
             </select><b class="b_fromto b_to">(으)로</b>
         </span>
@@ -270,7 +281,7 @@ $('.btn_no').on('click',function(){
 </script>
 
 
-<form name="form01" id="form01" action="./half_list_update.php" onsubmit="return form01_submit(this);" method="post">
+<form name="form01" id="form01" action="./item_list_update.php" onsubmit="return form01_submit(this);" method="post">
 <input type="hidden" name="sst" value="<?php echo $sst ?>">
 <input type="hidden" name="sod" value="<?php echo $sod ?>">
 <input type="hidden" name="sst2" value="<?php echo $sst2 ?>">
@@ -287,15 +298,15 @@ $('.btn_no').on('click',function(){
     <tr>
         <th scope="col">번호</th>
         <th scope="col">생산계획ID</th>
-        <th scope="col"><?php echo subject_sort_link('mtr_name') ?>품명/품번/규격</a></th>
+        <th scope="col"><?php echo subject_sort_link('itm_name') ?>품명/품번/규격</a></th>
         <th scope="col">생산시작일</th>
-        <?php foreach($g5['set_half_status_ng_array'] as $ng_name){ ?>
+        <?php foreach($g5['set_itm_status_ng_array'] as $ng_name){ ?>
         <th scope="col">
-            <?=str_replace("불량","",$g5['set_half_status_value'][$ng_name])?>
+            <?=str_replace("불량","",$g5['set_itm_status_value'][$ng_name])?>
         </th>
         <?php } ?>
-        <th scope="col" style="color:orange;">절단완료</th>
-        <th scope="col" style="color:pink;">사용완료</th>
+        <th scope="col" style="color:orange;">생산완료</th>
+        <th scope="col" style="color:pink;">출하완료</th>
         <th scope="col" style="color:skyblue;">총생산갯수</th>
     </tr>
     <tr>
@@ -305,16 +316,16 @@ $('.btn_no').on('click',function(){
     <?php
     for ($i=0; $row=sql_fetch_array($result); $i++) {
 
-        $s_mod = '<a href="./half_form.php?'.$qstr.'&amp;w=u&amp;mtr_idx='.$row['mtr_idx'].'" class="btn btn_03">수정</a>';
+        $s_mod = '<a href="./item_form.php?'.$qstr.'&amp;w=u&amp;mtr_idx='.$row['mtr_idx'].'" class="btn btn_03">수정</a>';
 
         $bg = 'bg'.($i%2);
     ?>
 
-    <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['mtr_idx'] ?>">
-        <td class="td_mtr_num"><?=$row['mtr_num']?></td><!-- 번호 -->
+    <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['itm_idx'] ?>">
+        <td class="td_itm_num"><?=$row['itm_num']?></td><!-- 번호 -->
         <td class="td_oop_idx"><?=$row['oop_idx']?></td><!-- 생산계회ID -->
-        <td class="td_mtr_name">
-            <b><?=$row['mtr_name']?></b>
+        <td class="td_itm_name">
+            <b><?=$row['itm_name']?></b>
             <?php if($row['bom_part_no']){ ?>
             <br><span class="sp_pno">[ <?=$row['bom_part_no']?> ]</span>
             <?php } ?>
@@ -323,17 +334,17 @@ $('.btn_no').on('click',function(){
             <?php } ?>
         </td><!-- 품명 -->
         <td class="td_orp_start_date"><?=substr($row['orp_start_date'],2,8)?></td><!-- 생산시작일 -->
-        <?php foreach($g5['set_half_status_ng_array'] as $ng_name){ ?>
-        <td class="td_mtr_cnt"><?=(($row[$ng_name])?$row[$ng_name]:'-')?></td><!-- 재고개수 -->
+        <?php foreach($g5['set_itm_status_ng_array'] as $ng_name){ ?>
+        <td class="td_itm_cnt"><?=(($row[$ng_name])?$row[$ng_name]:'-')?></td><!-- 재고개수 -->
         <?php } ?>
-        <td class="td_mtr_stock" style="color:orange;"><?=(($row['stock'])?$row['stock']:'-')?></td><!-- 절단완료 -->
-        <td class="td_mtr_finish" style="color:pink;"><?=(($row['finish'])?$row['finish']:'-')?></td><!-- 사용완료개수 -->
-        <td class="td_mtr_total" style="color:skyblue;"><?=(($row['cnt'])?$row['cnt']:'-')?></td><!-- 총생산갯수 -->
+        <td class="td_itm_finish" style="color:orange;"><?=(($row['finish'])?$row['finish']:'-')?></td><!-- 절단완료 -->
+        <td class="td_itm_delivery" style="color:pink;"><?=(($row['delivery'])?$row['delivery']:'-')?></td><!-- 사용완료개수 -->
+        <td class="td_itm_total" style="color:skyblue;"><?=(($row['cnt'])?$row['cnt']:'-')?></td><!-- 총생산갯수 -->
     </tr>
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='16' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='33' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>
@@ -343,7 +354,7 @@ $('.btn_no').on('click',function(){
     <?php if(false){//($is_admin){ ?>
     <input type="submit" name="act_button" value="선택수정" onclick="document.pressed=this.value" class="btn btn_02">
     <input type="submit" name="act_button" value="선택삭제" onclick="document.pressed=this.value" class="btn btn_02">
-    <a href="./half_form.php" id="member_add" class="btn btn_01">추가하기</a>
+    <a href="./item_form.php" id="member_add" class="btn btn_01">추가하기</a>
     <?php } ?>
     <?php //} ?>
 </div>
@@ -356,7 +367,7 @@ $('.btn_no').on('click',function(){
 <script>
 $("input[name*=_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99" });
 
-$('label[for="mtr_input_date"] i').on('click',function(){
+$('label[for="itm_date"] i').on('click',function(){
     $(this).siblings('input').val('');
 });
 

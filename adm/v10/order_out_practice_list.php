@@ -99,8 +99,6 @@ if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
 $sql = " SELECT *
-              , ( SELECT SUM(mtr_weight) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS mtr_sum
-              , ( SELECT SUM(itm_weight) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND itm_status NOT IN('delete','del','trash','cancel') ) AS itm_sum
         {$sql_common} {$sql_search} {$sql_group} {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";

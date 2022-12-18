@@ -622,7 +622,7 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 		<tr>
 			<th scope="row">완제품상태</th>
 			<td colspan="3">
-				<?php echo help('pending=대기,finish=생산완료,delivery=출하,trash=삭제,error_fold=접힘불량,error_unformed=결육불량,error_size=치수불량,error_position=정치불량,error_crack=크랙불량,error_dent=타흔불량,error_breakaway=형이탈불량,error_bend=벤딩불량,error_overheat=과열불량,error_scale=스케일불량,error_layer=덧살불량,error_worker=과실불량,error_triming=트리밍불량,error_sita=시타불량,error_material=원소재불량,error_cut=절단불량,error_mold=금형불량,error_equipment=장비불량,error_after=후처리불량,error_subcontractor=외주불량,error_replace=대체불량,error_dev=개발불량,error_heat=열처리불량,error_lose=로스불량,error_etc=기타불량,error_scrap=폐기불량'); ?>
+				<?php echo help('pending=대기,finish=생산완료,delivery=출하,trash=삭제,error_fold=접힘불량,error_unformed=결육불량,error_size=치수불량,error_position=정치불량,error_crack=크랙불량,error_dent=타흔불량,error_breakaway=형이탈불량,error_bend=벤딩불량,error_overheat=과열불량,error_scale=스케일불량,error_layer=덧살불량,error_worker=과실불량,error_trim=트리밍불량,error_sita=시타불량,error_material=원소재불량,error_cut=절단불량,error_mold=금형불량,error_equipment=장비불량,error_after=후처리불량,error_subcontractor=외주불량,error_replace=대체불량,error_dev=개발불량,error_heat=열처리불량,error_lose=로스불량,error_etc=기타불량,error_scrap=폐기불량'); ?>
 				<input type="text" name="set_itm_status" value="<?php echo $g5['setting']['set_itm_status']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>
@@ -650,7 +650,7 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 		<tr>
 			<th scope="row">파렛트상태</th>
 			<td colspan="3">
-				<?php echo help('pending=대기,finish=적재완료,delivery=출하,trash=삭제'); ?>
+				<?php echo help('pending=적재완료,delivery=출하,trash=삭제'); ?>
 				<input type="text" name="set_plt_status" value="<?php echo $g5['setting']['set_plt_status']; ?>" class="frm_input" style="width:70%;">
 			</td>
 		</tr>

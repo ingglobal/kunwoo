@@ -17,7 +17,8 @@ $sql_common = " FROM {$g5['item_table']} AS itm
 
 $where = array();
 // 디폴트 검색조건 (used 제외)
-$where[] = " itm.itm_status NOT IN ('delete','trash','used') AND itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " itm.itm_status NOT IN ('delete','trash','used') ";
+$where[] = " itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 // 검색어 설정
 if ($stx != "") {
@@ -46,9 +47,9 @@ if($itm2_status){
     $where[] = " itm_status = '".$itm2_status."' ";
     $qstr .= $qstr.'&itm_status='.$itms_status;
 }
-if($trm_idx_location){
-    $where[] = " trm_idx_location = '".$trm_idx_location."' ";
-    $qstr .= $qstr.'&trm_idx_location='.$trm_idx_location;
+if($forge_mms_idx){
+    $where[] = " itm.mms_idx = '".(($forge_mms_idx == '-1')?0:$forge_mms_idx)."' ";
+    $qstr .= $qstr.'&forge_mms_idx='.$forge_mms_idx;
 }
 if($itm_delivery){
     $where[] = " itm_delivery = '".$itm_delivery."' ";
@@ -76,7 +77,22 @@ $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
 if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
-$sql = "SELECT *
+$sql = "SELECT itm_idx
+        , orp.orp_idx
+        , itm.oop_idx
+        , itm.bom_idx
+        , itm_name
+        , itm.bom_part_no
+        , bom.bom_std
+        , itm.itm_date
+        , itm.mms_idx
+        , itm.itm_weight
+        , itm.itm_heat
+        , itm.itm_defect
+        , itm.itm_defect_type
+        , itm.itm_status
+        , itm.itm_reg_dt
+        , itm.itm_update_dt
         , ROW_NUMBER() OVER (PARTITION BY itm_date, itm.bom_part_no ORDER BY itm_reg_dt) AS itm_num
         {$sql_common} {$sql_search} {$sql_order}
         LIMIT {$from_record}, {$rows}
@@ -94,8 +110,10 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 .td_chk{position:relative;}
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
 .td_itm_name {text-align:left !important;}
+.sp_pno{color:skyblue;font-size:0.85em;}
+.sp_std{color:#e87eee;font-size:0.85em;}
 .td_itm_part_no, .td_com_name, .td_itm_maker
-,.td_itm_items, .td_itm_items_title {text-align:left !important;}
+,.td_itm_items, .td_itm_items_title, .td_mtr_std, {text-align:left !important;}
 .span_itm_price {margin-left:20px;}
 .span_itm_price b, .span_bit_count b {color:#737132;font-weight:normal;}
 #modal01 table ol {padding-right: 20px;text-indent: -12px;padding-left: 12px;}
@@ -124,6 +142,9 @@ echo $g5['container_sub_title'];
 <select name="sfl" id="sfl">
     <option value="itm_name"<?php echo get_selected($_GET['sfl'], "itm_name"); ?>>품명</option>
     <option value="bom.bom_part_no"<?php echo get_selected($_GET['sfl'], "bom_part_no"); ?>>품번</option>
+    <option value="bom.bom_std"<?php echo get_selected($_GET['sfl'], "bom_std"); ?>>규격</option>
+    <option value="itm.oop_idx"<?php echo get_selected($_GET['sfl'], "oop_idx"); ?>>생산계획ID</option>
+    <option value="itm.itm_heat"<?php echo get_selected($_GET['sfl'], "itm_heat"); ?>>히트넘버</option>
 </select>
 <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
 <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
@@ -131,9 +152,10 @@ echo $g5['container_sub_title'];
     <option value="">::작업구간::</option>
     <?php ;//$g5['set_itm_shift2_value_options']?>
 </select-->
-<select name="trm_idx_location" id="trm_idx_location">
-    <option value="">::라인선택::</option>
-    <?=$line_form_options?>
+<select name="forge_mms_idx" id="forge_mms_idx">
+    <option value="">::단조설비선택::</option>
+    <?=$g5['forge_options']?>
+    <option value="-1">외주단조</option>
 </select>
 <select name="itm2_status" id="itm2_status">
     <option value="">::상태선택::</option>
@@ -150,8 +172,11 @@ echo $g5['container_sub_title'];
 <?php
 $sfl = ($sfl == '') ? 'itm_name' : $sfl;
 ?>
-<?php if($trm_idx_location){ ?>
-    $('#trm_idx_location').val('<?=$trm_idx_location?>');
+<?php if($sfl){ ?>
+    $('#sfl').val('<?=$sfl?>');
+<?php } ?>
+<?php if($forge_mms_idx){ ?>
+    $('#forge_mms_idx').val('<?=$forge_mms_idx?>');
 <?php } ?>
 <?php if($itm2_status){ ?>
     $('#itm2_status').val('<?=$itm2_status?>');
@@ -203,6 +228,8 @@ $('.data_blank').on('click',function(e){
 <input type="hidden" name="sod" value="<?php echo $sod ?>">
 <input type="hidden" name="sfl" value="<?php echo $sfl ?>">
 <input type="hidden" name="stx" value="<?php echo $stx ?>">
+<input type="hidden" name="forge_mms_idx" value="<?php echo $forge_mms_idx ?>">
+<input type="hidden" name="itm2_status" value="<?php echo $itm2_status ?>">
 <input type="hidden" name="page" value="<?php echo $page ?>">
 <input type="hidden" name="token" value="">
 
@@ -217,18 +244,14 @@ $('.data_blank').on('click',function(e){
         </th>
         <th scope="col">ID</th>
         <th scope="col"><?php echo subject_sort_link('itm_name') ?>품명</a></th>
-        <th scope="col">파트넘버</th>
+        <th scope="col">생산계획ID</th>
         <th scope="col">통계일</th>
-        <th scope="col">설비라인</th>
-        <th scope="col">시간구간</th>
-        <th scope="col">바코드</th>
-        <th scope="col">품별순서</th>
+        <th scope="col">설비</th>
         <th scope="col">무게(kg)</th>
         <th scope="col">등록일시</th>
         <th scope="col">수정일시</th>
         <th scope="col">출하여부</th>
         <th scope="col">상태</th>
-        <th scope="col">관리</th>
     </tr>
     <tr>
     </tr>
@@ -268,13 +291,18 @@ $('.data_blank').on('click',function(e){
             <div class="chkdiv_btn" chk_no="<?=$i?>"></div>
         </td>
         <td class="td_itm_idx"><?=$row['itm_idx']?></td><!-- ID -->
-        <td class="td_itm_name"><?=$row['itm_name']?></td><!-- 품명 -->
-        <td class="td_itm_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
+        <td class="td_itm_name">
+            <b><?=$row['itm_name']?></b>
+            <?php if($row['bom_part_no']){ ?>
+            <br><span class="sp_pno">[ <?=$row['bom_part_no']?> ]</span>
+            <?php } ?>
+            <?php if($row['bom_std']){ ?>
+            <br><span class="sp_std">[ <?=$row['bom_std']?> ]</span>
+            <?php } ?>
+        </td><!-- 품명 -->
+        <td class="td_oop_idx"><?=$row['oop_idx']?></td><!-- 생산계획ID -->
         <td class="td_itm_date"><?=$row['itm_date']?></td><!-- 통계일 -->
-        <td class="td_itm_line"><?=$g5['line_name'][$row['trm_idx_line']]?></td><!-- 설비라인 -->
-        <td class="td_itm_shift"><?=$row['itm_shift']?></td><!-- 작업구간 -->
-        <td class="td_itm_barcode" style="text-align:left;"><?=$row['itm_barcode']?></td><!-- 바코드 -->
-        <td class="td_itm_num" style="text-align:right;"><?=$row['itm_num']?></td><!-- 품별순서 -->
+        <td class="td_itm_mms"><?=$g5['trms']['forge_idx_arr'][$row['mms_idx']]?></td><!-- 설비 -->
         <td class="td_itm_weight" style="text-align:right;">
             <?php if($is_admin){ ?>
                 <input type="text" name="itm_weight[<?=$row['itm_idx']?>]" value="<?=$row['itm_weight']?>" class="frm_input" style="width:70px;text-align:right;">
@@ -308,15 +336,11 @@ $('.data_blank').on('click',function(e){
             <input type="hidden" name="itm_status[<?php echo $row['itm_idx'] ?>]" class="itm_status_<?php echo $row['itm_idx'] ?>" value="<?php echo $row['itm_status']?>">
             <input type="text" value="<?php echo $g5['set_itm_status'][$row['itm_status']]?>" readonly class="tbl_input readonly itm_status_name_<?php echo $row['itm_idx'] ?>" style="width:170px;text-align:center;">
         </td><!-- 상태 -->
-        <td class="td_mng">
-            <?=($row['itm_type']!='material')?$s_bom:''?><!-- 자재가 아닌 경우만 BOM 버튼 -->
-			<?=$s_mod?>
-		</td>
     </tr>
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='15' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='11' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>

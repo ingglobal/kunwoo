@@ -18,7 +18,8 @@ $sql_common = " FROM {$g5['item_table']} AS itm
 
 $where = array();
 // 디폴트 검색조건 (used 제외)
-$where[] = " itm.itm_status NOT IN ('delete','del','trash') AND itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " itm.itm_status NOT IN ('delete','del','trash') ";
+$where[] = " itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 // 검색어 설정
 if ($stx != "") {
@@ -44,21 +45,23 @@ if($itm_date){
 if ($where)
     $sql_search = ' WHERE '.implode(' AND ', $where);
 
-$sql_group = " GROUP BY itm.bom_idx, itm_date ";
+$sql_group = " GROUP BY itm.bom_idx ";
 
 if (!$sst) {
-    $sst = "itm_date";
+    $sst = "itm_reg_dt";
     $sod = "desc";
 }
 
-if (!$sst2) {
-    $sst2 = ", itm_reg_dt";
-    $sod2 = "desc";
-}
+// if (!$sst2) {
+//     $sst2 = ", itm_reg_dt";
+//     $sod2 = "desc";
+// }
 
 $sql_order = " ORDER BY {$sst} {$sod} ";
 
-$sql = " SELECT COUNT(DISTINCT itm.bom_idx, itm_date) as cnt {$sql_common} {$sql_search} ";
+$sql = " SELECT COUNT(c.bom_idx) AS cnt FROM (
+    SELECT itm.bom_idx {$sql_common} {$sql_search} {$sql_group}
+) c ";
 $row = sql_fetch($sql,1);
 $total_count = $row['cnt'];
 // echo $total_count.'<br>';
@@ -69,10 +72,9 @@ if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
 $sql = "SELECT *
-              ,SUM(itm.itm_weight) AS sum
-              ,COUNT(*) AS cnt
-              ,( SELECT SUM(itm_weight) FROM {$g5['item_table']} WHERE bom_idx = itm.bom_idx AND itm_status = 'finish' ) AS sum2
-              ,( SELECT COUNT(itm_idx) FROM {$g5['item_table']} WHERE bom_idx = itm.bom_idx AND itm_status = 'finish' ) AS cnt2
+              ,ROW_NUMBER() OVER (ORDER BY itm_reg_dt) AS itm_num 
+              ,ROUND(SUM( CASE WHEN itm.itm_status = 'finish' THEN itm.itm_weight END )) AS sum_weight
+              ,COUNT( CASE WHEN itm.itm_status = 'finish' THEN 1 END ) AS total
         {$sql_common} {$sql_search} {$sql_group}  {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
@@ -88,7 +90,7 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
 .td_itm_name {text-align:left !important;}
 .td_itm_part_no, .td_com_name, .td_itm_maker
-,.td_itm_items, .td_itm_items_title {text-align:left !important;}
+,.td_itm_items, .td_itm_items_title,.td_itm_std {text-align:left !important;}
 .span_itm_price {margin-left:20px;}
 .span_itm_price b, .span_bit_count b {color:#737132;font-weight:normal;}
 #modal01 table ol {padding-right: 20px;text-indent: -12px;padding-left: 12px;}
@@ -116,16 +118,11 @@ echo $g5['container_sub_title'];
 <select name="sfl" id="sfl">
     <option value="itm_name"<?php echo get_selected($_GET['sfl'], "itm_name"); ?>>품명</option>
     <option value="bom.bom_part_no"<?php echo get_selected($_GET['sfl'], "bom_part_no"); ?>>품번</option>
+    <option value="bom.bom_std"<?php echo get_selected($_GET['sfl'], "bom_std"); ?>>규격</option>
 </select>
 <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
 <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
-<?php
-$itm_date = ($itm_date) ? $itm_date : G5_TIME_YMD;
-?>
-<label for="itm_date" class="slt_label"><strong class="sound_only">통계일 필수</strong>
-<i class="fa fa-times" aria-hidden="true"></i>
-<input type="text" name="itm_date" value="<?php echo $itm_date ?>" placeholder="통계일" id="itm_date" readonly class="frm_input readonly" style="width:95px;">
-</label>
+
 <script>
 <?php
 $sfl = ($sfl == '') ? 'itm_name' : $sfl;
@@ -174,14 +171,13 @@ $('.data_blank').on('click',function(e){
     <caption><?php echo $g5['title']; ?> 목록</caption>
     <thead>
     <tr>
-        <th scope="col">통계일</th>
-        <th scope="col">카테고리</th>
+        <th scope="col">번호</th>
         <th scope="col"><?php echo subject_sort_link('itm_name') ?>품명</a></th>
+        <th scope="col">BomID</th>
         <th scope="col">파트넘버</th>
-        <th scope="col">생산량(kg)</th>
-        <th scope="col">생산갯수(톤백)</th>
-        <th scope="col">재고량(kg)</th>
-        <th scope="col">재고갯수(톤백)</th>
+        <th scope="col">규격</th>
+        <th scope="col">재고무게(kg)</th>
+        <th scope="col">재고갯수</th>
     </tr>
     <tr>
     </tr>
@@ -223,18 +219,13 @@ $('.data_blank').on('click',function(e){
     ?>
 
     <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['itm_idx'] ?>">
-        <td class="td_itm_date"><?=$row['itm_date']?></td><!-- 통계일 -->
-        <td class="td_itm_cat" style="text-align:left;color:orange;">
-            <?php if($row['bct_name_tree']){ ?>
-            <span class="sp_cat"><?=$row['bct_name_tree']?></span>
-            <?php } ?>    
-        </td><!-- 카테고리 -->
+        <td class="td_itm_num"><?=$row['itm_num']?></td><!-- 번호 -->
         <td class="td_itm_name"><?=$row['itm_name']?></td><!-- 품명 -->
+        <td class="td_bom_idx"><?=$row['bom_idx']?></td><!-- BOMidx -->
         <td class="td_itm_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
-        <td class="td_itm_sum"><?=$row['sum']?></td><!-- 생산량 -->
-        <td class="td_itm_cnt"><?=$row['cnt']?></td><!-- 생산개수(톤백) -->
-        <td class="td_itm_sum2"><?=(($row['sum2'])?$row['sum2']:0)?></td><!-- 재고량 -->
-        <td class="td_itm_cnt2"><?=$row['cnt2']?></td><!-- 재고개수(톤백) -->
+        <td class="td_itm_std"><?=$row['bom_std']?></td><!-- 규격 -->
+        <td class="td_itm_sum_weight"><?=(($row['sum_weight'])?$row['sum_weight']:0)?></td><!-- 생산량 -->
+        <td class="td_itm_cnt"><?=$row['total']?></td><!-- 재고개수(톤백) -->
     </tr>
     <?php
     }
