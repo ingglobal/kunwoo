@@ -29,10 +29,9 @@ $col_arr = array(
     ,'21' => array('입고수량','입고무게')
     ,'22' => array('입고단가','단가')
     ,'23' => array('입고금액','금액')
-    ,'24' => array('LOT','로트넘버','로트')
-    ,'25' => array('히트넘버','히트','히트번호')
-    ,'26' => array('번들넘버','번들','번들번호')
-    ,'28' => array('비고','길이')
+    ,'24' => array('LOT','로트넘버','로트','히트넘버','Lot','lot','LOT넘버')
+    ,'25' => array('번들넘버','번들','번들번호')
+    ,'27' => array('비고','길이')
 );
 $colIdxArr = array(
     'mtr_input_date' => '6'
@@ -43,9 +42,8 @@ $colIdxArr = array(
     ,'mtr_price' => '22'
     ,'mtr_sum_price' => '23'
     ,'mtr_lot' => '24'
-    ,'mtr_heat' => '25'
-    ,'mtr_bundle' => '26'
-    ,'mtr_length' => '28'
+    ,'mtr_bundle' => '25'
+    ,'mtr_length' => '27'
 );
 $idxColArr = array();
 try {
@@ -198,7 +196,7 @@ if(count($conArr)){
                         , mtr_price = '{$conArr[$i]['mtr_price']}'
                         , mtr_sum_price = '{$conArr[$i]['mtr_sum_price']}'
                         , mtr_lot = '{$conArr[$i]['mtr_lot']}'
-                        , mtr_heat = '{$conArr[$i]['mtr_heat']}'
+                        , mtr_heat = '{$conArr[$i]['mtr_lot']}'
                         , mtr_bundle = '{$conArr[$i]['mtr_bundle']}'
                         , mtr_status = 'stock'
                         , mtr_input_date = '{$conArr[$i]['mtr_input_date']}'
@@ -219,7 +217,7 @@ if(count($conArr)){
                         , mtr_price = '{$conArr[$i]['mtr_price']}'
                         , mtr_sum_price = '{$conArr[$i]['mtr_sum_price']}'
                         , mtr_lot = '{$conArr[$i]['mtr_lot']}'
-                        , mtr_heat = '{$conArr[$i]['mtr_heat']}'
+                        , mtr_heat = '{$conArr[$i]['mtr_lot']}'
                         , mtr_bundle = '{$conArr[$i]['mtr_bundle']}'
                         , mtr_status = 'stock'
                         , mtr_input_date = '{$conArr[$i]['mtr_input_date']}'
