@@ -1,6 +1,6 @@
 @charset "utf-8";
-#modal{position:fixed;display:flex;top:0;left:0;width:100vw;height:100vh;z-index:5000;justify-content:center;align-items:center;}
-#modal.mdl_hide{display:none;}
-#modal .mdl_bg{position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:0;}
-#modal .mdl_box{position:relative;width:400px;background:#182C61;}
-#modal .mdl_box .mdl_close{position:absolute;top:-50px;right:-50px;cursor:pointer;}
+.modal{position:fixed;display:flex;top:0;left:0;width:100vw;height:100vh;z-index:5000;justify-content:center;align-items:center;}
+.modal.mdl_hide{display:none;}
+.modal .mdl_bg{position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:0;}
+.modal .mdl_box{position:relative;width:400px;background:#182C61;}
+.modal .mdl_box .mdl_close{position:absolute;top:-50px;right:-50px;cursor:pointer;}

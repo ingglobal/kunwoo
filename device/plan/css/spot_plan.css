@@ -32,6 +32,7 @@
 .tbl_head01 tbody td.td_today{background:#6D214F;}
 .tbl_head01 tbody td.td_today_n{background:#4B112D;}
 .dv_item{position:relative;text-align:left;padding:5px;border:1px solid #2980b9;background:#1e3799;border-radius:5px;margin-top:5px;}
+.dv_item.dv_child{background:#1e2c1c;}
 .dv_item.dv_stop{border:1px solid #4c4e56;background:#383a40;opacity:0.7;}
 .dv_item:first-child{margin-top:0px;}
 .dv_item p{text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height:23px;line-height:23px;}
@@ -41,6 +42,6 @@
 .dv_item p.p_std{color:pink;font-size:0.95em;}
 .dv_item p.p_mtr{color:white;font-size:0.9em;}
 .dv_item p.p_memo{color:yellow;font-weight:700;font-size:0.9em;}
-.dv_item span{position:absolute;display:block;top:5px;right:5px;border:0px solid #711320;background:rgba(77, 11, 59,0.7);padding:3px 5px;border-radius:4px;}
-.dv_item span.s_cnt{}
+.dv_item span{}
+.dv_item span.s_cnt{position:absolute;display:block;top:5px;right:5px;border:0px solid #711320;background:rgba(77, 11, 59,0.7);padding:3px 5px;border-radius:4px;}
 .dv_item .orp_mod{position:absolute;bottom:5px;right:5px;display:block;width:30px;height:30px;line-height:32px;text-align:center;border-radius:50%;background:rgba(0,0,0,0.4);}

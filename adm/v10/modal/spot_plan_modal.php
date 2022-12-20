@@ -1,4 +1,4 @@
-<div id="modal" class="mdl_hide">
+<div id="modal" class="modal mdl_hide">
     <div class="mdl_bg"></div>
     <div class="mdl_box">
         <?=svg_icon('close','mdl_close',50,50)?>
@@ -6,6 +6,7 @@
             <h1 class="h1_item"></h1>
         </div>
         <div class="mdl_cont">
+            <p><strong class="st_oop_idx">생산계획</strong><span class="sp_oop_idx"></span></p>
             <p><strong class="st_no">품번</strong><span class="sp_no"></span></p>
             <p><strong class="st_std">규격</strong><span class="sp_std"></span></p>
             <p><strong class="st_press_type">타수유형</strong><span class="sp_press_type"></span></p>

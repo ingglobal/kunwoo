@@ -158,7 +158,27 @@ $result = sql_query($sql,1);
 $total_count = $result->num_rows;
 // print_r2($result);
 for($row=0;$row=sql_fetch_array($result);$row++){
-    // print_r2($row);
+    // print_r2($row);//$g5['order_oop_child_table']
+    $csql = " SELECT * FROM {$g5['order_oop_child_table']} WHERE oop_idx = '{$row['oop_idx']}' AND ooc_status NOT IN('delete','del','trash') ";
+    $cres = sql_query($csql,1);
+    if($cres->num_rows){
+    for($crow=0;$crow=sql_fetch_array($cres);$crow++){
+        $sarr = $row;
+        $sarr['orp_start_date'] = $crow['ooc_date'];
+        $sarr['child'] = 1;
+        $sarr['oop_1'] = ($crow['ooc_day_night'] == 'D' || $crow['ooc_day_night'] == 'A')?1:0;
+        $sarr['oop_2'] = ($crow['ooc_day_night'] == 'N' || $crow['ooc_day_night'] == 'A')?1:0;
+
+        if($sarr['forge_mms_idx'] && $sarr['oop_count'])//각 단조설비별로 분류
+            array_push($forge_arr[$sarr['forge_mms_idx']]['orp_arr'][$sarr['orp_start_date']],$sarr);
+        else if(!$sarr['forge_mms_idx'] && $sarr['cut_mms_idx'] && $sarr['oop_count']) //절단내부, 단조외주
+            array_push($forge_arr['0']['orp_arr'][$sarr['orp_start_date']],$sarr);
+        else if(!$sarr['forge_mms_idx'] && !$sarr['cut_mms_idx'] && $sarr['oop_count']) //절단외주, 단조외주
+            array_push($forge_arr['-1']['orp_arr'][$sarr['orp_start_date']],$sarr);
+    }
+    }
+    
+
     if($row['forge_mms_idx'] && $row['oop_count']) //각 단조설비별로 분류
         array_push($forge_arr[$row['forge_mms_idx']]['orp_arr'][$row['orp_start_date']],$row);
     else if(!$row['forge_mms_idx'] && $row['cut_mms_idx'] && $row['oop_count']) //절단내부, 단조외주
@@ -205,6 +225,7 @@ add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/function.date.js"></script
 .tbl_head01 tbody td.td_today{background:#6D214F;}
 .tbl_head01 tbody td.td_today_n{background:#4B112D;}
 .dv_item{position:relative;text-align:left;padding:5px;border:1px solid #2980b9;background:#1e3799;border-radius:5px;margin-top:5px;}
+.dv_item.dv_child{background:#1e2c1c;}
 .dv_item.dv_stop{border:1px solid #4c4e56;background:#383a40;opacity:0.7;}
 .dv_item:first-child{margin-top:0px;}
 .dv_item p{text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height:23px;line-height:23px;}
@@ -214,8 +235,9 @@ add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/function.date.js"></script
 .dv_item p.p_std{color:pink;font-size:0.95em;}
 .dv_item p.p_mtr{color:white;font-size:0.9em;}
 .dv_item p.p_memo{color:yellow;font-weight:700;font-size:0.9em;}
-.dv_item span{position:absolute;display:block;top:5px;right:5px;border:0px solid #711320;background:rgba(77, 11, 59,0.7);padding:3px 5px;border-radius:4px;}
-.dv_item span.s_cnt{}
+.dv_item span{}
+.dv_item span.s_cnt{position:absolute;display:block;top:5px;right:5px;border:0px solid #711320;background:rgba(77, 11, 59,0.7);padding:3px 5px;border-radius:4px;}
+.dv_item .oop_son{position:absolute;bottom:40px;right:5px;display:block;width:30px;height:30px;line-height:36px;text-align:center;border-radius:50%;background:rgba(0,0,0,0.4);cursor:pointer;}
 .dv_item .orp_mod{position:absolute;bottom:5px;right:5px;display:block;width:30px;height:30px;line-height:32px;text-align:center;border-radius:50%;background:rgba(0,0,0,0.4);}
 </style>
 <div class="local_ov01 local_ov">
@@ -284,7 +306,8 @@ echo $g5['container_sub_title'];
                         $forge_val[$i]['cut_mms_name_str'] = ($forge_val[$i]['cut_mms_idx']) ? $forge_val[$i]['cut_mms_name'].'('.$forge_val[$i]['cut_mms_model'].')' : '절단외주작업';
                         $forge_val[$i]['forge_mms_name_str'] = ($forge_val[$i]['forge_mms_idx']) ? $forge_val[$i]['forge_mms_name'].'('.$forge_val[$i]['forge_mms_model'].')' : '단조외주작업';
                     ?>
-                        <div class="dv_item<?=(($forge_val[$i]['oop_status'] != 'confirm')?' dv_stop':'')?>"
+                        <div class="dv_item<?=(($forge_val[$i]['oop_status'] != 'confirm')?' dv_stop':'')?><?=(($forge_val[$i]['child'])?' dv_child':'')?>"
+                        oop_idx="<?=$forge_val[$i]['oop_idx']?>"
                         itm="<?=cut_str($forge_val[$i]['bom_name'],20,'...')?>"
                         no="<?=$forge_val[$i]['bom_part_no']?>"
                         std="<?=$forge_val[$i]['bom_std']?>"
@@ -310,8 +333,11 @@ echo $g5['container_sub_title'];
                             <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
                             <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),12,'...')?></p>
                             <?php } ?>
-                            <?php if($forge_val[$i]['oop_1']){ ?>
+                            <?php if(!$forge_val[$i]['child'] && $forge_val[$i]['oop_1']){ ?>
                             <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_count'])?></span>
+                            <?php } ?>
+                            <?php if(true){ //if($is_admin){ //if(true){ ?>
+                            <span class="p_clone oop_son"><?=svg_icon('clone','svg_edit',20,20,'#ffffff')?></span>
                             <?php } ?>
                             <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획수정"><?=svg_icon('edit','svg_edit',20,20,'#ffffff')?></a>
                         </div>
@@ -334,7 +360,8 @@ echo $g5['container_sub_title'];
                         $forge_val[$i]['cut_mms_name_str'] = ($forge_val[$i]['cut_mms_idx']) ? $forge_val[$i]['cut_mms_name'].'('.$forge_val[$i]['cut_mms_model'].')' : '절단외주작업';
                         $forge_val[$i]['forge_mms_name_str'] = ($forge_val[$i]['forge_mms_idx']) ? $forge_val[$i]['forge_mms_name'].'('.$forge_val[$i]['forge_mms_model'].')' : '단조외주작업';
                     ?>
-                        <div class="dv_item<?=(($forge_val[$i]['oop_status'] != 'confirm')?' dv_stop':'')?>"
+                        <div class="dv_item<?=(($forge_val[$i]['oop_status'] != 'confirm')?' dv_stop':'')?><?=(($forge_val[$i]['child'])?' dv_child':'')?>"
+                        oop_idx="<?=$forge_val[$i]['oop_idx']?>"
                         itm="<?=cut_str($forge_val[$i]['bom_name'],20,'...')?>"
                         no="<?=$forge_val[$i]['bom_part_no']?>"
                         std="<?=$forge_val[$i]['bom_std']?>"
@@ -360,8 +387,11 @@ echo $g5['container_sub_title'];
                             <?php if(trim(strip_tags($forge_val[$i]['oop_memo']))){ ?>
                             <p class="p_info p_memo"><?=cut_str(trim(strip_tags($forge_val[$i]['oop_memo'])),12,'...')?></p>
                             <?php } ?>
-                            <?php if(!$forge_val[$i]['oop_1']){ ?>
+                            <?php if(!$forge_val[$i]['child'] && !$forge_val[$i]['oop_1']){ ?>
                             <span class="p_info s_cnt"><?=number_format($forge_val[$i]['oop_count'])?></span>
+                            <?php } ?>
+                            <?php if(true){ //if($is_admin){ //if(true){ ?>
+                            <span class="p_clone oop_son"><?=svg_icon('clone','svg_edit',20,20,'#ffffff')?></span>
                             <?php } ?>
                             <a href="./order_out_practice_form.php?<?=$qstr?>&w=u&oop_idx=<?=$forge_val[$i]['oop_idx']?>" class="orp_mod" title="계획수정"><?=svg_icon('edit','svg_edit',20,20,'#ffffff')?></a>
                         </div>
@@ -393,6 +423,7 @@ $("input[name=end_date]").datepicker({ changeMonth: true, changeYear: true, date
 
 $('.p_info').on('click',function(){
     var plan = $(this).parent();
+    var oop_idx = plan.attr('oop_idx');
     var itm = plan.attr('itm');
     var no = plan.attr('no');
     var std = plan.attr('std');
@@ -409,6 +440,7 @@ $('.p_info').on('click',function(){
     var status = plan.attr('status');
     $('#modal').removeClass('mdl_hide');
     $('.h1_item').text(itm);
+    $('.sp_oop_idx').text(oop_idx);
     $('.sp_no').text(no);
     $('.sp_std').text(std);
     $('.sp_press_type').text(press_type);
@@ -425,9 +457,27 @@ $('.p_info').on('click',function(){
     modal_event_on();
 });
 
+$('.p_clone').on('click',function(){
+    var plan = $(this).parent();
+    var parent_date = plan.attr('date');
+    var oop_idx = plan.attr('oop_idx');
+    var itm = plan.attr('itm');
+    var no = plan.attr('no');
+    var std = plan.attr('std');
+    $('#modal_clone').removeClass('mdl_hide');
+    $('.cp_parent_date').text(parent_date);
+    $('.h1_item').text(itm+' [날짜추가복제]');
+    $('.cp_oop_idx').text(oop_idx);
+    $('.cp_no').text(no);
+    $('.cp_std').text(std);
+    $('input[name="oop_idx"]').val(oop_idx)
+    modal_clone_event_on();
+});
+
 function modal_event_on(){
     $('.mdl_bg,.mdl_close').on('click',function(){
         $('.h1_item').text("");
+        $('.sp_oop_idx').text("");
         $('.sp_no').text("");
         $('.sp_std').text("");
         $('.sp_press_type').text("");
@@ -446,7 +496,25 @@ function modal_event_on(){
     });
 }
 
+function modal_clone_event_on(){
+    $('.mdl_bg,.mdl_close').on('click',function(){
+        $('.cp_parent_date').text("");
+        $('.h1_item').text("");
+        $('.cp_oop_idx').text("");
+        $('.cp_no').text("");
+        $('.cp_std').text("");
+        $('input[name="oop_idx"]').val("")
+        $('input[name="ooc_date"]').val("")
+        $('#modal_clone').addClass('mdl_hide');
+        modal_clone_event_off();
+    });
+}
+
 function modal_event_off(){
+    $('.mdl_bg,.mdl_close').off('click');
+}
+
+function modal_clone_event_off(){
     $('.mdl_bg,.mdl_close').off('click');
 }
 </script>

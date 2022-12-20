@@ -149,7 +149,7 @@ label[for^=set_] input[type=radio] {margin-right:2px;}
 
 /* datepicker css */
 .ui-datepicker-title select {height:22px;}
-#ui-datepicker-div {z-index:1001 !important;}
+/*#ui-datepicker-div {z-index:1001 !important;}*/
 
 /* input file 스타일 */
 input[type=file] {padding-top: 5px;padding-left: 5px;height: 29px;line-height: 16px;color:#aaa;}

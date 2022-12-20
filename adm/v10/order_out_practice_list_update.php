@@ -75,6 +75,10 @@ if ($_POST['act_button'] == "선택수정") {
                 WHERE orp_idx = '{$_POST['orp_idx'][$oop_idx_v]}'
         ";
         sql_query($sql2,1);
+
+        $sql3 = " DELETE FROM {$g5['order_oop_child_table']}
+                WHERE oop_idx = '{$oop_idx_v}' ";
+        sql_query($sql3,1);
     }
 }
 // exit;
