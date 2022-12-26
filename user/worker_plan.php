@@ -1,5 +1,6 @@
 <?php
 include_once('./_common.php');
+// print_r2($g5['setting']['set_com_idx']);exit;
 include_once('./head.php');
 $yoil = array('일','월','화','수','목','금','토');
 // $forge_arr = $g5['trms']['forge_arr'];
@@ -66,7 +67,8 @@ else{ //기존 첫번째 날짜의 요일이 일요일 아니라면
 // print_r2($date_range);
 //mmg_idx = 2; //절단동 그룹 번호는 2번
 //mmg_idx = 3; //단조동 그룹 번호는 3번
-$mms_sql = " SELECT mms_idx,mmg_idx,mms_idx2,mms_name,mms_model,mms_sort FROM {$g5['mms_table']} WHERE mmg_idx = '3' AND mms_status = 'ok' AND com_idx = '{$_SESSION['ss_com_idx']}' ORDER BY mms_sort,mms_idx2 ";
+$mms_sql = " SELECT mms_idx,mmg_idx,mms_idx2,mms_name,mms_model,mms_sort FROM {$g5['mms_table']} WHERE mmg_idx = '3' AND mms_status = 'ok' AND com_idx = '{$g5['setting']['set_com_idx']}' ORDER BY mms_sort,mms_idx2 ";
+// echo $mms_sql;
 $mms_res = sql_query($mms_sql,1);
 for($mms_row=0;$mms_row=sql_fetch_array($mms_res);$mms_row++){
     foreach($date_range as $drv){
@@ -157,6 +159,7 @@ for($row=0;$row=sql_fetch_array($result);$row++){
     // print_r2($row);//$g5['order_oop_child_table']
     $csql = " SELECT * FROM {$g5['order_oop_child_table']} WHERE oop_idx = '{$row['oop_idx']}' AND ooc_status NOT IN('delete','del','trash') ";
     $cres = sql_query($csql,1);
+    
     if($cres->num_rows){
     for($crow=0;$crow=sql_fetch_array($cres);$crow++){
         $sarr = $row;
@@ -164,7 +167,8 @@ for($row=0;$row=sql_fetch_array($result);$row++){
         $sarr['child'] = 1;
         $sarr['oop_1'] = ($crow['ooc_day_night'] == 'D' || $crow['ooc_day_night'] == 'A')?1:0;
         $sarr['oop_2'] = ($crow['ooc_day_night'] == 'N' || $crow['ooc_day_night'] == 'A')?1:0;
-
+        // print_r2($forge_arr);
+        // print_r2($sarr);
         if($sarr['forge_mms_idx'] && $sarr['oop_count'])//각 단조설비별로 분류
             array_push($forge_arr[$sarr['forge_mms_idx']]['orp_arr'][$sarr['orp_start_date']],$sarr);
         else if(!$sarr['forge_mms_idx'] && $sarr['cut_mms_idx'] && $sarr['oop_count']) //절단내부, 단조외주
@@ -175,7 +179,7 @@ for($row=0;$row=sql_fetch_array($result);$row++){
     }
 
     if($row['forge_mms_idx'] && $row['oop_count']) //각 단조설비별로 분류
-        array_push($forge_arr[$row['forge_mms_idx']]['orp_arr'][$row['orp_start_date']],$row);
+        @array_push($forge_arr[$row['forge_mms_idx']]['orp_arr'][$row['orp_start_date']],$row);
     else if(!$row['forge_mms_idx'] && $row['cut_mms_idx'] && $row['oop_count']) //절단내부, 단조외주
         array_push($forge_arr['0']['orp_arr'][$row['orp_start_date']],$row);
     else if(!$row['forge_mms_idx'] && !$row['cut_mms_idx'] && $row['oop_count']) //절단외주, 단조외주
@@ -234,7 +238,7 @@ for($row=0;$row=sql_fetch_array($result);$row++){
             <?php foreach($forge['orp_arr'] as $d => $forge_val){ ?>
             <td class="td_cell td_d td_day<?=(($d==G5_TIME_YMD)?' td_today':'')?>" date="<?=$d?>">
             <div class="dv_cell dv_d dv_day">
-                <?php if(count($forge_val)){ ?>
+                <?php if(@count($forge_val)){ ?>
                 <?php for($i=0;$i<count($forge_val);$i++){ ?>
                     <?php if($forge_val[$i]['oop_1']){ 
                         $forge_val[$i]['mtr_bom_str'] = ($forge_val[$i]['mtr_bom_std'])?$forge_val[$i]['mtr_bom_name'].'('.$forge_val[$i]['mtr_bom_std'].')':$forge_val[$i]['mtr_bom_name'];
@@ -284,7 +288,7 @@ for($row=0;$row=sql_fetch_array($result);$row++){
             <?php foreach($forge['orp_arr'] as $d => $forge_val){ ?>
             <td class="td_cell td_n td_night<?=(($d==G5_TIME_YMD)?' td_today_n':'')?>" date="<?=$d?>">
             <div class="dv_cell dv_n dv_night">
-                <?php if(count($forge_val)){ ?>
+                <?php if(@count($forge_val)){ ?>
                 <?php for($i=0;$i<count($forge_val);$i++){ ?>
                     <?php if($forge_val[$i]['oop_2']){ 
                         $forge_val[$i]['mtr_bom_str'] = ($forge_val[$i]['mtr_bom_std'])?$forge_val[$i]['mtr_bom_name'].'('.$forge_val[$i]['mtr_bom_std'].')':$forge_val[$i]['mtr_bom_name'];
