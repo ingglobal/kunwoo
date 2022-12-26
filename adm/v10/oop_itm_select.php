@@ -8,6 +8,8 @@ if($member['mb_level']<4)
 $sql_common = " FROM {$g5['order_out_practice_table']} oop
                     LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
                     LEFT JOIN {$g5['bom_table']} bom ON oop.bom_idx = bom.bom_idx
+                    INNER JOIN {$g5['bom_item_table']} boi ON bom.bom_idx = boi.bom_idx
+                    INNER JOIN {$g5['bom_table']} mtr ON boi.bom_idx_child = mtr.bom_idx
 ";
 
 
@@ -66,12 +68,58 @@ $sql = "SELECT oop.oop_idx
             ,bom.bom_name
             ,bom.bom_std
             ,bom.bom_weight
+            ,mtr.bom_idx AS mtr_idx
+            ,mtr.bom_part_no AS mtr_part_no
         {$sql_common} {$sql_search} {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
-// print_r3($sql);
-$result = sql_query($sql,1);
+// print_r2($sql);
 
+$result = sql_query($sql,1); //$result->num_rows
+$row = array();
+for($i=0;$arr=sql_fetch_array($result);$arr++){   
+    if($arr['bom_press_type'] == '2_2'){
+        /*
+        $sql = "SELECT oop.oop_idx
+            ,orp.orp_start_date
+            ,orp.forge_mms_idx
+            ,oop.bom_idx
+            ,oop.oop_count
+            ,bom.bom_press_type
+            ,bom.bom_part_no
+            ,bom.bom_name
+            ,bom.bom_std
+            ,bom.bom_weight
+        */
+        $bom2_sql = " SELECT bom.com_idx
+                    , bom.bom_idx
+                    , bom.bom_name
+                    , bom_part_no
+                    , bom_std
+                    , bom_press_type
+                    , bom_weight
+            FROM {$g5['bom_item_table']} boi
+                INNER JOIN {$g5['bom_table']} bom ON bom.bom_idx = boi.bom_idx
+                WHERE  boi.bom_idx_child = '{$arr['mtr_idx']}'
+                    AND bom.bom_idx != '{$arr['bom_idx']}'
+                LIMIT 1
+        ";
+        $bom2 = sql_fetch($bom2_sql);
+        $bom2['oop_idx'] = $arr['oop_idx'];
+        $bom2['orp_start_date'] = $arr['orp_start_date'];
+        $bom2['oop_count'] = $arr['oop_count'];
+        $bom2['forge_mms_idx'] = $arr['forge_mms_idx'];
+        // print_r2($arr);
+        // print_r2($bom2);
+        array_push($row,$arr);
+        array_push($row,$bom2);
+    }
+    else{
+        // print_r2($arr);
+        array_push($row,$arr);
+    }
+}
+// echo count($row);
 $qstr .= '&sca='.$sca.'&fname='.$fname; // 추가로 확장해서 넘겨야 할 변수들
 
 $g5['title'] = '생산계획리스트 ('.number_format($total_count).')';
@@ -126,42 +174,42 @@ include_once('./_head.sub.php');
         </thead>
         <tbody>
         <?php
-        for ($i=0; $row=sql_fetch_array($result); $i++) {
+        for ($i=0; $i<count($row); $i++) {
             $bg = 'bg'.($i%2);
             $itm_heat = '';
-            if($row['forge_mms_idx']){
+            if($row[$i]['forge_mms_idx']){
                 $itm = sql_fetch(" SELECT itm_heat FROM {$g5['item_table']}
-                WHERE oop_idx = '{$row['oop_idx']}'
+                WHERE oop_idx = '{$row[$i]['oop_idx']}'
                     AND itm_type NOT IN('trash','delete','del')
                 ORDER BY itm_reg_dt DESC LIMIT 1 ");
                 $itm_heat = $itm['itm_heat'];
             }
         ?>
         <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['bom_idx'] ?>">
-            <td class="td_oop_idx"><?=$row['oop_idx']?></td>
+            <td class="td_oop_idx"><?=$row[$i]['oop_idx']?></td>
             <td class="td_bom_name">
-                <b><?=$row['bom_name']?></b>
-                <?php if($row['bom_part_no']){ ?><br><span class="sp_pno">[ <?=$row['bom_part_no']?> ]</span><?php } ?>
-                <?php if($row['bom_std']){ ?><br><span class="sp_std">[ <?=$row['bom_std']?> ]</span><?php } ?>
+                <b><?=$row[$i]['bom_name']?></b>
+                <?php if($row[$i]['bom_part_no']){ ?><br><span class="sp_pno">[ <?=$row[$i]['bom_part_no']?> ]</span><?php } ?>
+                <?php if($row[$i]['bom_std']){ ?><br><span class="sp_std">[ <?=$row[$i]['bom_std']?> ]</span><?php } ?>
             </td><!-- 완제품정보 -->
             <td class="td_orp_start_date">
-                <?=substr($row['orp_start_date'],2,8)?>
-                <?php if($row['oop_count']){ ?>
-                    <br>(<?=number_format($row['oop_count'])?>)
+                <?=substr($row[$i]['orp_start_date'],2,8)?>
+                <?php if($row[$i]['oop_count']){ ?>
+                    <br>(<?=number_format($row[$i]['oop_count'])?>)
                 <?php } ?>
             </td>
-            <td class="td_bom_press_type"><?=$g5['set_bom_press_type_value'][$row['bom_press_type']]?></td>
+            <td class="td_bom_press_type"><?=$g5['set_bom_press_type_value'][$row[$i]['bom_press_type']]?></td>
             <td class="td_forge_mms_idx">
-                <?php if(!$row['forge_mms_idx']){ ?>외주단조<?php } ?>
+                <?php if(!$row[$i]['forge_mms_idx']){ ?>외주단조<?php } ?>
             </td>
             <td class="td_mng td_mng_s">
                 <button type="button" class="btn btn_03 btn_select"
-                    oop_idx="<?=$row['oop_idx']?>"
-                    mms_idx="<?=$row['forge_mms_idx']?>"
-                    bom_idx="<?=$row['bom_idx']?>"
-                    bom_name="<?=$row['bom_name']?>"
-                    bom_part_no="<?=$row['bom_part_no']?>"
-                    bom_weight="<?=$row['bom_weight']?>"
+                    oop_idx="<?=$row[$i]['oop_idx']?>"
+                    mms_idx="<?=$row[$i]['forge_mms_idx']?>"
+                    bom_idx="<?=$row[$i]['bom_idx']?>"
+                    bom_name="<?=$row[$i]['bom_name']?>"
+                    bom_part_no="<?=$row[$i]['bom_part_no']?>"
+                    bom_weight="<?=$row[$i]['bom_weight']?>"
                     itm_heat="<?=$itm_heat?>"
                 >선택</button>
             </td>

@@ -45,7 +45,7 @@ if ($where)
     $sql_search = ' WHERE '.implode(' AND ', $where);
 
 // $sql_group = " GROUP BY itm.bom_idx, itm_date ";
-$sql_group = " GROUP BY oop.oop_idx,itm.bom_idx ";
+$sql_group = " GROUP BY itm.oop_idx ";
 
 if (!$sst) {
     $sst = "orp_start_date";
@@ -74,12 +74,10 @@ $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
 
 $sql = "SELECT itm.itm_name
-              ,itm.bom_idx
               ,oop.oop_idx
               ,oop.orp_idx
               ,itm.bom_part_no
               ,bom.bom_std
-              ,bom.bom_press_type
               ,orp.orp_start_date
               ,ROW_NUMBER() OVER (ORDER BY orp_start_date, oop.oop_idx) AS itm_num
               ,ROUND(SUM(itm.itm_weight)) AS sum
@@ -325,12 +323,7 @@ $('.btn_no').on('click',function(){
 
     <tr class="<?php echo $bg; ?>" tr_id="<?php echo $row['itm_idx'] ?>">
         <td class="td_itm_num"><?=$row['itm_num']?></td><!-- 번호 -->
-        <td class="td_oop_idx">
-            <?=$row['oop_idx']?>
-            <?php if($row['bom_press_type']){ ?>
-            <br>(<?=$g5['set_bom_press_type_value'][$row['bom_press_type']]?>)
-            <?php } ?>
-        </td><!-- 생산계회ID -->
+        <td class="td_oop_idx"><?=$row['oop_idx']?></td><!-- 생산계회ID -->
         <td class="td_itm_name">
             <b><?=$row['itm_name']?></b>
             <?php if($row['bom_part_no']){ ?>

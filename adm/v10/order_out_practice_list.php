@@ -314,7 +314,7 @@ $('.data_blank').on('click',function(e){
         <td class="td_mtr">
             <input type="hidden" name="orp_order_no[<?=$row['oop_idx']?>]" value="<?=$row['orp_order_no']?>">
             <?php
-            $mtr_tbl = " SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = (
+            $mtr_tbl = " SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx IN (
                 SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = '{$row['bom_idx']}'
             ) ";
 

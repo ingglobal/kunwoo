@@ -25,9 +25,6 @@ if ($sca != "") {
 // 검색어 설정
 if ($stx != "") {
     switch ($sfl) {
-		case ( $sfl == 'bct_id' ) :
-			$where[] = " {$sfl} LIKE '".trim($stx)."%' ";
-            break;
 		case ( $sfl == 'bom_part_no' ) :
 			$where[] = " {$sfl} = '".trim($stx)."' ";
             break;
@@ -90,10 +87,9 @@ include_once('./_head.sub.php');
 
     <div id="div_search">
         <select name="sfl" id="sfl">
+            <option value="bom_part_no"<?php echo get_selected($_GET['sfl'], "bom_part_no"); ?>>품번</option>
             <option value="bom_name"<?php echo get_selected($_GET['sfl'], "bom_name"); ?>>품명</option>
-            <option value="com_idx_customer"<?php echo get_selected($_GET['sfl'], "com_idx_customer"); ?>>거래처번호</option>
-            <option value="bom_maker"<?php echo get_selected($_GET['sfl'], "bom_maker"); ?>>메이커</option>
-            <option value="bom_memo"<?php echo get_selected($_GET['sfl'], "bom_idx"); ?>>메모</option>
+            <option value="bom_std"<?php echo get_selected($_GET['sfl'], "bom_std"); ?>>품번</option>
         </select>
         <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
         <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">

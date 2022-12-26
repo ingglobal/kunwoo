@@ -6,12 +6,12 @@ include_once('./_common.php');
 if($member['mb_level']<4)
 	alert_close('접근할 수 없는 메뉴입니다.');
 
-$mtr_tbl = " SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = (
+$mtr_tbl = " SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx IN (
     SELECT bom_idx_child FROM {$g5['bom_item_table']} WHERE bom_idx = '{$bom_idx}'
 ) ";
 
-$sql_common = " FROM ( {$mtr_tbl} ) AS bit
-                    LEFT JOIN {$g5['bom_table']} AS bom ON bit.bom_idx_child = bom.bom_idx
+$sql_common = " FROM ( {$mtr_tbl} ) AS bot
+                    LEFT JOIN {$g5['bom_table']} AS bom ON bot.bom_idx_child = bom.bom_idx
                     LEFT JOIN {$g5['bom_category_table']} AS bct ON bct.bct_id = bom.bct_id
                     LEFT JOIN {$g5['company_table']} AS com ON com.com_idx = bom.com_idx_customer
 ";

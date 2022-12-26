@@ -291,11 +291,11 @@ $('.data_blank').on('click',function(e){
             }
         }
         // 실행계획 건수
-        $sql2 = " SELECT orp_idx, COUNT(orp_idx) AS cnt FROM {$g5['order_out_practice_table']} WHERE oro_idx = '".$row['oro_idx']."' ";
+        $sql2 = " SELECT orp_idx, COUNT(orp_idx) AS cnt FROM {$g5['order_out_practice_table']} WHERE oro_idx = '".$row['oro_idx']."' AND oop_status NOT IN('trash') ";
         $orp_exist = sql_fetch($sql2,1);
         $row['orp_cnt'] = $orp_exist['cnt'];
         if($row['orp_cnt']) {
-            $ordq = sql_fetch(" SELECT trm_idx_line, orp_start_date FROM {$g5['order_practice_table']} WHERE orp_idx = '{$orp_exist['orp_idx']}' ");
+            $ordq = sql_fetch(" SELECT trm_idx_line, orp_start_date FROM {$g5['order_practice_table']} WHERE orp_idx = '{$orp_exist['orp_idx']}' AND orp_status NOT IN('trash') ");
             $row['orp_count'] = $g5['line_name'][$ordq['trm_idx_line']];
 
             $sql3 = " SELECT GROUP_CONCAT(orp_idx) AS orp_grp FROM {$g5['order_out_practice_table']} WHERE oro_idx = '".$row['oro_idx']."' ";

@@ -1,4 +1,3 @@
-itm_plt > index.php
 <?php
 header('Content-Type: application/json; charset=UTF-8');
 include_once('./_common.php');
@@ -102,7 +101,7 @@ if($result_arr['message'] == 'ok'){
     //날짜 데이터 입력
     if(!$test){
         $sql .= " , plt_barcode = '{$getData[0]['plt_barcode']}'
-                  , plt_count = '{$getData[0]['plt_count']}'
+                  , plt_count = '{$getData[0]['plt_cnt']}'
                   , plt_date = '".substr(G5_TIME_YMDHIS,0,10)."'
                   , plt_reg_dt = '".G5_TIME_YMDHIS."'
                   , plt_update_dt = '".G5_TIME_YMDHIS."'
@@ -137,7 +136,7 @@ if($result_arr['message'] == 'ok'){
             $in_cnt = ($rest_num > 0) ? $per_cnt + 1 : $per_cnt;
             $bcd_cnt = sprintf("%03d",$pltnum+$i+1);
             //바코드 생성
-            $plt_brc = $bcd_date.$g5['trms']['forge_idx_sort'][$orp['forge_mms_idx']].$bcd_cnt.'_'.$orp['forge_mms_idx'].'_P_'.$getData[0]['oop_idx'].'_'.$bom['bom_part_no'].'_'.$in_cnt;
+            $plt_brc = $bcd_date.$bcd_cnt.'_'.$orp['forge_mms_idx'].'_P_'.$getData[0]['oop_idx'].'_'.$bom['bom_part_no'].'_'.$in_cnt;
             $sql_init = $sql;
             $sql_add = " , plt_barcode = '{$plt_brc}'
                          , plt_count = '{$in_cnt}'

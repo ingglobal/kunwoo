@@ -26,6 +26,7 @@ $sql_chk = " SELECT COUNT(*) AS cnt, orp.orp_idx, oop.oop_idx FROM {$g5['order_p
             AND orp.cut_mms_idx = '{$cut_mms_idx}'
             AND orp.forge_mms_idx = '{$forge_mms_idx}'
             AND orp.orp_start_date = '{$orp_start_date}'
+            AND oop.oop_status NOT IN ('trash')
 ";
 $old_data = sql_fetch($sql_chk);
 if($old_data['cnt'] && $w == ''){
