@@ -53,9 +53,7 @@ $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
 if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
-$sql = " SELECT *
-            , ( SELECT COUNT(oop_idx) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS mtr_total
-            , ( SELECT COUNT(oop_idx) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND  itm_status = 'finish' ) AS itm_total
+$sql = " SELECT *   
     {$sql_common} {$sql_search} {$sql_group} {$sql_order}
     LIMIT {$from_record}, {$rows}
 ";
@@ -153,6 +151,14 @@ echo nl2br($sql);
                 else{
                     $heat_slt= '<b style="color:red;">히트넘버 없음</b>';
                 }
+                /*
+                , ( SELECT COUNT(oop_idx) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS mtr_total
+                , ( SELECT COUNT(oop_idx) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND  itm_status = 'finish' ) AS itm_total
+                */
+                $mtr_total_res = sql_fetch(" SELECT COUNT(oop_idx) AS mtr_total FROM {$g5['material_table']} WHERE oop_idx = '{$row['oop_idx']}' AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ");
+                $row['mtr_total'] = $mtr_total_res['mtr_total'];
+                $itm_total_res = sql_fetch(" SELECT COUNT(oop_idx) AS itm_total FROM {$g5['item_table']} WHERE oop_idx = '{$row['oop_idx']}' AND  itm_status = 'finish' ");
+                $row['itm_total'] = $itm_total_res['itm_total'];
 			?>
 
             <tr class="<?php echo $bg.$tr_focus; ?>" orp_idx="<?php echo $row['orp_idx'] ?>" bom_idx="<?=$row['bom_idx']?>">
@@ -251,9 +257,10 @@ echo nl2br($sql);
     </div><!--//.tbl_head02-->
     <?php } ?>
 </div><!--//#tbl_box-->
-<form id="form" action="./index.php" method="POST"></form>
+<form id="form" action="./index2.php" method="POST">
+    <input type="hidden" name="page" value="<?=$page?>">
+</form>
 <script>
-
 $('.btn_reg').on('click',function(){
     var mms_idx = $(this).parent().siblings('.td_mms_idx').find('select').val();
     var heat = $(this).parent().siblings('.td_heat').find('select').val();

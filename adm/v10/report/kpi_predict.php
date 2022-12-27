@@ -268,7 +268,7 @@ include_once('./_top.kpi.php');
 
                         // item_name
                         $row['item_name'] = ($row['item_name']!='합계') ? $g5['mms'][$row['item_name']]['mms_name'] : $row['item_name'];
-                        $row['rate'] = (float)($row['arm_predict_sum'] / $pre_faci_tot) * 100; 
+                        $row['rate'] = ($pre_faci_tot)?(float)($row['arm_predict_sum'] / $pre_faci_tot) * 100:0; 
                         $row['rate'] = sprintf("%2.2f",$row['rate']); 
                         // First line total skip, start from second line.
                         if($i>0) {

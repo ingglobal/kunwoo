@@ -8,7 +8,7 @@
 .div_stat ul span {position:absolute;transform:translate(-50%,-50%);}
 .div_stat ul li span {line-height:normal;}
 .div_stat ul li .title {top:28%;left:50%;font-size:1em;width:100px;}
-.div_stat ul li .content {top:50%;left:50%;font-size:2.5em;color:#f0ff00;}
+.div_stat ul li .content {top:50%;left:50%;font-size:1.8em;color:#f0ff00;}
 .div_stat ul li .unit {top:75%;left:50%;font-size:1.5em;}
 
 .div_title_01 {border:solid 1px #142546; border-radius:0px;;padding:10px;background:#343d48;text-align:center; font-size:1.7em;margin:25px 0 10px;color:#ddd;}

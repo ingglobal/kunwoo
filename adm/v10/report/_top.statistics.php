@@ -103,7 +103,7 @@ $sum_plan = number_format($plan['plan_cnt']);
 
 ?>
     <!-- the start of .div_stat  -->
-	<div class="div_stat">
+	<div class="div_stat" style="display:none;">
 		<ul>
 			<li>
 			   <span class="title">생산량</span>

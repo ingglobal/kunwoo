@@ -9,4 +9,5 @@ add_javascript('<script src="https://code.highcharts.com/modules/exporting.js"><
 add_javascript('<script src="https://code.highcharts.com/modules/export-data.js"></script>',2);
 add_javascript('<script src="https://code.highcharts.com/modules/accessibility.js"></script>',2);
 add_javascript('<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/9.3.2/themes/high-contrast-dark.min.js"></script>',2);
+add_javascript('<script src="https://code.highcharts.com/themes/dark-unica.js"></script>',2);
 ?>

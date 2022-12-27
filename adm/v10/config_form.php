@@ -439,6 +439,13 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
                 <input type="text" name="set_quality_input_time" value="<?php echo $g5['setting']['set_quality_input_time']; ?>" class="frm_input" style="width:40px;"> 시간
             </td>
         </tr>
+        <tr>
+            <th scope="row">UPH기본설비</th>
+            <td>
+				<?php echo help('75=단조프레스1,65=단조프레스2,77=단조프레스3,78=단조프레스4,79=단조프레스5,80=프레스6 <br>의 값중에서 숫자데이터를 저장하세요.'); ?>
+                <input type="text" name="set_uph_mms" value="<?php echo $g5['setting']['set_uph_mms']; ?>" class="frm_input" style="width:60px;">
+            </td>
+        </tr>
 		<tr>
 			<th scope="row">설비상태 설정</th>
 			<td colspan="3">

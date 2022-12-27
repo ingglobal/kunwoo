@@ -67,7 +67,7 @@ else{ //기존 첫번째 날짜의 요일이 일요일 아니라면
 // print_r2($date_range);
 //mmg_idx = 2; //절단동 그룹 번호는 2번
 //mmg_idx = 3; //단조동 그룹 번호는 3번
-$mms_sql = " SELECT mms_idx,mmg_idx,mms_idx2,mms_name,mms_model,mms_sort FROM {$g5['mms_table']} WHERE mmg_idx = '3' AND mms_status = 'ok' AND com_idx = '{$_SESSION['ss_com_idx']}' ORDER BY mms_sort,mms_idx2 ";
+$mms_sql = " SELECT mms_idx,mmg_idx,mms_idx2,mms_name,mms_model,mms_sort FROM {$g5['mms_table']} WHERE mmg_idx = '3' AND mms_status = 'ok' AND com_idx = '{$g5['setting']['set_com_idx']}' ORDER BY mms_sort,mms_idx2 ";
 $mms_res = sql_query($mms_sql,1);
 for($mms_row=0;$mms_row=sql_fetch_array($mms_res);$mms_row++){
     foreach($date_range as $drv){

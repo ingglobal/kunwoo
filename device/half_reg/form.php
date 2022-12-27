@@ -53,8 +53,7 @@ $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
 if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
-$sql = " SELECT *
-            , ( SELECT COUNT(oop_idx) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS mtr_total
+$sql = " SELECT *          
     {$sql_common} {$sql_search} {$sql_group} {$sql_order}
     LIMIT {$from_record}, {$rows}
 ";
@@ -129,18 +128,18 @@ echo nl2br($sql);
                 $loss_weight = ($row['oop_itm_weight']) ? $row['oop_mtr_weight'] - $row['oop_itm_weight'] : 0;
 				$loss_rate = ($row['oop_itm_weight']) ? (($row['oop_mtr_weight'] - $row['oop_itm_weight'])/$row['oop_itm_weight']) * 100 : 0;
 				$loss_rate = number_format($loss_rate,2,'.','');
+
+                /*
+                , ( SELECT COUNT(oop_idx) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS mtr_total
+                */
+                $mtr_total_res = sql_fetch(" SELECT COUNT(oop_idx) AS mtr_total FROM {$g5['material_table']} WHERE oop_idx = '{$row['oop_idx']}' AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ");
+                $row['mtr_total'] = $mtr_total_res['mtr_total'];
 				?>
 
             <tr class="<?php echo $bg.$tr_focus; ?>" orp_idx="<?php echo $row['orp_idx'] ?>" bom_idx="<?=$row['bom_idx']?>">
                 <td class="td_oop_idx"><?=$row['oop_idx']?></td>
                 <td class="td_bom_name">
                     <?php
-                    $cat_tree = category_tree_array($bom['bct_id']);
-                    $row['bct_name_tree'] = '';
-                    for($k=0;$k<count($cat_tree);$k++){
-                        $cat_str = sql_fetch(" SELECT bct_name FROM {$g5['bom_category_table']} WHERE bct_id = '{$cat_tree[$k]}' ");
-                        $row['bct_name_tree'] .= ($k == 0) ? $cat_str['bct_name'] : ' > '.$cat_str['bct_name'];
-                    }
                     $bom_name = $bom['bom_name'];
                     // echo ($row['bct_name_tree'])?'<span class="sp_cat">'.$row['bct_name_tree'].'</span><br>':'';
                     echo '<span style="color:yellow;">'.$bom_name.'</span>';
@@ -230,7 +229,9 @@ echo nl2br($sql);
     </div><!--//.tbl_head02-->
     <?php } ?>
 </div><!--//#tbl_box-->
-<form id="form" action="./index.php" method="POST"></form>
+<form id="form" action="./index.php" method="POST">
+    <input type="hidden" name="page" value="<?=$page?>">
+</form>
 <script>
 
 $('.btn_reg').on('click',function(){

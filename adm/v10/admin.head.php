@@ -139,7 +139,7 @@ function imageview(id, w, h)
         <div id="tnb">
             <ul>
                 <!--제일상단에 추가적인 메뉴를 표시하기위한 메뉴파일-->
-                <?php if($is_admin=='super') { include_once('./admin.head_test_menu.php'); } ?>
+                <?php if($is_admin=='super') { include_once(G5_USER_ADMIN_PATH.'/admin.head_test_menu.php'); } ?>
                 <li class="tnb_li"><a href="<?php echo G5_SHOP_URL ?>/" class="tnb_shop" target="_blank" title="쇼핑몰 바로가기">쇼핑몰 바로가기</a></li>
                 <li class="tnb_li"><a href="<?php echo G5_URL ?>/" class="tnb_community" target="_blank" title="커뮤니티 바로가기">커뮤니티 바로가기</a></li>
                 <li class="tnb_li"><a href="<?php echo G5_ADMIN_URL ?>/service.php" class="tnb_service">부가서비스</a></li>

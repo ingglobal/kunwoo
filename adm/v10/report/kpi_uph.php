@@ -54,12 +54,13 @@ $sql = "SELECT table_name, table_rows, auto_increment
             , SUBSTRING_INDEX (SUBSTRING_INDEX(table_name,'_',-1), '_', 1) AS dta_no
         FROM Information_schema.tables
         WHERE TABLE_SCHEMA = '".G5_MYSQL_DB."'
-            AND TABLE_NAME LIKE 'g5_1_data_measure_54%'
+            AND TABLE_NAME LIKE 'g5_1_data_measure_".$g5['setting']['set_uph_mms']."%'
         ORDER BY convert(mms_idx, decimal), convert(dta_type, decimal), convert(dta_no, decimal)
 ";
 // echo $sql.'<br>';
 $rs = sql_query($sql,1);
 for($i=0;$row=sql_fetch_array($rs);$i++) {
+    // print_r2($row);
     // echo ($i+1).'<br>';
     $row['ar'] = explode("_",$row['table_name']);
     // print_r2($row);
@@ -73,7 +74,7 @@ for($i=0;$row=sql_fetch_array($rs);$i++) {
     }
 }
 // echo $ser_mms_idx.'<br>';
-
+// exit;
 if(!$ser_mms_idx)
     alert('설비정보가 존재하지 않습니다.');
 

@@ -55,10 +55,6 @@ if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
 $sql = " SELECT *
-            , ( SELECT COUNT(oop_idx) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS cut_total
-            , ( SELECT COUNT(oop_idx) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND bom_idx = bom.bom_idx AND itm_status NOT IN('delete','del','trash','cancel') ) AS bom_total
-            , ( SELECT COUNT(oop_idx) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND itm_status NOT IN('delete','del','trash','cancel') ) AS itm_total
-            , ( SELECT COUNT(plt_idx) FROM {$g5['pallet_table']} WHERE oop_idx = oop.oop_idx AND plt_type = 'forge' AND plt_status NOT IN('delete','del','trash','cancel') ) AS plt_c
     {$sql_common} {$sql_search} {$sql_group} {$sql_order}
     LIMIT {$from_record}, {$rows}
 ";
@@ -185,6 +181,21 @@ echo nl2br($sql);
                 else{
                     $sbom_slt= '<b style="color:red;">제품규격 없음</b>';
                 }
+
+                /*
+                , ( SELECT COUNT(oop_idx) FROM {$g5['material_table']} WHERE oop_idx = oop.oop_idx AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ) AS cut_total
+                , ( SELECT COUNT(oop_idx) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND bom_idx = bom.bom_idx AND itm_status NOT IN('delete','del','trash','cancel') ) AS bom_total
+                , ( SELECT COUNT(oop_idx) FROM {$g5['item_table']} WHERE oop_idx = oop.oop_idx AND itm_status NOT IN('delete','del','trash','cancel') ) AS itm_total
+                , ( SELECT COUNT(plt_idx) FROM {$g5['pallet_table']} WHERE oop_idx = oop.oop_idx AND plt_type = 'forge' AND plt_status NOT IN('delete','del','trash','cancel') ) AS plt_c
+                */
+                $cut_total_res = sql_fetch(" SELECT COUNT(oop_idx) AS cut_total FROM {$g5['material_table']} WHERE oop_idx = '{$row['oop_idx']}' AND mtr_type = 'half' AND mtr_status NOT IN('delete','del','trash','cancel') ");
+                $row['cut_total'] = $cut_total_res['cut_total'];
+                $bom_total_res = sql_fetch(" SELECT COUNT(oop_idx) AS bom_total FROM {$g5['item_table']} WHERE oop_idx = '{$row['oop_idx']}' AND bom_idx = '{$row['bom_idx']}' AND itm_status NOT IN('delete','del','trash','cancel') ");
+                $row['bom_total'] = $bom_total_res['bom_total'];
+                $itm_total_res = sql_fetch(" SELECT COUNT(oop_idx) AS itm_total FROM {$g5['item_table']} WHERE oop_idx = '{$row['oop_idx']}' AND itm_status NOT IN('delete','del','trash','cancel') ");
+                $row['itm_total'] = $itm_total_res['itm_total'];
+                $plt_c_res = sql_fetch(" SELECT COUNT(plt_idx) AS plt_c FROM {$g5['pallet_table']} WHERE oop_idx = '{$row['oop_idx']}' AND plt_type = 'forge' AND plt_status NOT IN('delete','del','trash','cancel') ");
+                $row['plt_c'] = $plt_c_res['plt_c'];
 				?>
 
             <tr class="<?php echo $bg.$tr_focus; ?>" orp_idx="<?php echo $row['orp_idx'] ?>" bom_idx="<?=$row['bom_idx']?>">
@@ -321,7 +332,9 @@ echo nl2br($sql);
     </div><!--//.tbl_head02-->
     <?php } ?>
 </div><!--//#tbl_box-->
-<form id="form" action="./index.php" method="POST"></form>
+<form id="form" action="./index.php" method="POST">
+    <input type="hidden" name="page" value="<?=$page?>">
+</form>
 <script>
 /*
 [ token ] : {$g5['setting']['set_api_token']}
