@@ -15,7 +15,7 @@ $sql_common = " FROM {$g5['order_out_practice_table']} oop
 
 $where = array();
 // $where[] = " oop_status NOT IN ('trash','delete','del','cancel') ";
-$where[] = " oop_status = ('confirm') ";
+$where[] = " oop_status IN ('confirm','done') ";
 $where[] = " orp.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 
@@ -231,10 +231,10 @@ include_once('./_head.sub.php');
 <script>
 var fname = '<?=$fname?>';
 var i = <?=$i?>;
-if(i == 0){
-    alert('해당 제품의 출하데이터가 없습니다.\n출하데이터를 먼저 등록해 주세요.');
-    window.close();
-}
+// if(i == 0){
+//     alert('해당 제품의 출하데이터가 없습니다.\n출하데이터를 먼저 등록해 주세요.');
+//     window.close();
+// }
 $('.btn_select').click(function(e){
     e.preventDefault();
     var oop_idx = $(this).attr('oop_idx');

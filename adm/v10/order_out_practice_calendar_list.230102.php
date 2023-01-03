@@ -74,7 +74,7 @@ else{ //기존 첫번째 날짜의 요일이 일요일 아니라면
 // print_r2($date_range);
 //mmg_idx = 2; //절단동 그룹 번호는 2번
 //mmg_idx = 3; //단조동 그룹 번호는 3번
-$mms_sql = " SELECT mms_idx,mmg_idx,mms_idx2,mms_name,mms_model,mms_sort FROM {$g5['mms_table']} WHERE mmg_idx = '3' AND mms_status = 'ok' AND com_idx = '{$_SESSION['ss_com_idx']}' ORDER BY mms_sort,mms_idx2 ";
+$mms_sql = " SELECT mms_idx,mmg_idx,mms_idx2,mms_name,mms_model,mms_sort FROM {$g5['mms_table']} WHERE mmg_idx = '3' AND mms_status = 'ok' AND com_idx = '{$g5['setting']['set_com_idx']}' ORDER BY mms_sort,mms_idx2 ";
 $mms_res = sql_query($mms_sql,1);
 for($mms_row=0;$mms_row=sql_fetch_array($mms_res);$mms_row++){
     foreach($date_range as $drv){
@@ -115,10 +115,52 @@ $forge_arr['-1'] = $add_ex_all;
 $sql_common = " AND orp_start_date >= '{$first_date}' 
                 AND orp_start_date <= '{$last_date}'
 ";
-$sql_common_ex = " AND ooc_date >= '{$first_date}' 
+$sql_common_child = " AND ooc_date >= '{$first_date}' 
                 AND ooc_date <= '{$last_date}'
 ";
 $sql = " SELECT oop.oop_idx
+                , oop.ori_idx
+                , oop.bom_idx
+                , oop.orp_idx
+                , oop.mtr_bom_idx
+                , oop.oop_count
+                , oop.oop_memo
+                , oop.oop_onlythis_yn
+                , oop.oop_1
+                , oop.oop_2
+                , oop.oop_status
+                , orp.cut_mms_idx
+                , orp.cut_mb_id
+                , orp.forge_mms_idx
+                , orp.forge_mb_id
+                , orp.trm_idx_line
+                , ooc.ooc_date AS orp_start_date
+                , orp.orp_done_date
+                , bom.bom_name
+                , bom.bom_part_no
+                , bom.bom_std
+                , bom.bom_press_type
+                , 'child' AS orp_relation
+                , ooc_day_night
+                , ( SELECT bom_name FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_name
+                , ( SELECT bom_part_no FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_part_no
+                , ( SELECT bom_std FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_std
+                , cut.mms_name AS cut_mms_name
+                , cut.mms_model AS cut_mms_model
+                , forge.mms_name AS forge_mms_name
+                , forge.mms_model AS forge_mms_model
+                FROM {$g5['order_oop_child_table']} ooc
+                LEFT JOIN {$g5['order_out_practice_table']} oop ON ooc.oop_idx = oop.oop_idx
+                LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
+                LEFT JOIN {$g5['mms_table']} cut ON orp.cut_mms_idx = cut.mms_idx
+                LEFT JOIN {$g5['mms_table']} forge ON orp.forge_mms_idx = forge.mms_idx
+                LEFT JOIN {$g5['bom_table']} bom ON oop.bom_idx = bom.bom_idx
+                WHERE oop_status NOT IN('del','delete','trash','cancel')
+                {$sql_common_child} 
+
+         UNION
+
+         SELECT oop.oop_idx
                 , oop.ori_idx
                 , oop.bom_idx
                 , oop.orp_idx
@@ -140,6 +182,8 @@ $sql = " SELECT oop.oop_idx
                 , bom.bom_part_no
                 , bom.bom_std
                 , bom.bom_press_type
+                , 'parent' AS orp_relation
+                , '' AS ooc_day_night
                 , ( SELECT bom_name FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_name
                 , ( SELECT bom_part_no FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_part_no
                 , ( SELECT bom_std FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_std
@@ -160,9 +204,13 @@ $sql = " SELECT oop.oop_idx
 $result = sql_query($sql,1);
 $total_count = $result->num_rows;
 // print_r2($result);
-// print_r2($forge_arr);
-$oops = array();
 for($row=0;$row=sql_fetch_array($result);$row++){
+    if($row['orp_relation'] == 'child'){
+        $row['oop_1'] = '';
+        $row['oop_2'] = '';
+        $row['oop_1'] = ($row['ooc_day_night'] == 'D' || $crow['ooc_day_night'] == 'A')?1:0;
+        $row['oop_2'] = ($row['ooc_day_night'] == 'N' || $crow['ooc_day_night'] == 'A')?1:0;
+    }
     if($row['forge_mms_idx'] && $row['oop_count']) //각 단조설비별로 분류
         array_push($forge_arr[$row['forge_mms_idx']]['orp_arr'][$row['orp_start_date']],$row);
     else if(!$row['forge_mms_idx'] && $row['cut_mms_idx'] && $row['oop_count']) //절단내부, 단조외주
@@ -170,65 +218,6 @@ for($row=0;$row=sql_fetch_array($result);$row++){
     else if(!$row['forge_mms_idx'] && !$row['cut_mms_idx'] && $row['oop_count']) //절단외주, 단조외주
         array_push($forge_arr['-1']['orp_arr'][$row['orp_start_date']],$row);
 }
-
-$exsql = " SELECT oop.oop_idx
-            , oop.ori_idx
-            , oop.bom_idx
-            , oop.orp_idx
-            , oop.mtr_bom_idx
-            , oop.oop_count
-            , oop.oop_memo
-            , oop.oop_onlythis_yn
-            , oop.oop_1
-            , oop.oop_2
-            , oop.oop_status
-            , orp.cut_mms_idx
-            , orp.cut_mb_id
-            , orp.forge_mms_idx
-            , orp.forge_mb_id
-            , orp.trm_idx_line
-            , ooc.ooc_date AS orp_start_date
-            , orp.orp_done_date
-            , bom.bom_name
-            , bom.bom_part_no
-            , bom.bom_std
-            , bom.bom_press_type
-            , ooc.ooc_day_night
-            , ( SELECT bom_name FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_name
-            , ( SELECT bom_part_no FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_part_no
-            , ( SELECT bom_std FROM {$g5['bom_table']} WHERE bom_idx = mtr_bom_idx ) AS mtr_bom_std
-            , cut.mms_name AS cut_mms_name
-            , cut.mms_model AS cut_mms_model
-            , forge.mms_name AS forge_mms_name
-            , forge.mms_model AS forge_mms_model 
-        FROM {$g5['order_oop_child_table']} ooc
-            LEFT JOIN {$g5['order_out_practice_table']} oop ON ooc.oop_idx = oop.oop_idx
-            LEFT JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
-            LEFT JOIN {$g5['mms_table']} cut ON orp.cut_mms_idx = cut.mms_idx
-            LEFT JOIN {$g5['mms_table']} forge ON orp.forge_mms_idx = forge.mms_idx
-            LEFT JOIN {$g5['bom_table']} bom ON oop.bom_idx = bom.bom_idx
-        WHERE ooc_status NOT IN('delete','del','trash')
-            {$sql_common_ex}
-";
-$exres = sql_query($exsql,1);
-$total_count = $total_count + $exres->num_rows;
-if($exres->num_rows){
-    for($exrow=0;$exrow=sql_fetch_array($exres);$exrow++){
-        $exrow['child'] = 1;
-        $exrow['oop_1'] = '';
-        $exrow['oop_2'] = '';
-        $exrow['oop_1'] = ($exrow['ooc_day_night'] == 'D' || $exrow['ooc_day_night'] == 'A')?1:0;
-        $exrow['oop_2'] = ($exrow['ooc_day_night'] == 'N' || $exrow['ooc_day_night'] == 'A')?1:0;
-
-        if($exrow['forge_mms_idx'] && $exrow['oop_count'] && array_key_exists($exrow['orp_start_date'],$forge_arr[$exrow['forge_mms_idx']]['orp_arr']))//각 단조설비별로 분류
-            array_push($forge_arr[$exrow['forge_mms_idx']]['orp_arr'][$exrow['orp_start_date']],$exrow);
-        else if(!$exrow['forge_mms_idx'] && $exrow['cut_mms_idx'] && $exrow['oop_count'] && array_key_exists($exrow['orp_start_date'],$forge_arr['0']['orp_arr'])) //절단내부, 단조외주
-            array_push($forge_arr['0']['orp_arr'][$exrow['orp_start_date']],$exrow);
-        else if(!$exrow['forge_mms_idx'] && !$exrow['cut_mms_idx'] && $exrow['oop_count'] && array_key_exists($exrow['orp_start_date'],$forge_arr['-1']['orp_arr'])) //절단외주, 단조외주
-            array_push($forge_arr['-1']['orp_arr'][$exrow['orp_start_date']],$exrow);
-    }
-}
-
 // echo $qstr;
 $qstr .= '&calendar=1&start_date='.$first_date.'&end_date='.$last_date; // 추가로 확장해서 넘겨야 할 변수들
 // echo $qstr;

@@ -83,8 +83,9 @@ min-width:1160px;
 .mms_image {background-color: #242F4B;text-align:center;min-height:150px;line-height:150px;}
 .mms_image img{width:100%;cursor:pointer;}
 
-.data_mms_table td {padding:4px;background:#3E4B64;color:#efefef;}
-.data_mms_table td:first-child {width:87px;}
+.ui-tabs .ui-tabs-panel{padding:10px 10px !important;}
+.data_mms_table td {padding:4px;background:#3E4B64;color:#efefef;font-size:1em;}
+.data_mms_table td:first-child {width:100px;}
 
 .no_mms_list {width:100% !important;height:168px;line-height:168px;text-align:center;}
 
@@ -118,7 +119,7 @@ min-width:1160px;
 .ui-widget.ui-widget-content{background:#3E4B64;border:1px solid #43535C;}
 .ui-widget-header{border:1px solid #080623;}
 .ui-tabs .ui-tabs-nav{background:#080623;}
-.ui-tabs .ui-tabs-nav li{background:#0B1838;border:1px solid #080623;}
+.ui-tabs .ui-tabs-nav li{background:#0B1838;border:1px solid #080623;font-size:0.75em;}
 .ui-tabs .ui-tabs-nav li.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover{
     background:#3E4B64;
     border-bottom:1px solid #3E4B64;

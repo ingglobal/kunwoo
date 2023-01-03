@@ -255,8 +255,8 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
         <div class="div_left">
 
             <!-- ========================================================================================= -->
-            <div class="div_title_02"><i class="fa fa-check" aria-hidden="true"> 라인별 매출</i></div>
-            <div class="div_info_body">
+            <div class="div_title_02" style="display:none;"><i class="fa fa-check" aria-hidden="true"> 라인별 매출</i></div>
+            <div class="div_info_body" style="display:none;">
 
                 <table class="table01">
                     <thead class="tbl_head">
@@ -536,6 +536,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                         // echo $amount_max.'<br>';
 
                         // 목표 대비 달성율
+                        print_r2($row);
                         $row['rate_total'] = ($row['target']) ? $row['output_total'] / $row['target'] * 100 : 0 ;
                         $row['rate_total_color'] = '#d1c594';
                         $row['rate_total_color'] = ($row['rate_total']>=80) ? '#72ddf5' : $row['rate_total_color'];

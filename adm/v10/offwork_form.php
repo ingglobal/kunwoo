@@ -155,9 +155,16 @@ select{height:26px;line-height:26px;}
                 <label id="mms_idx_0" class="radio_lb"><input type="radio" name="mms_idx_radio" id="mms_idx_0" value="0"<?=$mms_idx_0?>> 전체설비</label>
                 <label id="mms_idx_1" class="radio_lb"><input type="radio" name="mms_idx_radio" id="mms_idx_1" value="1"<?=$mms_idx_1?>> 설비선택</label>
                 <?php if($g5['set_mms_options']){ ?>
-                <select name="mms_idx" id="mms_idx" class="select<?=$mms_idx_type?>">
-                    <?php echo $g5['set_mms_options']; ?>
-                </select>
+                    <select name="mms_idx" id="mms_idx" class="select<?=$mms_idx_type?>">
+                        <?php ;//echo $g5['set_mms_options']; ?>
+                        <option value="0">::설비선택::</option>
+                        <?=$g5['forge_options']?>
+                    </select>
+                    <?php if(${$pre}['mms_idx']){ ?>
+                    <script>
+                    $('#mms_idx').val(<?=${$pre}['mms_idx']?>);
+                    </script>
+                    <?php } ?>
                 <?php } else { ?>
                 <strong class="strong<?=$mms_idx_type?>">등록된 설비가 없음</strong>
                 <?php } ?>
@@ -177,7 +184,7 @@ select{height:26px;line-height:26px;}
                 <div id="dt_box">
                     <div class="his_box <?=$off_period_type?>">
                         <span>시작일</span>
-                        <input type="<?=$off_period_type?>" name="off_start_date" id="from_date" required class="frm_input required frm_date" value="<?=${$pre}['off_start_date']?>">
+                        <input type="<?=$off_period_type?>" name="off_start_date" id="from_date" required class="frm_input required frm_date" value="<?=${$pre}['off_start_date']?>" style="width:90px;">
                     </div>
                     <div class="his_box sh_box">
                         <span>시</span>
@@ -213,7 +220,7 @@ select{height:26px;line-height:26px;}
                 <div id="dt_box">
                     <div class="his_box <?=$off_period_type?>">
                         <span>종료일</span>
-                        <input type="<?=$off_period_type?>" name="off_end_date" id="to_date" required class="frm_input required frm_date" value="<?=${$pre}['off_end_date']?>">
+                        <input type="<?=$off_period_type?>" name="off_end_date" id="to_date" required class="frm_input required frm_date" value="<?=${$pre}['off_end_date']?>" style="width:90px;">
                     </div>
                     <div class="his_box eh_box">
                         <span>시</span>

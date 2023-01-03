@@ -42,6 +42,7 @@ $bom1_sql = " SELECT orp.com_idx
                 , bom.bom_std
                 , bom.bom_press_type
                 , bom.bom_weight
+                , bom.bom_price
                 , mtr.bom_idx AS mtr_idx
                 , mtr.bom_part_no AS mtr_part_no
             FROM {$g5['order_out_practice_table']} oop
@@ -62,6 +63,7 @@ if($bom1['oop_onlythis_yn'] == 0 && $bom1['bom_press_type'] == '2_2'){
                 , bom_std
                 , bom_press_type
                 , bom_weight
+                , bom.bom_price
         FROM {$g5['bom_item_table']} boi
             INNER JOIN {$g5['bom_table']} bom ON bom.bom_idx = boi.bom_idx
             WHERE  boi.bom_idx_child = '{$bom1['mtr_idx']}'
@@ -122,26 +124,26 @@ for($j=0;$j<$getData[0]['number'];$j++){
         || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '0_1'
         || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '1_1'
         || !$bom1['oop_onlythis_yn'] && $bom1['bom_press_type'] == '2_1'){
-        $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES 
-        ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
+        $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_price, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES 
+        ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', '{$bom1['bom_price']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
         ";
     }
     //press_type 규정에 반영하여 생성할것인가
     else {
         if($bom1['bom_press_type'] == '2_2'){
-            $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES 
-            ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
+            $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_price, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES 
+            ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', '{$bom1['bom_price']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
 
-            , ( '{$bom2['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom2['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom2['bom_part_no']}', '".addslashes($bom2['bom_name'])."', '{$bom2['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
+            , ( '{$bom2['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom2['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom2['bom_part_no']}', '".addslashes($bom2['bom_name'])."', '{$bom2['bom_weight']}', '{$getData[0]['heat']}', '{$bom2['bom_price']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' )
             ";
         }
         else {
             $tp_arr = explode('_',$bom1['bom_press_type']);
             $cp_num = $tp_arr[1]; //복제갯수
-            $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES ";
+            $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_price, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES ";
             $sql_loop = '';
             for($i=0;$i<$cp_num;$i++){
-                $sql_loop .= (($i==0)?'':',')." ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' ) ";
+                $sql_loop .= (($i==0)?'':',')." ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', '{$bom1['bom_price']}, 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' ) ";
             }
             $sql = $sql.$sql_loop;
         }

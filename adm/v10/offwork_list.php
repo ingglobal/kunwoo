@@ -91,7 +91,8 @@ $items1 = array(
     "mms_idx"=>array("설비",0,0,0)
     ,"off_name"=>array("비가동명칭",0,0,0)
     ,"off_period"=>array("적용기간",0,0,0)
-    ,"off_reg_dt"=>array("등록일시",0,0,1)
+    ,"off_reg_dt"=>array("등록일시",0,0,0)
+    ,"off_status"=>array("상태",0,0,1)
 );
 ?>
 <style>
@@ -234,6 +235,10 @@ $items1 = array(
                                                 : date("Y-m-d H:i:s",$row['off_start_time']).'~'.date("Y-m-d H:i:s",$row['off_end_time']);
                     $list[$k1] = $row[$k1].' <span class="font_size_">'.$row['off_period_range'].'</span>';
                 }
+                //상태
+                else if($k1=='off_status'){
+                    $list[$k1] = $g5['set_status_value'][$row[$k1]];
+                }
 
                 $row['colspan'] = ($v1[1]>1) ? ' colspan="'.$v1[1].'"' : '';   // colspan 설정
                 $row['rowspan'] = ($v1[2]>1) ? ' rowspan="'.$v1[2].'"' : '';   // rowspan 설정
@@ -244,7 +249,7 @@ $items1 = array(
         echo '</tr>'.PHP_EOL;	
 	}
 	if ($i == 0)
-		echo '<tr><td colspan="20" class="empty_table">자료가 없습니다.</td></tr>';
+		echo '<tr><td colspan="7" class="empty_table">자료가 없습니다.</td></tr>';
 	?>
 	</tbody>
 	</table>

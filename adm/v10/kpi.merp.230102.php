@@ -106,7 +106,7 @@ else {
 }
 
 // 지시수량 목표 먼저 추출 (아래 부분 목표 추출하는 부분에서 활용합니다.)
-$sql = "SELECT bom_idx, trm_idx_line, orp_done_date, oop_count, oop_1, oop_2, oop_3, oop_4, oop_5, oop_6, oop_7, oop_8, oop_9, oop_10
+$sql = "SELECT bom_idx, trm_idx_line, orp_done_date, oop_count, oop_1, oop_2, oop_3, oop_4, oop_5, oop_6, oop_7, oop_8
         FROM {$g5['order_out_practice_table']} AS oop
             LEFT JOIN {$g5['order_practice_table']} AS orp ON orp.orp_idx = oop.orp_idx
         WHERE oop_status IN ('confirm','done')
@@ -114,11 +114,12 @@ $sql = "SELECT bom_idx, trm_idx_line, orp_done_date, oop_count, oop_1, oop_2, oo
             AND orp_done_date <= '".$en_date."'
             AND orp_done_date != '0000-00-00'
             {$sql_mmses3}
-        GROUP BY bom_idx, trm_idx_line, orp_done_date, oop_count, oop_1, oop_2, oop_3, oop_4, oop_5, oop_6, oop_7, oop_8, oop_9, oop_10
+        GROUP BY bom_idx, trm_idx_line, orp_done_date, oop_count, oop_1, oop_2, oop_3, oop_4, oop_5, oop_6, oop_7, oop_8
         ORDER BY bom_idx, trm_idx_line, orp_done_date
 ";
 // echo $sql.'<br>';
 $rs = sql_query($sql,1);
+// print_r2($rs);
 for($j=0;$row=sql_fetch_array($rs);$j++){
     // print_r2($row);
     $date1 = preg_replace("/[ :-]/","",substr($row['orp_done_date'],0,10));   // 날짜중에서 일자 추출하여 배열키값으로!
@@ -142,8 +143,6 @@ for($j=0;$row=sql_fetch_array($rs);$j++){
     $target['date_shift'][$date1]['6'] += (int)$row['oop_6'];  // 날짜별-6구간 목표
     $target['date_shift'][$date1]['7'] += (int)$row['oop_7'];  // 날짜별-7구간 목표
     $target['date_shift'][$date1]['8'] += (int)$row['oop_8'];  // 날짜별-8구간 목표
-    $target['date_shift'][$date1]['9'] += (int)$row['oop_9'];  // 날짜별-9구간 목표
-    $target['date_shift'][$date1]['10'] += (int)$row['oop_10'];  // 날짜별-10구간 목표
     $target['shift']['1'] += (int)$row['oop_1'];  // 1구간 목표
     $target['shift']['2'] += (int)$row['oop_2'];  // 2구간 목표
     $target['shift']['3'] += (int)$row['oop_3'];  // 3구간 목표
@@ -152,8 +151,6 @@ for($j=0;$row=sql_fetch_array($rs);$j++){
     $target['shift']['6'] += (int)$row['oop_6'];  // 6구간 목표
     $target['shift']['7'] += (int)$row['oop_7'];  // 7구간 목표
     $target['shift']['8'] += (int)$row['oop_8'];  // 8구간 목표
-    $target['shift']['9'] += (int)$row['oop_9'];  // 9구간 목표
-    $target['shift']['10'] += (int)$row['oop_10'];  // 날짜별-10구간 목표
     $target['date'][$date1] += (int)$row['oop_count'];  // 날짜별 목표
     $target['week'][$week2] += (int)$row['oop_count'];  // 주차별 목표
     $target['month'][$date2] += (int)$row['oop_count'];  // 월별 목표
@@ -216,7 +213,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
 <div id="report_wrapper">
 
     <!-- the start of .div_stat  -->
-	<div class="div_stat">
+	<div class="div_stat" style="display:none;">
 		<ul>
             <li>
 			   <span class="title">매출액</span>
@@ -446,10 +443,12 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
             </div><!-- .div_info_body -->
             <?php
             $amount_price = num_to_han($amount_output_price);
-            // print_r2($amount_price);
+            // print_r2($target);
+            //$sum_target_val = ()
             ?>
             <script>
             // 매출액, 목표달성율, 불량율 입력
+            // console.log($('#sub_sales').length);
             $('#sum_sales').text('<?=number_format($amount_price[0],1)?>');
             $('#sum_sales').closest('li').find('.unit').text('<?=$amount_price[1]?>');
             $('#sum_target').text('<?=number_format(($amount_output/$target['total']*100),1)?>');

@@ -31,7 +31,7 @@
 .form01 .frm_input {width:95px;text-align:center;height:42px;line-height:42px;border:solid 1px #151149;border-radius:0px;font-size:1.1em;margin-right:5px;}
 .form01:after {display:block;visibility:hidden;clear:both;content:'';}
 .form01 > div {display:inline-block;margin-right:5px;}
-.form01 .btn_submit {border:none;border-radius:0px;background:#0891D1;padding:11px 30px 12px;}
+.form01 .btn_submit {border:none;border-radius:0px;background:#0891D1;padding:9px 30px 10px;}
 .tab_wrapper .content_wrapper{margin-top:-4px;}
 
 /* iframe area */

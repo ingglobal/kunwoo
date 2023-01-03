@@ -440,9 +440,36 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
             </td>
         </tr>
         <tr>
+            <th scope="row">UPH기본설비그룹</th>
+            <td>
+				<?php
+				$mmg_string = '';
+				$mmg_res = sql_query(" SELECT mmg_idx,mmg_name FROM {$g5['mms_group_table']} 
+								WHERE mmg_idx_parent <> '0'
+									AND com_idx = '{$_SESSION['ss_com_idx']}'
+									AND mmg_status = 'ok' ",1);
+				for($i=0;$mmgrow=sql_fetch_array($mmg_res);$i++){
+					$mmg_string .= ($i == 0)?$mmgrow['mmg_idx'].'='.$mmgrow['mmg_name']:','.$mmgrow['mmg_idx'].'='.$mmgrow['mmg_name'];
+				}
+				echo help($mmg_string.'<br>의 값중에서 숫자데이터를 저장하세요.');
+				unset($i); unset($mmg_sql); unset($mmg_res); unset($forge_string);
+				?>
+                <input type="text" name="set_uph_mmg" value="<?php echo $g5['setting']['set_uph_mmg']; ?>" class="frm_input" style="width:60px;">
+            </td>
+        </tr>
+        <tr>
             <th scope="row">UPH기본설비</th>
             <td>
-				<?php echo help('75=단조프레스1,65=단조프레스2,77=단조프레스3,78=단조프레스4,79=단조프레스5,80=프레스6 <br>의 값중에서 숫자데이터를 저장하세요.'); ?>
+				<?php
+				$forge_string = '';
+				$i=0;
+				foreach($g5['trms']['forge_idx_arr'] as $fk => $fv){
+					$forge_string .= ($i==0)?$fk.'='.$fv:','.$fk.'='.$fv;
+					$i++;
+				}
+				echo help($forge_string.'<br>의 값중에서 숫자데이터를 저장하세요.');
+				unset($i); unset($forge_string);
+				?>
                 <input type="text" name="set_uph_mms" value="<?php echo $g5['setting']['set_uph_mms']; ?>" class="frm_input" style="width:60px;">
             </td>
         </tr>

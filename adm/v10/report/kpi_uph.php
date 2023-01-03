@@ -4,11 +4,18 @@ include_once('./_common.php');
 
 auth_check($auth[$sub_menu],"r");
 
+if($sum_reload){
+    update_item_sum2();
+    unset($sum_reload);
+    unset($_GET['sum_reload']);
+    Header("Location:./kpi_uph.php"); 
+}
 // 변수 설정, 필드 구조 및 prefix 추출
 $qstr .= '&ser_mms_idx='.$ser_mms_idx.'&st_date='.$st_date.'&en_date='.$en_date.'&st_time='.$st_time.'&en_time='.$en_time; // 추가로 확장해서 넘겨야 할 변수들
 
 // st_date, en_date
 $st_date = $st_date ?: date("Y-m-01",G5_SERVER_TIME);
+$st_date = date("Y-m-d H:i:s",strtotime("-1month",strtotime($st_date)));//작업후에 반드시 주석처리해라
 $en_date = $en_date ?: date("Y-m-d");
 $st_time = $st_time ?: '00:00:00';
 $en_time = $en_time ?: '23:59:59';
@@ -34,19 +41,6 @@ for ($i=0; $row2=sql_fetch_array($result2); $i++) {
     $mms[$row2['mms_idx']] = $row2['mms_name'];
 }
 
-
-// 기존 쿼리 수정해서 문제발생시 주석 해제해라
-/*
-$sql = "SELECT table_name, table_rows, auto_increment
-            , SUBSTRING_INDEX (SUBSTRING_INDEX(table_name,'_',-3), '_', 1) AS mms_idx
-            , SUBSTRING_INDEX (SUBSTRING_INDEX(table_name,'_',-2), '_', 1) AS dta_type
-            , SUBSTRING_INDEX (SUBSTRING_INDEX(table_name,'_',-1), '_', 1) AS dta_no
-        FROM Information_schema.tables
-        WHERE TABLE_SCHEMA = '".G5_MYSQL_DB."'
-            AND TABLE_NAME REGEXP 'g5_1_data_measure_[0-9]{1,4}'
-        ORDER BY convert(mms_idx, decimal), convert(dta_type, decimal), convert(dta_no, decimal)
-";
-*/
 //g5_1_data_measure_디비 시리즈에서 테이블명 끝에 54번으로 시작하는 것만 추출
 $sql = "SELECT table_name, table_rows, auto_increment
             , SUBSTRING_INDEX (SUBSTRING_INDEX(table_name,'_',-3), '_', 1) AS mms_idx
@@ -67,9 +61,6 @@ for($i=0;$row=sql_fetch_array($rs);$i++) {
     // print_r2($row['ar']);
     // 해당 업체 것만 추출, 아니면 통과
     if($mms[$row['ar'][4]]) {
-        // echo $mms[$row['ar'][4]].' / ';
-        // echo $g5['set_data_type'][$row['ar'][5]].' / ';
-        // echo $row['ar'][4].'_'.$row['ar'][5].'_'.$row['ar'][6].' (mms_idx='.$row['ar'][4].'/.dat_type='.$row['ar'][5].'/dat_no='.$row['ar'][6].')<br>';
         $ser_mms_idx = ($ser_mms_idx) ?: $row['ar'][4];
     }
 }
@@ -81,7 +72,7 @@ if(!$ser_mms_idx)
 
 // Get the mmi_nos for each mms
 $sql = "SELECT mms_idx, mmi_no, mmi_name
-        FROM g5_1_mms_item
+        FROM {$g5['mms_item_table']}
         WHERE mmi_status = 'ok'
         GROUP BY mms_idx, mmi_no
         ORDER BY mms_idx, mmi_no
@@ -122,79 +113,33 @@ $sql = "SELECT mms_idx
 // echo $sql.'<br>';
 $rs = sql_query($sql,1);
 $byunit = 86400;
+$offdaily = array();
+$offsomed = array();
 for($i=0;$row=sql_fetch_array($rs);$i++){
     // print_r2($row);
     $offwork[$i]['mms_idx'] = $row['mms_idx'];
-    $offwork[$i]['start'] = date("His",$row['db_off_start_time']);
-    $offwork[$i]['end'] = date("His",$row['db_off_end_time']);
-    // print_r2($offwork[$i]);
-    // echo '<br>----<br>';
-    // echo $i.'번째  <br>';
-    // 앞에서 정의한 겹치는 시간이 있으면 빼야 함, 중복 계산하지 않도록 한다.
-    if( is_array($offwork) ) {
-        $offworkold = $offwork;
-        for($j=0;$j<sizeof($offworkold);$j++){
-            // print_r2($offworkold[$j]);
-            // 완전 내부 포함인 경우는 중복 제외
-            if( $offwork[$i]['start'] > $offworkold[$j]['start'] && $offwork[$i]['end'] < $offworkold[$j]['end'] ) {
-                unset($offwork[$i]);
-            }
-            // 걸쳐 있는 경우
-            else if( $offwork[$i]['start'] < $offworkold[$j]['end'] && $offwork[$i]['end'] > $offworkold[$j]['start'] ) {
-                if( $offwork[$i]['start'] < $offworkold[$j]['start'] ) {
-                    $offwork[$i]['end'] = $offworkold[$j]['start'];
-                }
-                if( $offwork[$i]['end'] > $offworkold[$j]['end'] ) {
-                    $offwork[$i]['start'] = $offworkold[$j]['end'];
-                }
-            }
-        }
+    $offwork[$i]['off_period_type'] = $row['off_period_type'];
+    $offwork[$i]['start'] = date("H:i:s",$row['db_off_start_time']);
+    $offwork[$i]['end'] = date("H:i:s",$row['db_off_end_time']);
+    //특정날짜의 비가동
+    if(!$row['off_period_type']){
+        $offwork[$i]['start_day'] = date("Y-m-d",$row['db_off_start_time']); 
+        $offwork[$i]['end_day'] = date("Y-m-d",$row['db_off_end_time']); 
+        // $offwork[$i]['days'] = date_gapdays_times($offwork[$i]['start_day'],$offwork[$i]['end_day'],$offwork[$i]['start'],$offwork[$i]['end']);       
+        $offsomed = date_gapdays_times($offwork[$i]['start_day'],$offwork[$i]['end_day'],$offwork[$i]['start'],$offwork[$i]['end']);       
     }
-    // echo '<br>정리<br>';
-    // print_r2($offwork[$i]);
-    // echo '<br>----------------------------------------<br>';
-
-
+    //매일비가동
+    else{
+        array_push($offdaily,array('start'=>$offwork[$i]['start'],'end'=>$offwork[$i]['end']));
+    }
 }
-// print_r2($mms_date);
-// print_r2($offwork);
+// print_r2($offsomed);
+// print_r2($offdaily);
 
-// 하루의 전체 공제 시간 계산
-for($j=0;$j<@sizeof($offwork);$j++){
-    // print_r2($offwork[$j]);
-    $off_total += strtotime($offwork[$j]['end']) - strtotime($offwork[$j]['start']);
-}
-// echo $off_total.'<br>';
-
-
-$sql_common = " FROM g5_1_item ";
+$sql_common = " FROM {$g5['item_table']} ";
 
 $where = array();
 $where[] = " mms_idx = '".$ser_mms_idx."' AND itm_status NOT IN ('delete','del','trash') ";
-
-if ($stx && $sfl) {
-    switch ($sfl) {
-		case ( $sfl == 'itm_id' || $sfl == 'itm_idx' || $sfl == 'mms_idx' || $sfl == 'itm_mmi_no' ) :
-            $where[] = " ({$sfl} = '{$stx}') ";
-            break;
-		case ($sfl == 'itm_hp') :
-            $where[] = " REGEXP_REPLACE(mb_hp,'-','') LIKE '".preg_replace("/-/","",$stx)."' ";
-            break;
-		case ($sfl == 'itm_more') :
-            $where[] = " itm_value >= '".$stx."' ";
-            break;
-		case ($sfl == 'itm_less') :
-            $where[] = " itm_value <= '".$stx."' ";
-            break;
-		case ($sfl == 'itm_range') :
-            $stxs = explode("-",$stx);
-            $where[] = " itm_value >= '".$stxs[0]."' AND itm_value <= '".$stxs[1]."' ";
-            break;
-        default :
-            $where[] = " ({$sfl} LIKE '%{$stx}%') ";
-            break;
-    }
-}
 
 // 기간 검색
 if ($st_date) {
@@ -208,60 +153,9 @@ if ($en_date) {
 if ($where)
     $sql_search = ' WHERE '.implode(' AND ', $where);
 
-//기존 쿼리를 수정해서 문제발생시 아래주석을 해제
-/*
-$sql = " SELECT SQL_CALC_FOUND_ROWS mms_idx, bom_part_no, itm_date
-            , COUNT(itm_idx) AS output_sum
-            , MIN(itm_reg_dt) AS itm_ymdhis_min
-            , MAX(itm_reg_dt) AS itm_ymdhis_max
-		{$sql_common}
-		{$sql_search}
-        GROUP BY itm_date
-        ORDER BY itm_date DESC
-";
-*/
-/*
-☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★ 중요 ☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★☆ ★
-완제품생산간격이 초단위이면 "MIN(itm_reg_dt) AS itm_ymdhis_min"를 사용하고 사용시에는 itm_ymdhis_min2를 itm_ymdhis_min로 변경
-생산간격이 시간단위이면 "( SELECT MIN(mtr_reg_dt) FROM {$g5['material_table']} WHERE mtr_input_date = itm_date ) AS itm_ymdhis_min"를 사용하고
-사용시에는 itm_ymdhis_min2를 itm_ymdhis_min로 변경
-*/
-/*
-$sql = " SELECT SQL_CALC_FOUND_ROWS mms_idx, bom_part_no, itm_date
-            , SUM(itm_weight) AS output_sum
-            , CASE WHEN ( SELECT MIN(mtr_melt_dt) FROM {$g5['material_table']} WHERE mtr_input_date = itm_date AND mtr_type = 'half' AND mtr_status = 'melt'  ) != NULL
-                        THEN ( SELECT MIN(mtr_melt_dt) FROM {$g5['material_table']} WHERE mtr_input_date = itm_date )
-                    ELSE MIN(itm_reg_dt)
-                END
-             AS itm_ymdhis_min
-            , MAX(itm_reg_dt) AS itm_ymdhis_max
-		{$sql_common}
-		{$sql_search}
-        GROUP BY itm_date
-        ORDER BY itm_date DESC
-";
-*/
-/*
-$sql = " SELECT SQL_CALC_FOUND_ROWS mms_idx, bom_part_no, itm_date
-            , SUM(itm_weight) AS output_sum
-            , CASE WHEN ( SELECT MIN(mtr_melt_dt) FROM {$g5['material_table']} WHERE mtr_input_date = itm_date ) <> NULL
-                        AND ( SELECT MIN(mtr_melt_dt) FROM {$g5['material_table']} WHERE mtr_input_date = itm_date ) != '0000-00-00 00:00:00'
-                        THEN ( SELECT MIN(mtr_melt_dt) FROM {$g5['material_table']} WHERE mtr_input_date = itm_date )
-                    ELSE MIN(itm_reg_dt)
-                END
-             AS itm_ymdhis_min
-            , MAX(itm_reg_dt) AS itm_ymdhis_max
-		{$sql_common}
-		{$sql_search}
-        GROUP BY itm_date
-        ORDER BY itm_date DESC
-";
-*/
-
-
 $sql = " SELECT SQL_CALC_FOUND_ROWS mms_idx, bom_part_no, itm_date, oop_idx
-    , SUM(itm_weight) AS output_sum
-    , DATE_SUB(MIN(itm_reg_dt), INTERVAL 2 HOUR) AS itm_ymdhis_min
+    , COUNT(itm_idx) AS output_sum
+    , MIN(itm_reg_dt) AS itm_ymdhis_min
     , MAX(itm_reg_dt) AS itm_ymdhis_max
     {$sql_common}
     {$sql_search}
@@ -274,9 +168,7 @@ $result = sql_query($sql,1);
 
 add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi.css">', 0);
 add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css">', 1);
-
 add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/function.date.js"></script>', 0);
-
 add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker/jquery.timepicker.css">', 0);
 ?>
 <script type="text/javascript" src="<?=G5_USER_ADMIN_URL?>/js/timepicker/jquery.timepicker.js"></script>
@@ -289,8 +181,8 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
     // Get all the mms_idx values to make them optionf for selection.
     $sql2 = "SELECT mms_idx, mms_name
             FROM {$g5['mms_table']}
-            WHERE com_idx = '".$_SESSION['ss_com_idx']."' AND mms_status = 'ok' AND mms_idx = '54'
-            ORDER BY mms_idx
+            WHERE com_idx = '".$_SESSION['ss_com_idx']."' AND mms_status = 'ok' AND mmg_idx = '{$g5['setting']['set_uph_mmg']}'
+            ORDER BY mms_sort
     ";
     // echo $sql2.'<br>';
     $result2 = sql_query($sql2,1);
@@ -303,17 +195,9 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
 <script>$('select[name=ser_mms_idx]').val("<?=$ser_mms_idx?>").attr('selected','selected');</script>
 
 <input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:95px;">
-<!-- <input type="text" name="st_time" value="<?=$st_time?>" id="st_time" class="frm_input" autocomplete="off" style="width:65px;" placeholder="00:00:00"> -->
 ~
 <input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:95px;">
-<!-- <input type="text" name="en_time" value="<?=$en_time?>" id="en_time" class="frm_input" autocomplete="off" style="width:65px;" placeholder="00:00:00"> -->
-
-<select name="sfl" id="sfl">
-    <option value="bom_part_no" <?php echo get_selected($sfl, 'bom_part_no'); ?>>파트번호</option>
-    <option value="itm_shift" <?php echo get_selected($sfl, 'itm_shift'); ?>>구간번호</option>
-</select>
 <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
-<input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
 <input type="submit" class="btn_submit" value="검색">
 </form>
 
@@ -322,8 +206,6 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
     <p>설비를 선택하시고 파트번호 또는 구간번호를 입력하시고 검색하세요.</p>
     <p>공제시간 및 비가동 시간은 해당 페이지에서 설정해 주시기 바랍니다.</p>
 </div>
-
-
 <div class="tbl_head01 tbl_wrap">
     <table id="sodr_list">
     <caption>목록</caption>
@@ -345,299 +227,23 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
     <?php
     for ($i=0; $row=sql_fetch_array($result); $i++)
     {
-        // 시작시간, 종료시간
-        // $sql2 = "   SELECT dta_mmi_no, dta_date, dta_dt
-        //                 , min(dta_dt)
-        //                 , max(dta_dt)
-        //                 , FROM_UNIXTIME(min(dta_dt),'%Y-%m-%d %H:%i:%s') AS dta_ymdhis_min
-        //                 , FROM_UNIXTIME(max(dta_dt),'%Y-%m-%d %H:%i:%s') AS dta_ymdhis_max
-        //                 , FROM_UNIXTIME(min(dta_dt),'%H%i%s') AS dta_start_his
-        //                 , FROM_UNIXTIME(max(dta_dt),'%H%i%s') AS dta_end_his
-        //             FROM g5_1_data_output_".$ser_mms_idx."
-        //             WHERE dta_mmi_no = '".$row['dta_mmi_no']."'
-        //                 AND dta_date IN ('".$row['dta_date']."')
-        // ";
-        // $row2 = sql_fetch($sql2,1);
-        // $row['period'] = $row2;
-        $msql = " SELECT MIN(mtr_melt_dt) AS min_melt_dt FROM {$g5['material_table']}
-                WHERE oop_idx = '{$row['oop_idx']}'
-                    AND mtr_input_date = '{$row['itm_date']}'
-                    AND mtr_type = 'half'
-                    AND mtr_status = 'melt'
-					AND mtr_melt_dt != '0000-00-00 00:00:00'
-        ";
-        // echo $msql."<br>";
-        $met = sql_fetch($msql);
-        if($met['min_melt_dt']){
-            $row['itm_ymdhis_min'] = $met['min_melt_dt'];
-        }
-
         $row['itm_start_his'] = preg_replace("/:/","",substr($row['itm_ymdhis_min'],11));
         $row['itm_end_his'] = preg_replace("/:/","",substr($row['itm_ymdhis_max'],11));
-        $row['itm_ymdhis_max_display'] = $row['itm_ymdhis_max'];    // 목록에 종료시간 표시(24기간 경계 때문에 중간에 값이 바뀔 수 있어서 따로 정의함)
-        // print_r2($row['period']);
-
+        $row['itm_ymdhis_max_display'] = $row['itm_ymdhis_max'];
         // 작업시간 합계 (초)
         $row['worktime'] = strtotime($row['itm_ymdhis_max']) - strtotime($row['itm_ymdhis_min']);
-
-
-        // 종료시간이 시작보다 작은 경우는 다음날이므로 일단 24시까지 추출한 다음 한번 더 추출해야 함
-        if( $row['itm_start_his'] > $row['itm_end_his'] ) {
-            // echo 'big ++++++++++++++++++++++ <br>';
-            $row['itm_end_his2'] = $row['itm_end_his']; // 한번더 추출을 위해서 저장해 두고
-            $row['itm_end_his'] = 235959; // 일단 마지막 시간으로 설정해서 1차 계산
-            $row['dta_ymdhis_max2'] = $row['itm_ymdhis_max']; // 한번더 추출을 위해서 저장
-            $row['itm_ymdhis_max'] = $row['itm_date'].' 23:59:59';
-        }
-        // print_r2($row['period']);
-        // echo $row['itm_start_his'].'~'.$row['itm_end_his'].' 1차 기간<br>';
-        // print_r2($offwork);
-
-
-        // 공제시간 및 비가동시간 디폴트
-        $row['offwork'][$i] = 0;
-        $row['downtime'][$i] = 0;
-        for($j=0;$j<@sizeof($offwork);$j++){
-            // print_r2($offwork[$j]);
-            // echo $i.'-'.$j.'<br>';
-            // echo $offwork[$j]['start'].'~'.$offwork[$j]['end'].' 원본<br>';
-            // 완전 포함인 경우는 무조건 공제시간에 포함됨
-            if( $row['itm_start_his'] <= $offwork[$j]['start'] && $row['itm_end_his'] >= $offwork[$j]['end'] ) {
-                $row['offworks'][$i][$j]['start'] = $offwork[$j]['start'];  // 하단 비가동에서 활용
-                $row['offworks'][$i][$j]['end'] = $offwork[$j]['end'];      // 하단 비가동에서 활용
-                $row['offwork'][$i] += strtotime($offwork[$j]['end']) - strtotime($offwork[$j]['start']);
-            }
-            // 걸쳐 있는 경우
-            else if( $row['itm_start_his'] <= $offwork[$j]['end'] && $row['itm_end_his'] >= $offwork[$j]['start'] ) {
-                if( $row['itm_start_his'] >= $offwork[$j]['start'] ) {
-                    $row['offworks'][$i][$j]['start'] = $row['itm_start_his'];  // 하단 비가동에서 활용
-                    $row['offworks'][$i][$j]['end'] = $offwork[$j]['end'];      // 하단 비가동에서 활용
-                    // $offwork[$j]['start'] = $row['itm_start_his']; // 원본을 바꾸면 안 됨 (for문에서 변경되므로)
-                    $row['offwork'][$i] += strtotime($offwork[$j]['end']) - strtotime($row['itm_start_his']);
-                }
-                if( $row['itm_end_his'] <= $offwork[$j]['end'] ) {
-                    $row['offworks'][$i][$j]['start'] = $offwork[$j]['start'];  // 하단 비가동에서 활용
-                    $row['offworks'][$i][$j]['end'] = $row['itm_end_his'];      // 하단 비가동에서 활용
-                    // $offwork[$j]['end'] = $row['itm_end_his']; // 원본을 바꾸면 안 됨 (for문에서 변경되므로)
-                    $row['offwork'][$i] += strtotime($row['itm_end_his']) - strtotime($offwork[$j]['start']);
-                }
-                // $row['offwork'][$i] += strtotime($offwork[$j]['end']) - strtotime($offwork[$j]['start']);
-            }
-            // echo $offwork[$j]['start'].'~'.$offwork[$j]['end'].' 변경<br>';
-            // echo $row['offwork'][$i].'<br>';
-        }
-        // echo $row['offwork'][$i].'<br>';
-        // print_r2($row['offworks'][$i]);
-        // echo '<br>--------------------------------------------------<br>';
-
-        //  다음날인 경우는 한번 더
-        if( $row['itm_end_his2'] ) {
-            $row['period']['dta_start_his2'] = '000000';
-            // echo $row['period']['dta_start_his2'].'~'.$row['itm_end_his2'].' 2차 기간<br>';
-            // echo 'one more time ++++++++++++++++++++++ <br>';
-            for($j=0;$j<@sizeof($offwork);$j++){
-                // echo $offwork[$j]['start'].'~'.$offwork[$j]['end'].' 원본<br>';
-                // 완전 포함인 경우는 무조건 공제시간에 포함됨
-                if( $row['period']['dta_start_his2'] <= $offwork[$j]['start'] && $row['itm_end_his2'] >= $offwork[$j]['end'] ) {
-                    $row['offworks'][$i][$j]['start'] = $offwork[$j]['start'];  // 하단 비가동에서 활용
-                    $row['offworks'][$i][$j]['end'] = $offwork[$j]['end'];      // 하단 비가동에서 활용
-                    $row['offwork'][$i] += strtotime($offwork[$j]['end']) - strtotime($offwork[$j]['start']);
-                }
-                // 걸쳐 있는 경우
-                else if( $row['period']['dta_start_his2'] <= $offwork[$j]['end'] && $row['itm_end_his2'] >= $offwork[$j]['start'] ) {
-                    if( $row['period']['dta_start_his2'] >= $offwork[$j]['start'] ) {
-                        $row['offworks'][$i][$j]['start'] = $row['period']['dta_start_his2'];  // 하단 비가동에서 활용
-                        $row['offworks'][$i][$j]['end'] = $offwork[$j]['end'];      // 하단 비가동에서 활용
-                        // $offwork[$j]['start'] = $row['period']['dta_start_his2'];   // 원본을 바꾸면 안 됨 (for문에서 변경되므로)
-                        $row['offwork'][$i] += strtotime($offwork[$j]['end']) - strtotime($row['period']['dta_start_his2']);
-                    }
-                    if( $row['itm_end_his2'] <= $offwork[$j]['end'] ) {
-                        $row['offworks'][$i][$j]['start'] = $offwork[$j]['start'];  // 하단 비가동에서 활용
-                        $row['offworks'][$i][$j]['end'] = $row['itm_end_his2'];      // 하단 비가동에서 활용
-                        // $offwork[$j]['end'] = $row['itm_end_his2'];   // 원본을 바꾸면 안 됨 (for문에서 변경되므로)
-                        $row['offwork'][$i] += strtotime($row['itm_end_his2']) - strtotime($offwork[$j]['start']);
-                    }
-                    // $row['offwork'][$i] += strtotime($offwork[$j]['end']) - strtotime($offwork[$j]['start']);
-                }
-                // echo $offwork[$j]['start'].'~'.$offwork[$j]['end'].' 변경<br>';
-                // print_r2($row['offworks'][$i]);
-                // echo $row['offwork'][$i].'<br>';
-            }
-            // echo $row['offwork'][$i].'<br>';
-            // echo '<br>--------------------------------------------------<br>';
-
-        }
-        // print_r2($row['offworks'][$i]); // 공제시간 전체 배열
-        // echo '<br>=====================================================================<br>';
-        $row['offworkmin'] = round($row['offwork'][$i]/60);         // 공제시간(분)
-
-        $row['workmin'] = round($row['worktime']/60);           // 작업시간(분)
-        $row['workreal'] = $row['worktime']-$row['offwork'][$i];    // 실작업시간 = 작업시간 - 공제
-        $row['workrealmin'] = round($row['workreal']/60);       // 실작업시간(분)
-        $row['workhour'] = round($row['workreal']/3600,2);      // 작업시간(시)
-
-
-
-
-
-
-        // echo $row['itm_start_his'].' / '.$row['itm_end_his'].' 1차<br>';
-        // echo $row['period']['dta_start_his2'].' / '.$row['itm_end_his2'].' 2차<br>';
-        // // 비가동(downtime) 추출 1차 (24시 전)
-        $row['downtime_start'] = strtotime($row['itm_ymdhis_min']);
-        $row['downtime_end'] = strtotime($row['itm_ymdhis_max']);
-        // echo  $row['downtime_start'].' ('.$row['itm_ymdhis_min'].') 1차 시작시점<br>';
-        // echo  $row['downtime_end'].' ('.$row['itm_ymdhis_max'].') 1차 종료시점<br>';
-        $sql2 = "SELECT dta_idx, mms_idx
-                , dta_start_dt AS db_dta_start_time
-                , dta_end_dt AS db_dta_end_time
-                , FROM_UNIXTIME(dta_start_dt,'%Y-%m-%d %H:%i:%s') AS db_off_start_ymdhis
-                , FROM_UNIXTIME(dta_end_dt,'%Y-%m-%d %H:%i:%s') AS db_off_end_ymdhis
-                , GREATEST('".$row['downtime_start']."', dta_start_dt ) AS dta_start_dt
-                , LEAST('".$row['downtime_end']."', dta_end_dt ) AS dta_end_dt
-                , FROM_UNIXTIME( GREATEST('".$row['downtime_start']."', dta_start_dt ) ,'%Y-%m-%d %H:%i:%s') AS dta_start_ymdhis
-                , FROM_UNIXTIME( LEAST('".$row['downtime_end']."', dta_end_dt ) ,'%Y-%m-%d %H:%i:%s') AS dta_end_ymdhis
-                , FROM_UNIXTIME( GREATEST('".$row['downtime_start']."', dta_start_dt ) ,'%H%i%s') AS dta_start_his
-                , FROM_UNIXTIME( LEAST('".$row['downtime_end']."', dta_end_dt ) ,'%H%i%s') AS dta_end_his
-                FROM {$g5['data_downtime_table']}
-                WHERE mms_idx = '".$ser_mms_idx."'
-                    AND dta_end_dt >= '".$row['downtime_start']."'
-                    AND dta_start_dt <= '".$row['downtime_end']."'
-                ORDER BY dta_start_dt
-        ";
-        // echo $sql2.'<br>';
-        $rs2 = sql_query($sql2,1);
-        for ($j=0; $row2=sql_fetch_array($rs2); $j++) {
-            // print_r2($row2);
-
-            // 비가동 시간(초), 일단 추출해 놓고 공제시간 돌면서 해당 사항 있으면 공제
-            $row['downtime1'][$i][$j] = $row2['dta_end_dt'] - $row2['dta_start_dt'];
-            // echo $row['downtime1'][$i][$j].' downtime original<br>';
-
-            // 공제시간 배열 전체를 돌면서 중복을 제거해야 함
-            if(is_array($row['offworks'][$i])) {
-                foreach($row['offworks'][$i] as $k1=>$v1) {
-                    // print_r2($v1);
-                    // echo $v1['start'].'~'.$v1['end'].' 원본<br>';
-
-                    // 완전 포함인 경우는 무조건 중복이므로 제외해야 함
-                    if( $row2['dta_start_his'] <= $row['offworks'][$i][$k1]['start'] && $row2['dta_end_his'] >= $row['offworks'][$i][$k1]['end'] ) {
-                        // echo '3<br>';
-                        $row['downtime_tmp'][$i][$j] = strtotime($row['offworks'][$i][$k1]['end']) - strtotime($row['offworks'][$i][$k1]['start']);
-                        $row['downtime1'][$i][$j] = $row['downtime1'][$i][$j] - $row['downtime_tmp'][$i][$j];
-                    }
-                    // 걸쳐 있는 경우는 중복 부분만 중복으로 제거해야 함
-                    else if( $row2['dta_start_his'] <= $row['offworks'][$i][$k1]['end'] && $row2['dta_end_his'] >= $row['offworks'][$i][$k1]['start'] ) {
-                        // echo '4<br>';
-                        if( $row2['dta_start_his'] >= $row['offworks'][$i][$k1]['start'] ) {
-                            $row['offworks'][$i][$k1]['start'] = $row2['dta_start_his'];  // 공제 시작 시점 변경
-                        }
-                        if( $row2['dta_end_his'] <= $row['offworks'][$i][$k1]['end'] ) {
-                            $row['offworks'][$i][$k1]['end'] = $row2['dta_end_his'];  // 공제 끝점 변경
-                        }
-                        $row['downtime_tmp'][$i][$j] = strtotime($row['offworks'][$i][$k1]['end']) - strtotime($row['offworks'][$i][$k1]['start']);
-                        $row['downtime1'][$i][$j] = $row['downtime1'][$i][$j] - $row['downtime_tmp'][$i][$j];
-                    }
-                    // echo $row['downtime1'][$i][$j].' <== downtime changed.<br>';
-                    // print_r2($row['downtime1'][$i]);
-                    // echo $row['downtime1'][$i].'<br>';
-
-                }
-            }
-            // echo '<br>---------------------------<br>';
-
-        }
-        // echo '<br>==================================================================<br>';
-        // print_r2($row['downtime1'][$i]);
-        if(is_array($row['downtime1'][$i])) {
-            for ($j=0; $j<@sizeof($row['downtime1'][$i]); $j++) {
-                // echo $row['downtime1'][$i][$j].'<br>';
-                $row['downtime'][$i] += $row['downtime1'][$i][$j];
-            }
-        }
-        // echo $row['downtime'][$i].'<br>';
-
-
-        // 비가동(downtime) 추출 2차 (24시 이후)
-        if( $row['itm_end_his2'] ) {
-
-            $row['downtime_start'] = strtotime(substr($row['dta_ymdhis_max2'],0,10).' 00:00:00');
-            $row['downtime_end'] = strtotime($row['dta_ymdhis_max2']);
-            // echo  $row['downtime_start'].' ('.substr($row['dta_ymdhis_max2'],0,10).' 00:00:00'.') 2차 시작시점<br>';
-            // echo  $row['downtime_end'].' ('.$row['dta_ymdhis_max2'].') 2차 종료시점<br>';
-            $sql2 = "SELECT dta_idx, mms_idx
-                    , dta_start_dt AS db_dta_start_time
-                    , dta_end_dt AS db_dta_end_time
-                    , FROM_UNIXTIME(dta_start_dt,'%Y-%m-%d %H:%i:%s') AS db_off_start_ymdhis
-                    , FROM_UNIXTIME(dta_end_dt,'%Y-%m-%d %H:%i:%s') AS db_off_end_ymdhis
-                    , GREATEST('".$row['downtime_start']."', dta_start_dt ) AS dta_start_dt
-                    , LEAST('".$row['downtime_end']."', dta_end_dt ) AS dta_end_dt
-                    , FROM_UNIXTIME( GREATEST('".$row['downtime_start']."', dta_start_dt ) ,'%Y-%m-%d %H:%i:%s') AS dta_start_ymdhis
-                    , FROM_UNIXTIME( LEAST('".$row['downtime_end']."', dta_end_dt ) ,'%Y-%m-%d %H:%i:%s') AS dta_end_ymdhis
-                    , FROM_UNIXTIME( GREATEST('".$row['downtime_start']."', dta_start_dt ) ,'%H%i%s') AS dta_start_his
-                    , FROM_UNIXTIME( LEAST('".$row['downtime_end']."', dta_end_dt ) ,'%H%i%s') AS dta_end_his
-                    FROM {$g5['data_downtime_table']}
-                    WHERE mms_idx = '".$ser_mms_idx."'
-                        AND dta_end_dt >= '".$row['downtime_start']."'
-                        AND dta_start_dt <= '".$row['downtime_end']."'
-                    ORDER BY dta_start_dt
-            ";
-            // echo $sql2.'<br>';
-            $rs2 = sql_query($sql2,1);
-            for ($j=0; $row2=sql_fetch_array($rs2); $j++) {
-                // print_r2($row2);
-
-                // 비가동 시간(초), 일단 추출해 놓고 공제시간 돌면서 해당 사항 있으면 공제
-                $row['downtime2'][$i][$j] = $row2['dta_end_dt'] - $row2['dta_start_dt'];
-                // echo $row['downtime2'][$i][$j].' downtime original<br>';
-
-                // 공제시간 배열 전체를 돌면서 중복을 제거해야 함
-                if(is_array($row['offworks'][$i])) {
-                    foreach($row['offworks'][$i] as $k1=>$v1) {
-                        // print_r2($v1);
-                        // echo $v1['start'].'~'.$v1['end'].' 원본<br>';
-
-                        // 완전 포함인 경우는 무조건 중복이므로 제외해야 함
-                        if( $row2['dta_start_his'] <= $row['offworks'][$i][$k1]['start'] && $row2['dta_end_his'] >= $row['offworks'][$i][$k1]['end'] ) {
-                            // echo '3<br>';
-                            $row['downtime_tmp'][$i][$j] = strtotime($row['offworks'][$i][$k1]['end']) - strtotime($row['offworks'][$i][$k1]['start']);
-                            $row['downtime2'][$i][$j] = $row['downtime2'][$i][$j] - $row['downtime_tmp'][$i][$j];
-                        }
-                        // 걸쳐 있는 경우는 중복 부분만 중복으로 제거해야 함
-                        else if( $row2['dta_start_his'] <= $row['offworks'][$i][$k1]['end'] && $row2['dta_end_his'] >= $row['offworks'][$i][$k1]['start'] ) {
-                            // echo '4<br>';
-                            if( $row2['dta_start_his'] >= $row['offworks'][$i][$k1]['start'] ) {
-                                $row['offworks'][$i][$k1]['start'] = $row2['dta_start_his'];  // 공제 시작 시점 변경
-                            }
-                            if( $row2['dta_end_his'] <= $row['offworks'][$i][$k1]['end'] ) {
-                                $row['offworks'][$i][$k1]['end'] = $row2['dta_end_his'];  // 공제 끝점 변경
-                            }
-                            $row['downtime_tmp'][$i][$j] = strtotime($row['offworks'][$i][$k1]['end']) - strtotime($row['offworks'][$i][$k1]['start']);
-                            $row['downtime2'][$i][$j] = $row['downtime2'][$i][$j] - $row['downtime_tmp'][$i][$j];
-                        }
-                        // echo $row['downtime2'][$i][$j].' <== downtime changed.<br>';
-                        // print_r2($row['downtime2'][$i]);
-                        // echo $row['downtime2'][$i].'<br>';
-
-                    }
-                }
-                // echo '<br>---------------------------<br>';
-
-            }
-            // echo '<br>==================================================================<br>';
-            // print_r2($row['downtime2'][$i]);
-            if(is_array($row['downtime2'][$i])) {
-                for ($j=0; $j<sizeof($row['downtime2'][$i]); $j++) {
-                    // echo $row['downtime2'][$i][$j].'<br>';
-                    $row['downtime'][$i] += $row['downtime2'][$i][$j];
-                }
-            }
-            // echo $row['downtime'][$i].'<br>';
-        }
-
-        $row['downtimemin'] = round($row['downtime'][$i]/60,1);    // 비가동시간(분)
-        $row['downtimehour'] = round($row['downtime'][$i]/3600,2); // 비가동시간(시)
-
+        //작업시간 합계 (분)
+        $row['workmin'] = round($row['worktime'] / 60);
+        
+        // 공제시간 합계 (초)
+        $offtime_seconds = offtime_result($row['itm_ymdhis_min'],$row['itm_ymdhis_max'],$offdaily,($offsomed[$row['itm_date']])?$offsomed[$row['itm_date']]:array());
+        //공제시간 합계 (분)
+        $row['offworkmin'] = round($offtime_seconds / 60);
+        //실제작업시간 합계(분)
+        $row['workrealmin'] = $row['workmin'] - $row['offworkmin'];
+        //실제작업시간 합계(시간)
+        $row['workhour'] = round($row['workrealmin'] / 60);
+        
         // 링크
         $row['ahref'] = '<a href="?'.$qstr.'&sfl=dta_mmi_no&stx='.$row['dta_mmi_no'].'">';
 
@@ -673,7 +279,9 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
     </tbody>
     </table>
 </div>
-
+<div class="btn_fixed_top" style="display:none;">
+    <a href="./<?=$g5['file_name']?>.php?sum_reload=1" class="btn btn_02">리로드</a>
+</div>
 <script>
 $(function(e) {
     // timepicker 설정

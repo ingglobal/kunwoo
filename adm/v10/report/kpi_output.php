@@ -382,7 +382,7 @@ include_once('./_top.kpi.php');
                 
 
             <!-- ========================================================================================= -->
-            <div class="div_title_02"><i class="fa fa-check" aria-hidden="true">교대별 생산</i></div>
+            <div class="div_title_02"><i class="fa fa-check" aria-hidden="true">유형별 생산</i></div>
             <div id="chart_alternating"></div>
             <div class="div_info_body">
                 <table class="table01">

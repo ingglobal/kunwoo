@@ -55,6 +55,7 @@ if($result_arr['message'] == 'ok'){
                     , cut.bom_part_no AS mtr_part_no
                     , cut.bom_length AS mtr_length
                     , cut.bom_weight AS mtr_weight
+                    , cut.bom_price AS mtr_price
                 FROM {$g5['order_out_practice_table']} oop
                     INNER JOIN {$g5['order_practice_table']} orp ON oop.orp_idx = orp.orp_idx
                     INNER JOIN {$g5['bom_table']} bom ON oop.bom_idx = bom.bom_idx
@@ -82,6 +83,7 @@ if($result_arr['message'] == 'ok'){
                 , bom_part_no = '{$oop['mtr_part_no']}'
                 , mtr_name = '".addslashes($oop['mtr_name'])."'
                 , mtr_weight = '{$oop['mtr_weight']}'
+                , mtr_price = '{$oop['mtr_price']}'
                 , mtr_type = 'half'
                 , mtr_heat = '{$mtr['mtr_heat']}'
                 , mtr_lot = '{$mtr['mtr_lot']}'

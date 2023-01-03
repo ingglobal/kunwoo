@@ -118,42 +118,15 @@ function update_item_sum($arr) {
         sql_query($sql,1);
         $row['itm_idx'] = sql_insert_id();
     }
-    /*
-    $sql = " SELECT itm.com_idx, itm.mms_idx, 14, itm_date, itm_shift, trm_idx_line, oop.bom_idx, bom_part_no, itm_price, itm_status
-        , COUNT(itm_idx) AS itm_count
-        FROM {$g5['item_table']} AS itm
-            LEFT JOIN {$g5['order_out_practice_table']} AS oop ON oop.oop_idx = itm.oop_idx
-            LEFT JOIN {$g5['order_practice_table']} AS orp ON orp.orp_idx = oop.orp_idx
-        WHERE itm_status NOT IN ('trash','delete')
-            AND trm_idx_line = '{$arr['trm_idx_line']}'
-            AND itm_date = '{$arr['itm_date']}'
-            AND itm.bom_idx = '{$arr['bom_idx']}'
-        GROUP BY itm_date, itm.mms_idx, trm_idx_line, itm_shift, bom_idx, itm_status
-        ORDER BY itm_date ASC, trm_idx_line, itm_shift, bom_idx, itm_status
-    ";
-    $res = sql_query($sql,1);
-
-    if($res->num_rows){
-        for($i=0;$row1=sql_fetch_array($res);$i++){
-            $sql = " UPDATE {$g5['item_sum_table']} SET
-                        itm_count = '{$row1['itm_count']}'
-                    WHERE itm_date = '{$row1['itm_date']}'
-                        AND itm_shift = '{$row1['itm_shift']}'
-                        AND trm_idx_line = '{$row1['trm_idx_line']}'
-                        AND bom_idx = '{$row1['bom_idx']}'
-                        AND itm_status = '{$row1['itm_status']}'
-            ";
-            sql_query($sql,1);
-        }
-    }
-    */
+    
     return $row['itm_idx'];
 }
 }
 
 
 // 생산량 일간 합계 입력
-// itm_date, trm_idx_line, itm_shift, bom_idx, itm_status
+// kpi,m-erp,데이터 관련 페이지 접근할때만 item_sum테이블을 초기화 할것을 검토하자.
+//if($sub_menu == '960100' || $sub_menu == '955400' || $sub_menu == '955500')
 if(!function_exists('update_item_sum2')){
 function update_item_sum2() {
     global $g5;
@@ -163,22 +136,77 @@ function update_item_sum2() {
     sql_query($truncate_sql,1);
 
     $sqls = " INSERT INTO {$g5['item_sum_table']} (com_idx, imp_idx, mms_idx, mmg_idx, itm_date, trm_idx_line, bom_idx, bom_part_no, itm_price, itm_status, itm_count, itm_weight, itm_type)
-           
-           SELECT 
-                itm.com_idx AS com_idx,itm.imp_idx AS imp_idx,itm.mms_idx AS mms_idx,31,itm_date AS mt_date, trm_idx_line AS trm_idx_line, oop.bom_idx AS bom_idx, bom_part_no AS bom_part_no, itm_price AS mt_price, itm_status AS mt_status,COUNT(itm_idx) AS mt_count,SUM(itm_weight) AS mt_sum,'product'
-            FROM {$g5['item_table']} AS itm
-                LEFT JOIN {$g5['order_out_practice_table']} AS oop ON oop.oop_idx = itm.oop_idx
-                LEFT JOIN {$g5['order_practice_table']} AS orp ON orp.orp_idx = oop.orp_idx
+           SELECT  itm.com_idx
+                ,itm.imp_idx
+                ,itm.mms_idx
+                ,".$g5['setting']['set_uph_mmg']."
+                ,itm_date AS mt_date
+                ,trm_idx_line
+                ,oop.bom_idx
+                ,bom_part_no
+                ,itm_price AS mt_price
+                ,itm_status AS mt_status
+                ,COUNT(itm_idx) AS mt_count
+                ,SUM(itm_weight) AS mt_sum
+                ,'product'
+            FROM {$g5['item_table']} itm
+                LEFT JOIN {$g5['order_out_practice_table']} oop ON oop.oop_idx = itm.oop_idx
+                LEFT JOIN {$g5['order_practice_table']} orp ON orp.orp_idx = oop.orp_idx
+            WHERE itm_status NOT IN ('trash','delete')
+                AND itm_date != '0000-00-00'
+            GROUP BY itm_date, itm.mms_idx, trm_idx_line, itm_shift, bom_idx, itm_status
+            ORDER BY mt_date ASC, trm_idx_line, bom_idx, mt_status 
+    ";
+    sql_query($sqls,1);
+}
+}
+
+if(!function_exists('update_item_sum2_bak')){
+function update_item_sum2_bak() {
+    global $g5;
+
+    //item_sum 테이블 초기화
+    $truncate_sql = " TRUNCATE {$g5['item_sum_table']} ";
+    sql_query($truncate_sql,1);
+
+    $sqls = " INSERT INTO {$g5['item_sum_table']} (com_idx, imp_idx, mms_idx, mmg_idx, itm_date, trm_idx_line, bom_idx, bom_part_no, itm_price, itm_status, itm_count, itm_weight, itm_type)
+           SELECT  itm.com_idx
+                ,itm.imp_idx
+                ,itm.mms_idx
+                ,".$g5['setting']['set_uph_mmg']."
+                ,itm_date AS mt_date
+                ,trm_idx_line
+                ,oop.bom_idx
+                ,bom_part_no
+                ,itm_price AS mt_price
+                ,itm_status AS mt_status
+                ,COUNT(itm_idx) AS mt_count
+                ,SUM(itm_weight) AS mt_sum
+                ,'product'
+            FROM {$g5['item_table']} itm
+                LEFT JOIN {$g5['order_out_practice_table']} oop ON oop.oop_idx = itm.oop_idx
+                LEFT JOIN {$g5['order_practice_table']} orp ON orp.orp_idx = oop.orp_idx
             WHERE itm_status NOT IN ('trash','delete')
                 AND itm_date != '0000-00-00'
             GROUP BY itm_date, itm.mms_idx, trm_idx_line, itm_shift, bom_idx, itm_status
 
             UNION
 
-            SELECT 
-                mtr.com_idx AS com_idx,mtr.imp_idx AS imp_idx,mtr.mms_idx AS mms_idx,31,mtr_input_date AS mt_date,trm_idx_location AS trm_idx_line,oop.bom_idx AS bom_idx,bom_part_no AS bom_part_no,mtr_price AS mt_price,mtr_status AS mt_status,COUNT(mtr_idx) AS mt_count,SUM(mtr_weight) AS mt_sum,'half'
-            FROM {$g5['material_table']} AS mtr
-                LEFT JOIN {$g5['order_out_practice_table']} AS oop ON oop.oop_idx = mtr.oop_idx
+            SELECT mtr.com_idx
+                ,mtr.imp_idx
+                ,mtr.mms_idx
+                ,".$g5['setting']['set_uph_mmg']."
+                ,mtr_input_date AS mt_date
+                ,trm_idx_location AS trm_idx_line
+                ,oop.bom_idx
+                ,bom_part_no
+                ,mtr_price AS mt_price
+                ,mtr_status AS mt_status
+                ,COUNT(mtr_idx) AS mt_count
+                ,SUM(mtr_weight) AS mt_sum
+                ,'half'
+            FROM {$g5['material_table']} mtr
+                LEFT JOIN {$g5['order_out_practice_table']} oop ON oop.oop_idx = mtr.oop_idx
                 LEFT JOIN {$g5['order_practice_table']} AS orp ON orp.orp_idx = oop.orp_idx
             WHERE mtr_status NOT IN ('trash','delete')
                 AND mtr_input_date != '0000-00-00'
@@ -188,7 +216,6 @@ function update_item_sum2() {
     sql_query($sqls,1);
 }
 }
-
 
 
 // item 출하 처리 함수 (material도 함께 변경)
@@ -3927,4 +3954,200 @@ function item_shif_date_return2($date){
     return $shift;
 }
 }
+
+// 두 날짜사이의 모든날짜를 배열로 반환하는 함수
+if(!function_exists('date_gapdays_times')){
+function date_gapdays_times($sdate,$edate,$stime,$etime){
+    $sdate = str_replace("-","",$sdate);
+    $edate = str_replace("-","",$edate);
+    $days = date_diff(new DateTime($sdate),new DateTime($edate))->d;
+    
+    for($i=$sdate;$i<=$edate;$i++){
+        $year = substr($i,0,4);
+        $month = substr($i,4,2);
+        $day = substr($i,6,2);
+        if(checkdate($month,$day,$year)){
+            if($days == 0){
+                $date[$year."-".$month."-".$day] = array('start'=>$stime,'end'=>$etime);
+            }
+            else if($days == 1){
+                if($i == $sdate){
+                    $date[$year."-".$month."-".$day] = array('start'=>$stime,'end'=>'23:59:59');
+                }
+                else if($i == $edate){
+                    $date[$year."-".$month."-".$day] = array('start'=>'00:00:00','end'=>$etime);
+                }
+            }
+            else{
+                if($i == $sdate){
+                    $date[$year."-".$month."-".$day] = array('start'=>$stime,'end'=>'23:59:59');
+                }
+                else if($i == $edate){
+                    $date[$year."-".$month."-".$day] = array('start'=>'00:00:00','end'=>$etime);
+                }
+                else{
+                    $date[$year."-".$month."-".$day] = array('start'=>'00:00:00','end'=>'23:59:59');
+                }
+            }
+        }
+    }
+    return $date;
+}
+}
+
+/*
+$offsomed(
+    [2022-12-03] => Array(
+        [start] => 05:59:27
+        [end] => 23:59:59
+    )
+    [2022-12-04] => Array(
+        [start] => 00:00:00
+        [end] => 23:59:59
+    )
+    [2022-12-05] => Array(
+        [start] => 00:00:00
+        [end] => 11:59:27
+    )
+)
+$offdaily(
+    [0] => Array(
+        [start] => 05:00:00
+        [end] => 06:59:59
+    )
+    [1] => Array(
+        [start] => 13:00:00
+        [end] => 13:59:59
+    )
+)
+*/
+// 두 날짜사이의 모든날짜를 배열로 반환하는 함수
+if(!function_exists('offtime_result')){
+function offtime_result($start_dt,$end_dt,$offday,$offone){
+    $itm_date = substr($start_dt,0,10);
+    $work_seconds = strtotime($end_dt) - strtotime($start_dt);
+    $work_minutes = $work_seconds / 60;
+    $work_hours = $work_minutes / 60;
+
+    $off_seconds = 0;
+    $off_minutes = $off_seconds / 60;
+    $off_hours = $off_minutes / 60;
+
+    $off_arr = array();
+    if($offday && count($offday)){
+        foreach($offday as $od){
+            array_push($off_arr,array('start'=>$itm_date.' '.$od['start'],'end'=>$itm_date.' '.$od['end']));
+        } 
+    }
+
+    if($offone && count($offone)){
+        array_push($off_arr,array('start'=>$itm_date.' '.$offone['start'],'end'=>$itm_date.' '.$offone['end']));
+    }
+
+    $off_trim = array();
+    if(count($off_arr))
+        $off_trim = offtime_trim($start_dt,$end_dt,$off_arr);
+
+    // $off_res = array();
+    // if(count($off_trim))
+    //     $off_res = off_result($start_dt,$end_dt,$off_trim);
+
+    //$off_seconds
+    if(count($off_trim)){
+        for($i=0;$i<count($off_trim);$i++){
+            $off_seconds = $off_seconds + (strtotime($off_trim[$i]['end']) - strtotime($off_trim[$i]['start']));
+        }
+        $off_minutes = $off_seconds / 60;
+        $off_hours = $off_minutes / 60;
+    }
+
+    return $off_seconds;
+}
+}
+
+// 작업시간 범위와 상관없는 공제시간들을 제거해서 다시 공제시간을 배열로 재정리해서 반환
+if(!function_exists('offtime_trim')){
+function offtime_trim($start_dt,$end_dt,$off_arr){
+    $trim_arr = array();
+    foreach($off_arr as $off){
+        //공제시간이 작업시간 범위를 완전히 벗어난 경우에는 적용할 필요가 없다.
+        if( strtotime($off['start']) > strtotime($end_dt) 
+            || strtotime($off['end']) < strtotime($start_dt) )
+            continue;
+        //공제시간범위가 작업시작시간과 걸쳐있는 경우(작업 시작시간 ~ 공제종료시간까지의 시간범위계산)
+        else if( strtotime($off['start']) <= strtotime($start_dt) 
+            && strtotime($off['end']) > strtotime($start_dt) 
+            && strtotime($off['end']) <= strtotime($end_dt) ){
+            array_push($trim_arr,array('start'=>$start_dt,'end'=>$off['end']));
+        }
+        //공제시간범위가 작업시간범위 안에 있는 경우(공제시작시간 ~ 공제종료시간까지의 시간범위계산)
+        else if( strtotime($off['start']) >= strtotime($start_dt)
+            && strtotime($off['end']) <= strtotime($end_dt) ){
+            array_push($trim_arr,array('start'=>$off['start'],'end'=>$off['end']));
+        }
+        //공제시간범위가 작업종료시간과 걸쳐있는 경우(공제시작시간 ~ 작업종료시간까지의 시간범위계산)
+        else if( strtotime($off['start']) >= strtotime($start_dt) 
+            && strtotime($off['start']) < strtotime($end_dt)
+            && strtotime($off['end']) >= strtotime($end_dt) ){
+            array_push($trim_arr,array('start'=>$off['start'],'end'=>$end_dt));
+        }
+        //작업시간범위가 공제시간범위 안에 속할경우(작업시작시간 ~ 작업종료까지의 시간범위)
+        else if( strtotime($off['start']) < strtotime($start_dt)
+            && strtotime($off['end']) > strtotime($end_dt) ){
+            array_push($trim_arr,array('start'=>$start_dt,'end'=>$end_dt));
+        }
+    }
+
+    return $trim_arr;
+}
+}
+/*
+//재정리(트림)된 공제시간들에 중첩 또는 분리된 시간들을 정리해서 반환
+if(!function_exists('off_result')){
+function off_result($start_dt,$end_dt,$off_arr){
+    $res_arr = array();
+    $chk_arr = array();
+    foreach($off_arr as $ofp){
+        foreach($off_arr as $ofs){
+            if($ofp['start'] == $ofs['start'] && $ofp['end'] == $ofs['end'])
+                continue;
+            if(in_array(array('p_start'=>$ofp['start'],'p_end'=>$ofp['end'],'s_start'=>$ofs['start'],'s_end'=>$ofs['end']),$chk_arr))
+                continue;
+            //p시간범위가 s시간범위를 완전히 벗어난 경우에는 두개 시간범위 둘 다 저장
+            if( strtotime($ofp['start']) > strtotime($ofs['end']) 
+                || strtotime($ofp['end']) < strtotime($ofs['start']) ){
+                array_push($res_arr,array('start'=>$ofp['start'],'end'=>$ofp['end']));
+                array_push($res_arr,array('start'=>$ofs['start'],'end'=>$ofs['end']));
+            }
+            //p시간범위가 s시간범위에 걸쳐있는 경우(p시작시간 ~ s종료시간까지로 등록)
+            else if( strtotime($ofp['start']) <= strtotime($ofs['start']) 
+                && strtotime($ofp['end']) > strtotime($ofs['start']) 
+                && strtotime($ofp['end']) <= strtotime($ofs['end']) ){
+                array_push($res_arr,array('start'=>$ofp['start'],'end'=>$ofs['end']));
+            }
+            //p시간범위가 s시간범위 안에 있는 경우(s시작시간 ~ s종료시간까지로 등록)
+            else if( strtotime($ofp['start']) >= strtotime($ofs['start'])
+                && strtotime($ofp['end']) <= strtotime($ofs['end']) ){
+                array_push($res_arr,array('start'=>$ofs['start'],'end'=>$ofs['end']));
+            }
+            //p시간범위가 s종료시간과 걸쳐있는 경우(s시작시간 ~ p종료시간까지로 등록)
+            else if( strtotime($ofp['start']) >= strtotime($ofs['start']) 
+                && strtotime($ofp['start']) < strtotime($ofs['end'])
+                && strtotime($ofp['end']) >= strtotime($ofs['end']) ){
+                array_push($res_arr,array('start'=>$ofs['start'],'end'=>$$ofp['end']));
+            }
+            //s시간범위가 p시간범위 안에 속할경우(p시작시간 ~ p종료까지의 시간범위)
+            else if( strtotime($ofp['start']) < strtotime($ofs['start'])
+                && strtotime($ofp['end']) > strtotime($ofs['end']) ){
+                array_push($res_arr,array('start'=>$ofp['start'],'end'=>$ofp['end']));
+            }
+
+            array_push($chk_arr,array('p_start'=>$ofs['start'],'p_end'=>$ofs['end'],'s_start'=>$ofp['start'],'s_end'=>$ofp['end']));
+        }
+    }
+
+    return $res_arr;
+}
+}
+*/
 ?>
