@@ -30,7 +30,7 @@
 .tbl_head01 tbody td.td_d{border-bottom:1px solid #555;}
 .tbl_head01 tbody td .dv_cell{min-height:100px;}
 .tbl_head01 tbody td.td_today{background:#6D214F;}
-.tbl_head01 tbody td.td_today_n{background:#4B112D;}
+.tbl_head01 tbody td.td_today_n{background:#4B112D !important;}
 .dv_item{position:relative;text-align:left;padding:5px;border:1px solid #2980b9;background:#1e3799;border-radius:5px;margin-top:5px;}
 .dv_item.dv_child{background:#1e2c1c;}
 .dv_item.dv_stop{border:1px solid #4c4e56;background:#383a40;opacity:0.7;}

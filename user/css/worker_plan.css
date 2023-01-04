@@ -58,6 +58,7 @@ html,body{height:100%;}
 /* 테이블 관련 */
 .tbl_head01 th{background:#000204 !important;border: 1px solid #50537c !important;}
 .tbl_head01 tbody td{border: 1px solid #4d5a77;color:#bbb;}
+.tbl_head01 tbody td.td_today_n{background:#4B112D !important;}
 .tbl_head01 thead tr th {white-space:nowrap;}
 .tbl_head01 thead th {
     background: #0B1838;

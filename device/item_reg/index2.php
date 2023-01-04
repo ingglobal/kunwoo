@@ -143,7 +143,7 @@ for($j=0;$j<$getData[0]['number'];$j++){
             $sql = " INSERT INTO {$g5['item_table']} ( com_idx, mms_idx, bom_idx, oop_idx, bom_part_no, itm_name, itm_weight, itm_heat, itm_price, itm_status, itm_date, itm_reg_dt, itm_update_dt ) VALUES ";
             $sql_loop = '';
             for($i=0;$i<$cp_num;$i++){
-                $sql_loop .= (($i==0)?'':',')." ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', '{$bom1['bom_price']}, 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' ) ";
+                $sql_loop .= (($i==0)?'':',')." ( '{$bom1['com_idx']}', '{$getData[0]['mms_idx']}', '{$bom1['bom_idx']}', '{$getData[0]['oop_idx']}', '{$bom1['bom_part_no']}', '".addslashes($bom1['bom_name'])."', '{$bom1['bom_weight']}', '{$getData[0]['heat']}', '{$bom1['bom_price']}', 'finish', '".$start_dt_10."', '".$start_date."', '".$start_date."' ) ";
             }
             $sql = $sql.$sql_loop;
         }

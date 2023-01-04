@@ -345,7 +345,7 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 		<tr>
 			<th scope="row">가동상태</th>
 			<td colspan="3">
-				<?php echo help('0=POWER OFF, 1=수동, 2=자동, 3=이상') ?>
+				<?php echo help('0=작동, 1=수동, 2=자동, 3=이상') ?>
 				<input type="text" name="set_run_status" value="<?php echo $g5['setting']['set_run_status']; ?>" class="frm_input" style="width:60%;">
 			</td>
 		</tr>

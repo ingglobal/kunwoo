@@ -74,8 +74,8 @@ $from_record = ($page - 1) * $rows; // 시작 열을 구함
 $sql = " SELECT SQL_CALC_FOUND_ROWS 
                     DISTINCT ".$pre.".*
                     , bom.bom_name
-                    , SUM(itm.itm_count) AS itm_cnt
-                    , SUM(itm.itm_weight) AS itm_wt
+                    , bom.bom_std
+                    , COUNT(itm.itm_idx) AS itm_cnt
 		{$sql_common}
 		{$sql_groupby}
 		{$sql_search}
@@ -93,13 +93,12 @@ $listall = '<a href="'.$_SERVER['SCRIPT_NAME'].'" class="ov_listall">전체목�
 // 각 항목명 및 항목 설정값 정의, 형식: 항목명, colspan, rowspan, 정렬링크여부(타이틀클릭)
 $items1 = array(
     "itm_idx"=>array("번호",0,0,1)
+    ,"bom_part_no"=>array("품목코드",0,0,0)
     ,"bom_name"=>array("품명",0,0,0)
-    ,"bom_part_no"=>array("파트번호",0,0,0)
-    ,"mms_idx"=>array("MMS_idx",0,0,0)
-    ,"trm_idx_line"=>array("라인",0,0,0)
+    ,"bom_std"=>array("규격",0,0,0)
+    ,"mms_idx"=>array("설비",0,0,0)
     ,"itm_status"=>array("상태",0,0,0)
-    ,"itm_cnt"=>array("톤백수량",0,0,0)
-    ,"itm_wt"=>array("무게(kg)",0,0,0)
+    ,"itm_cnt"=>array("수량",0,0,0)
     ,"itm_date"=>array("통계일",0,0,1)
 );
 /*
@@ -155,7 +154,7 @@ $items1 = array(
 <select name="sfl" id="sfl">
     <option value="">검색항목</option>
     <?php
-    $skips = array('com_idx','mms_idx','bom_part_no','trm_idx_line');
+    $skips = array('itm_idx','com_idx','mms_idx','itm_cnt');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}
@@ -221,7 +220,7 @@ function sch_submit(f){
             }
         }
         ?>
-		<th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th>
+		<!-- <th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th> -->
 	</tr>
 	</thead>
 	<tbody>
@@ -274,8 +273,8 @@ function sch_submit(f){
                     $list[$k1] = '<span class="font_size_8">'.date("y-m-d H:i:s",$row[$k1]).'</span>';
 //                    $list[$k1] = substr($row[$k1],0,10);
                 }
-                else if($k1=='trm_idx_line') {
-                    $list[$k1] = $line_name[$row['trm_idx_line']];
+                else if($k1=='mms_idx') {
+                    $list[$k1] = $g5['trms']['forge_idx_arr'][$row['mms_idx']];
                 }
                 else if($k1=='itm_status') {
                     $list[$k1] = $g5['set_itm_mtr_status'][$row['itm_status']];

@@ -4,12 +4,6 @@ include_once('./_common.php');
 
 auth_check($auth[$sub_menu],"r");
 
-if($sum_reload){
-    update_item_sum2();
-    unset($sum_reload);
-    unset($_GET['sum_reload']);
-    Header("Location:./kpi_uph.php"); 
-}
 // 변수 설정, 필드 구조 및 prefix 추출
 $qstr .= '&ser_mms_idx='.$ser_mms_idx.'&st_date='.$st_date.'&en_date='.$en_date.'&st_time='.$st_time.'&en_time='.$en_time; // 추가로 확장해서 넘겨야 할 변수들
 

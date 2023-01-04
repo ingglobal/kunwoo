@@ -84,7 +84,7 @@ add_javascript('<script src="'.G5_USER_URL.'/js/slick-1.8.1/slick/slick.min.js">
             <td>생산기종</td>
             <td class="mms_mmi_no"><?=$row['item']['mmi_no']?></td>
         </tr>
-        <tr>
+        <tr style="display:no ne;">
             <td>일생산</td>
             <td><span class="daily_output"></span></td>
         </tr>
@@ -101,6 +101,7 @@ add_javascript('<script src="'.G5_USER_URL.'/js/slick-1.8.1/slick/slick.min.js">
             <td><span class="daily_alarm_count"></span></td>
         </tr>
         <tr>
+            <!---0=ON, 1=수동, 2=자동, 3=이상--->
             <td colspan="2" class="td_dot"><span class="run_status"></span></td>
         </tr>
         </table>
@@ -171,7 +172,7 @@ add_javascript('<script src="'.G5_USER_URL.'/js/slick-1.8.1/slick/slick.min.js">
                         my_mms_li.find('table').data('daily_run_time_hour', my_run_time_hour );
 
                         // run status related.
-                        var run_status = (res.mms_status==null||res.mms_status==undefined) ? '-' : mms_run_status[res.mms_status];
+                        var run_status = (res.mms_status==0||res.mms_status==null||res.mms_status==undefined) ? '작동' : mms_run_status[res.mms_status];
                         my_mms_li.find('.run_status').text( run_status );
 
 

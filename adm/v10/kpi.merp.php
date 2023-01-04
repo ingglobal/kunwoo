@@ -248,7 +248,11 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
 		</ul>
 	</div>
     <!-- the end of .div_stat  -->
-    
+    <style>
+    .td_graph{position:relative;}
+    .td_graph .graph_total{position:absolute;top:13px;left:0;height:5px;width:100%;background:darkblue;}
+    .td_graph .graph_defect{position:relative;height:100%;background:red;}
+    </style>
 	<!-- start of 생산보고서  -->
 	<div class="div_title_01"><i class="fa fa-plus" aria-hidden="true"> 매출보고서</i></div>
 	<div class="div_wrapper">
@@ -286,10 +290,10 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                     , 'total' AS mmg_name
                                     , 0 AS depth
                                     , 0 AS mmg_left
-                                    , SUM( itm_weight ) AS output_sum
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight ELSE 0 END ) AS output_defect
-                                    , SUM( itm_weight * itm_price ) AS output_sum_price
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_defect_price
+                                    , SUM( itm_count ) AS output_sum
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count ELSE 0 END ) AS output_defect
+                                    , SUM( itm_count * itm_price ) AS output_sum_price
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_defect_price
                                 FROM {$g5['item_sum_table']}
                                 WHERE itm_date >= '".$st_date."'
                                     AND itm_date <= '".$en_date."'
@@ -345,10 +349,10 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                             (
                                             SELECT 
                                                 mmg_idx AS mmg_idx_group
-                                                , SUM( itm_weight ) AS output_sum
-                                                , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight ELSE 0 END ) AS output_defect
-                                                , SUM( itm_weight * itm_price ) AS output_sum_price
-                                                , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_defect_price
+                                                , SUM( itm_count ) AS output_sum
+                                                , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count ELSE 0 END ) AS output_defect
+                                                , SUM( itm_count * itm_price ) AS output_sum_price
+                                                , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_defect_price
                                             FROM {$g5['item_sum_table']}
                                             WHERE itm_date >= '".$st_date."'
                                                 AND itm_date <= '".$en_date."'
@@ -482,12 +486,12 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                             (
                                 SELECT 
                                     mms_idx
-                                    , SUM(itm_weight) AS output_total
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight ELSE 0 END ) AS output_good
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight ELSE 0 END ) AS output_defect
-                                    , SUM(itm_weight * itm_price) AS output_total_price
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_good_price
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_defect_price
+                                    , SUM(itm_count) AS output_total
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count ELSE 0 END ) AS output_good
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count ELSE 0 END ) AS output_defect
+                                    , SUM(itm_count * itm_price) AS output_total_price
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_good_price
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_defect_price
                                 FROM {$g5['item_sum_table']}
                                 WHERE itm_date >= '".$st_date."' AND itm_date <= '".$en_date."'
                                     AND com_idx='".$com_idx."'
@@ -501,9 +505,6 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                             ORDER BY n DESC, convert(item_name, decimal)
                     ";
                     // echo $sql;
-                    $result = sql_query($sql,1);
-
-                    // 전체 목표가 아니고 날짜별 목표중에서 최고값 추출
                     $result = sql_query($sql,1);
                     for ($i=0; $row=sql_fetch_array($result); $i++) {
                         // print_r2($row);
@@ -533,35 +534,10 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                             $row['tr_class'] = 'tr_stat_normal';
                             $row['target'] = $target['mms'][$row['item_name']];
                         }
-                        // echo $amount_max.'<br>';
-
-                        // 목표 대비 달성율
-                        print_r2($row);
-                        $row['rate_total'] = ($row['target']) ? $row['output_total'] / $row['target'] * 100 : 0 ;
-                        $row['rate_total_color'] = '#d1c594';
-                        $row['rate_total_color'] = ($row['rate_total']>=80) ? '#72ddf5' : $row['rate_total_color'];
-                        $row['rate_total_color'] = ($row['rate_total']>=100) ? '#ff9f64' : $row['rate_total_color'];
-                        $row['rate_good'] = ($row['target']) ? $row['output_good'] / $row['target'] * 100 : 0 ;
-                        $row['rate_good_color'] = '#d1c594';
-                        $row['rate_good_color'] = ($row['rate_good']>=80) ? '#72ddf5' : $row['rate_good_color'];
-                        $row['rate_good_color'] = ($row['rate_good']>=100) ? '#ff9f64' : $row['rate_good_color'];
-                        $row['rate_defect'] = ($row['target']) ? $row['output_defect'] / $row['target'] * 100 : 0 ;
-                        $row['rate_defect_color'] = '#ff7029';
-                        $row['rate_defect_color'] = ($row['rate_defect']>=80) ? '#ff2929' : $row['rate_defect_color'];
-                        $row['rate_defect_color'] = ($row['rate_defect']>=100) ? '#ff0d0d' : $row['rate_defect_color'];
-
-                        // 그래프
-                        if($amount_max && $row['output_total']) {
-                            $row['rate_total_percent'] = ($amount_max && $row['target']) ? $row['output_total'] / $amount_max * 100 : 0 ;
-                            $row['graph_total'] = '<img class="graph_output" src="./img/dot.gif" style="width:'.$row['rate_total_percent'].'%;background:'.$row['rate_total_color'].';" height="8px" title="생산: '.number_format($row['rate_total'],1).'%">';
-                            $row['rate_good_percent'] = ($amount_max && $row['target']) ? $row['output_good'] / $amount_max * 100 : 0 ;
-                            $row['graph_good'] = '<img class="graph_good" src="./img/dot.gif" style="width:'.$row['rate_good_percent'].'%;background:'.$row['rate_good_color'].';" height="8px" title="정상: '.number_format($row['rate_good'],1).'%">';
-                            $row['rate_defect_percent'] = ($amount_max && $row['target']) ? $row['output_defect'] / $amount_max * 100 : 0 ;
-                            $row['graph_defect'] = '<img class="graph_defect" src="./img/dot.gif" style="width:'.$row['rate_defect_percent'].'%;background:'.$row['rate_defect_color'].';" height="8px" title="불량: '.number_format($row['rate_defect'],1).'%">';
-                            $row['rate_target'] = ($amount_max) ? $row['target'] / $amount_max * 100 : 0 ;
-                            $row['graph_target'] = '<img class="graph_target" src="./img/dot.gif" style="width:'.$row['rate_target'].'%;background:#bbb;display:block" height="2px" title="목표">';
-                        }
-
+                        
+                        $row['output_defect_percent'] = ($row['output_total_price'])?floor($row['output_defect_price'] / $row['output_total_price'] * 100):0;
+                        $row['output_total_percent'] = ($row['output_total_price'])?100:0;
+                        // print_r2($row);
                         // First line total skip, start from second line.
                         if($i>0) {
                             echo '
@@ -570,7 +546,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                 <td class="text_right pr_5">'.number_format($row['output_good_price']).'</td><!-- 정상매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect_price']).'</td><!-- 불량매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_total_price']).'</td><!-- 전체매출 -->
-                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
+                                <td class="td_graph text_left pl_0"><div class="graph_total" style="width:100%;"><div class="graph_defect" style="width:'.$row['output_defect_percent'].'%;"></div></div></td>
                             </tr>
                             ';
                         }
@@ -584,12 +560,13 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
             </div><!-- .div_info_body -->
 
             <!-- ========================================================================================= -->
-            <div class="div_title_02"><i class="fa fa-check" aria-hidden="true"> 파트넘버별 매출</i></div>
+            <div class="div_title_02"><i class="fa fa-check" aria-hidden="true"> 품목코드별 매출</i></div>
             <div class="div_info_body">
                 <table class="table01">
                     <thead class="tbl_head">
                     <tr>
-                        <th scope="col">구분</th>
+                        <th scope="col">품목코드</th>
+                        <th scope="col">품명</th>
                         <th scope="col" style="width:16%;">정상매출</th>
                         <th scope="col" style="width:10%;">불량매출</th>
                         <th scope="col" style="width:16%;">전체매출</th>
@@ -601,6 +578,8 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                     $sql = "SELECT (CASE WHEN n='1' THEN CONCAT(mms_idx,'-',bom_part_no) ELSE 'total' END) AS item_name
                                 , mms_idx
                                 , bom_part_no
+                                , bom_name
+                                , bom_std
                                 , SUM(output_total) AS output_total
                                 , MAX(output_total) AS output_max
                                 , SUM(output_good) AS output_good
@@ -612,20 +591,23 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                             (
                                 SELECT
                                     mms_idx
-                                    , bom_part_no
-                                    , SUM(itm_weight) AS output_total
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight ELSE 0 END ) AS output_good
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight ELSE 0 END ) AS output_defect
-                                    , SUM(itm_weight * itm_price) AS output_total_price
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_good_price
-                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_defect_price
-                                FROM {$g5['item_sum_table']}
+                                    , itm.bom_part_no
+                                    , bom.bom_name
+                                    , bom.bom_std
+                                    , SUM(itm_count) AS output_total
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count ELSE 0 END ) AS output_good
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count ELSE 0 END ) AS output_defect
+                                    , SUM(itm_count * itm_price) AS output_total_price
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_good_price
+                                    , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_defect_price
+                                FROM {$g5['item_sum_table']} itm
+                                LEFT JOIN {$g5['bom_table']} bom ON itm.bom_idx = bom.bom_idx
                                 WHERE itm_date >= '".$st_date."' AND itm_date <= '".$en_date."'
-                                    AND com_idx='".$com_idx."'
+                                    AND itm.com_idx='".$com_idx."'
                                     AND itm_type = 'product'
                                     {$sql_mmses}
-                                GROUP BY mms_idx, bom_part_no
-                                ORDER BY mms_idx, bom_part_no
+                                GROUP BY mms_idx, itm.bom_part_no
+                                ORDER BY mms_idx, itm.bom_part_no
                             ) AS db2, g5_5_tally AS db_no
                             WHERE n <= 2
                             GROUP BY item_name
@@ -664,52 +646,18 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                             $row['tr_class'] = 'tr_stat_normal';
                             $row['target'] = $target['mms_mmi'][$row['mms_idx']][$row['dta_mmi_no']];
                         }
-                        // echo $amount_max.'<br>';
-
-                        // 목표 대비 달성율
-                        $row['rate_total'] = ($row['target']) ? $row['output_total'] / $row['target'] * 100 : 0 ;
-                        $row['rate_total_color'] = '#d1c594';
-                        $row['rate_total_color'] = ($row['rate_total']>=80) ? '#72ddf5' : $row['rate_total_color'];
-                        $row['rate_total_color'] = ($row['rate_total']>=100) ? '#ff9f64' : $row['rate_total_color'];
-                        $row['rate_good'] = ($row['target']) ? $row['output_good'] / $row['target'] * 100 : 0 ;
-                        $row['rate_good_color'] = '#d1c594';
-                        $row['rate_good_color'] = ($row['rate_good']>=80) ? '#72ddf5' : $row['rate_good_color'];
-                        $row['rate_good_color'] = ($row['rate_good']>=100) ? '#ff9f64' : $row['rate_good_color'];
-                        $row['rate_defect'] = ($row['target']) ? $row['output_defect'] / $row['target'] * 100 : 0 ;
-                        $row['rate_defect_color'] = '#ff7029';
-                        $row['rate_defect_color'] = ($row['rate_defect']>=80) ? '#ff2929' : $row['rate_defect_color'];
-                        $row['rate_defect_color'] = ($row['rate_defect']>=100) ? '#ff0d0d' : $row['rate_defect_color'];
-
-                        // 그래프
-                        if($amount_max && $row['output_total']) {
-                            $row['rate_total_percent'] = ($amount_max && $row['target']) ? $row['output_total'] / $amount_max * 100 : 0 ;
-                            $row['graph_total'] = '<img class="graph_output" src="./img/dot.gif" style="width:'.$row['rate_total_percent'].'%;background:'.$row['rate_total_color'].';" height="8px" title="생산: '.number_format($row['rate_total'],1).'%">';
-                            $row['rate_good_percent'] = ($amount_max && $row['target']) ? $row['output_good'] / $amount_max * 100 : 0 ;
-                            $row['graph_good'] = '<img class="graph_good" src="./img/dot.gif" style="width:'.$row['rate_good_percent'].'%;background:'.$row['rate_good_color'].';" height="8px" title="정상: '.number_format($row['rate_good'],1).'%">';
-                            $row['rate_defect_percent'] = ($amount_max && $row['target']) ? $row['output_defect'] / $amount_max * 100 : 0 ;
-                            $row['graph_defect'] = '<img class="graph_defect" src="./img/dot.gif" style="width:'.$row['rate_defect_percent'].'%;background:'.$row['rate_defect_color'].';" height="8px" title="불량: '.number_format($row['rate_defect'],1).'%">';
-                            $row['rate_target'] = ($amount_max) ? $row['target'] / $amount_max * 100 : 0 ;
-                            $row['graph_target'] = '<img class="graph_target" src="./img/dot.gif" style="width:'.$row['rate_target'].'%;background:#bbb;display:block" height="2px" title="목표">';
-                        }
-
-                        // 기종명
-                        // $cur_len = 17;
-                        // $row['mms_name'] = cut_str($g5['mms'][$row['mms_idx']]['mms_name'],$cur_len,'..');
-                        $row['mms_name'] = $g5['mms'][$row['mms_idx']]['mms_name'];
-                        $row['arr_str'] = preg_split("//u", $g5['mms'][$row['mms_idx']]['mms_name'], -1, PREG_SPLIT_NO_EMPTY);
-                        $row['str_len'] = count($row['arr_str']);
-                        // $row['mms_title'] = ($row['str_len'] >= $cur_len) ? ' title="'.$g5['mms'][$row['mms_idx']]['mms_name'].'"' : "";
-                        $row['mmi_name'] = ($row['dta_mmi_no']) ? ' <span style="color:#3ab4d2;">'.$row['dta_mmi_no'].'</span>': '';
-
+                        $row['output_defect_percent'] = ($row['output_total_price'])?floor($row['output_defect_price'] / $row['output_total_price'] * 100):0;
+                        $row['output_total_percent'] = ($row['output_total_price'])?100:0;
                         // First line total skip, start from second line.
                         if($i>0) {
                             echo '
                             <tr class="'.$row['tr_class'].'">
                                 <td class="text_left" '.$row['mms_title'].'>'.$row['mms_name'].' '.$row['bom_part_no'].'</td><!-- cache/mms-setting.php -->
+                                <td class="text_left">'.cut_str($row['bom_name'],25,'...').'</td><!-- cache/mms-setting.php -->
                                 <td class="text_right pr_5">'.number_format($row['output_good_price']).'</td><!-- 정상매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect_price']).'</td><!-- 불량매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_total_price']).'</td><!-- 전체매출 -->
-                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
+                                <td class="td_graph text_left pl_0"><div class="graph_total" style="width:100%;"><div class="graph_defect" style="width:'.$row['output_defect_percent'].'%;"></div></div></td>
                             </tr>
                             ';
                         }
@@ -779,12 +727,12 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                     (
                                     SELECT 
                                         itm_date AS ymd_date
-                                        , SUM(itm_weight) AS output_total
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight ELSE 0 END ) AS output_good
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight ELSE 0 END ) AS output_defect
-                                        , SUM(itm_weight * itm_price) AS output_total_price
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_good_price
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_defect_price
+                                        , SUM(itm_count) AS output_total
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count ELSE 0 END ) AS output_good
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count ELSE 0 END ) AS output_defect
+                                        , SUM(itm_count * itm_price) AS output_total_price
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_good_price
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_defect_price
                                     FROM {$g5['item_sum_table']}
                                     WHERE itm_date >= '".$st_date."' AND itm_date <= '".$en_date."'
                                         AND com_idx='".$com_idx."'
@@ -833,31 +781,8 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                         }
                         // echo $amount_max.'<br>';
 
-                        // 목표 대비 달성율
-                        $row['rate_total'] = ($row['target']) ? $row['output_total'] / $row['target'] * 100 : 0 ;
-                        $row['rate_total_color'] = '#d1c594';
-                        $row['rate_total_color'] = ($row['rate_total']>=80) ? '#72ddf5' : $row['rate_total_color'];
-                        $row['rate_total_color'] = ($row['rate_total']>=100) ? '#ff9f64' : $row['rate_total_color'];
-                        $row['rate_good'] = ($row['target']) ? $row['output_good'] / $row['target'] * 100 : 0 ;
-                        $row['rate_good_color'] = '#d1c594';
-                        $row['rate_good_color'] = ($row['rate_good']>=80) ? '#72ddf5' : $row['rate_good_color'];
-                        $row['rate_good_color'] = ($row['rate_good']>=100) ? '#ff9f64' : $row['rate_good_color'];
-                        $row['rate_defect'] = ($row['target']) ? $row['output_defect'] / $row['target'] * 100 : 0 ;
-                        $row['rate_defect_color'] = '#ff7029';
-                        $row['rate_defect_color'] = ($row['rate_defect']>=80) ? '#ff2929' : $row['rate_defect_color'];
-                        $row['rate_defect_color'] = ($row['rate_defect']>=100) ? '#ff0d0d' : $row['rate_defect_color'];
-
-                        // 그래프
-                        if($amount_max && $row['output_total']) {
-                            $row['rate_total_percent'] = ($amount_max && $row['target']) ? $row['output_total'] / $amount_max * 100 : 0 ;
-                            $row['graph_total'] = '<img class="graph_output" src="./img/dot.gif" style="width:'.$row['rate_total_percent'].'%;background:'.$row['rate_total_color'].';" height="8px" title="생산: '.number_format($row['rate_total'],1).'%">';
-                            $row['rate_good_percent'] = ($amount_max && $row['target']) ? $row['output_good'] / $amount_max * 100 : 0 ;
-                            $row['graph_good'] = '<img class="graph_good" src="./img/dot.gif" style="width:'.$row['rate_good_percent'].'%;background:'.$row['rate_good_color'].';" height="8px" title="정상: '.number_format($row['rate_good'],1).'%">';
-                            $row['rate_defect_percent'] = ($amount_max && $row['target']) ? $row['output_defect'] / $amount_max * 100 : 0 ;
-                            $row['graph_defect'] = '<img class="graph_defect" src="./img/dot.gif" style="width:'.$row['rate_defect_percent'].'%;background:'.$row['rate_defect_color'].';" height="8px" title="불량: '.number_format($row['rate_defect'],1).'%">';
-                            $row['rate_target'] = ($amount_max) ? $row['target'] / $amount_max * 100 : 0 ;
-                            $row['graph_target'] = '<img class="graph_target" src="./img/dot.gif" style="width:'.$row['rate_target'].'%;background:#bbb;display:block" height="2px" title="목표">';
-                        }
+                        $row['output_defect_percent'] = ($row['output_total_price'])?floor($row['output_defect_price'] / $row['output_total_price'] * 100):0;
+                        $row['output_total_percent'] = ($row['output_total_price'])?100:0;
 
                         // First line total skip, start from second line.
                         if($i>0) {
@@ -867,7 +792,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                 <td class="text_right pr_5">'.number_format($row['output_good_price']).'</td><!-- 정상매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect_price']).'</td><!-- 불량매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_total_price']).'</td><!-- 전체매출 -->
-                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
+                                <td class="td_graph text_left pl_0"><div class="graph_total" style="width:100%;"><div class="graph_defect" style="width:'.$row['output_defect_percent'].'%;"></div></div></td>
                             </tr>
                             ';
                         }
@@ -934,12 +859,12 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                     (
                                     SELECT 
                                         YEARWEEK(itm_date,4) AS ymd_week
-                                        , SUM(itm_weight) AS output_total
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight ELSE 0 END ) AS output_good
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight ELSE 0 END ) AS output_defect
-                                        , SUM(itm_weight * itm_price) AS output_total_price
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_good_price
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_defect_price
+                                        , SUM(itm_count) AS output_total
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count ELSE 0 END ) AS output_good
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count ELSE 0 END ) AS output_defect
+                                        , SUM(itm_count * itm_price) AS output_total_price
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_good_price
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_defect_price
                                     FROM {$g5['item_sum_table']}
                                     WHERE itm_date >= '".$st_date."' AND itm_date <= '".$en_date."'
                                         AND com_idx='".$com_idx."'
@@ -992,31 +917,8 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                         }
                         // echo $amount_max.'<br>';
 
-                        // 목표 대비 달성율
-                        $row['rate_total'] = ($row['target']) ? $row['output_total'] / $row['target'] * 100 : 0 ;
-                        $row['rate_total_color'] = '#d1c594';
-                        $row['rate_total_color'] = ($row['rate_total']>=80) ? '#72ddf5' : $row['rate_total_color'];
-                        $row['rate_total_color'] = ($row['rate_total']>=100) ? '#ff9f64' : $row['rate_total_color'];
-                        $row['rate_good'] = ($row['target']) ? $row['output_good'] / $row['target'] * 100 : 0 ;
-                        $row['rate_good_color'] = '#d1c594';
-                        $row['rate_good_color'] = ($row['rate_good']>=80) ? '#72ddf5' : $row['rate_good_color'];
-                        $row['rate_good_color'] = ($row['rate_good']>=100) ? '#ff9f64' : $row['rate_good_color'];
-                        $row['rate_defect'] = ($row['target']) ? $row['output_defect'] / $row['target'] * 100 : 0 ;
-                        $row['rate_defect_color'] = '#ff7029';
-                        $row['rate_defect_color'] = ($row['rate_defect']>=80) ? '#ff2929' : $row['rate_defect_color'];
-                        $row['rate_defect_color'] = ($row['rate_defect']>=100) ? '#ff0d0d' : $row['rate_defect_color'];
-
-                        // 그래프
-                        if($amount_max && $row['output_total']) {
-                            $row['rate_total_percent'] = ($amount_max && $row['target']) ? $row['output_total'] / $amount_max * 100 : 0 ;
-                            $row['graph_total'] = '<img class="graph_output" src="./img/dot.gif" style="width:'.$row['rate_total_percent'].'%;background:'.$row['rate_total_color'].';" height="8px" title="생산: '.number_format($row['rate_total'],1).'%">';
-                            $row['rate_good_percent'] = ($amount_max && $row['target']) ? $row['output_good'] / $amount_max * 100 : 0 ;
-                            $row['graph_good'] = '<img class="graph_good" src="./img/dot.gif" style="width:'.$row['rate_good_percent'].'%;background:'.$row['rate_good_color'].';" height="8px" title="정상: '.number_format($row['rate_good'],1).'%">';
-                            $row['rate_defect_percent'] = ($amount_max && $row['target']) ? $row['output_defect'] / $amount_max * 100 : 0 ;
-                            $row['graph_defect'] = '<img class="graph_defect" src="./img/dot.gif" style="width:'.$row['rate_defect_percent'].'%;background:'.$row['rate_defect_color'].';" height="8px" title="불량: '.number_format($row['rate_defect'],1).'%">';
-                            $row['rate_target'] = ($amount_max) ? $row['target'] / $amount_max * 100 : 0 ;
-                            $row['graph_target'] = '<img class="graph_target" src="./img/dot.gif" style="width:'.$row['rate_target'].'%;background:#bbb;display:block" height="2px" title="목표">';
-                        }
+                        $row['output_defect_percent'] = ($row['output_total_price'])?floor($row['output_defect_price'] / $row['output_total_price'] * 100):0;
+                        $row['output_total_percent'] = ($row['output_total_price'])?100:0;
 
                         // First line total skip, start from second line.
                         if($i>0) {
@@ -1033,7 +935,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                 <td class="text_right pr_5">'.number_format($row['output_good_price']).'</td><!-- 정상매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect_price']).'</td><!-- 불량매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_total_price']).'</td><!-- 전체매출 -->
-                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
+                                <td class="td_graph text_left pl_0"><div class="graph_total" style="width:100%;"><div class="graph_defect" style="width:'.$row['output_defect_percent'].'%;"></div></div></td>
                             </tr>
                             ';
                         }
@@ -1100,12 +1002,12 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                     (
                                     SELECT 
                                         substring( CAST(itm_date AS CHAR),1,7) AS ymd_month
-                                        , SUM(itm_weight) AS output_total
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight ELSE 0 END ) AS output_good
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight ELSE 0 END ) AS output_defect
-                                        , SUM(itm_weight * itm_price) AS output_total_price
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_good_price
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_defect_price
+                                        , SUM(itm_count) AS output_total
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count ELSE 0 END ) AS output_good
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count ELSE 0 END ) AS output_defect
+                                        , SUM(itm_count * itm_price) AS output_total_price
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_good_price
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_defect_price
                                     FROM {$g5['item_sum_table']}
                                     WHERE itm_date >= '".$st_date."' AND itm_date <= '".$en_date."'
                                         AND com_idx='".$com_idx."'
@@ -1155,31 +1057,8 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                         }
                         // echo $amount_max.'<br>';
 
-                        // 목표 대비 달성율
-                        $row['rate_total'] = ($row['target']) ? $row['output_total'] / $row['target'] * 100 : 0 ;
-                        $row['rate_total_color'] = '#d1c594';
-                        $row['rate_total_color'] = ($row['rate_total']>=80) ? '#72ddf5' : $row['rate_total_color'];
-                        $row['rate_total_color'] = ($row['rate_total']>=100) ? '#ff9f64' : $row['rate_total_color'];
-                        $row['rate_good'] = ($row['target']) ? $row['output_good'] / $row['target'] * 100 : 0 ;
-                        $row['rate_good_color'] = '#d1c594';
-                        $row['rate_good_color'] = ($row['rate_good']>=80) ? '#72ddf5' : $row['rate_good_color'];
-                        $row['rate_good_color'] = ($row['rate_good']>=100) ? '#ff9f64' : $row['rate_good_color'];
-                        $row['rate_defect'] = ($row['target']) ? $row['output_defect'] / $row['target'] * 100 : 0 ;
-                        $row['rate_defect_color'] = '#ff7029';
-                        $row['rate_defect_color'] = ($row['rate_defect']>=80) ? '#ff2929' : $row['rate_defect_color'];
-                        $row['rate_defect_color'] = ($row['rate_defect']>=100) ? '#ff0d0d' : $row['rate_defect_color'];
-
-                        // 그래프
-                        if($amount_max && $row['output_total']) {
-                            $row['rate_total_percent'] = ($amount_max && $row['target']) ? $row['output_total'] / $amount_max * 100 : 0 ;
-                            $row['graph_total'] = '<img class="graph_output" src="./img/dot.gif" style="width:'.$row['rate_total_percent'].'%;background:'.$row['rate_total_color'].';" height="8px" title="생산: '.number_format($row['rate_total'],1).'%">';
-                            $row['rate_good_percent'] = ($amount_max && $row['target']) ? $row['output_good'] / $amount_max * 100 : 0 ;
-                            $row['graph_good'] = '<img class="graph_good" src="./img/dot.gif" style="width:'.$row['rate_good_percent'].'%;background:'.$row['rate_good_color'].';" height="8px" title="정상: '.number_format($row['rate_good'],1).'%">';
-                            $row['rate_defect_percent'] = ($amount_max && $row['target']) ? $row['output_defect'] / $amount_max * 100 : 0 ;
-                            $row['graph_defect'] = '<img class="graph_defect" src="./img/dot.gif" style="width:'.$row['rate_defect_percent'].'%;background:'.$row['rate_defect_color'].';" height="8px" title="불량: '.number_format($row['rate_defect'],1).'%">';
-                            $row['rate_target'] = ($amount_max) ? $row['target'] / $amount_max * 100 : 0 ;
-                            $row['graph_target'] = '<img class="graph_target" src="./img/dot.gif" style="width:'.$row['rate_target'].'%;background:#bbb;display:block" height="2px" title="목표">';
-                        }
+                        $row['output_defect_percent'] = ($row['output_total_price'])?floor($row['output_defect_price'] / $row['output_total_price'] * 100):0;
+                        $row['output_total_percent'] = ($row['output_total_price'])?100:0;
 
                         // First line total skip, start from second line.
                         if($i>0) {
@@ -1189,7 +1068,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                 <td class="text_right pr_5">'.number_format($row['output_good_price']).'</td><!-- 정상매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect_price']).'</td><!-- 불량매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_total_price']).'</td><!-- 전체매출 -->
-                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
+                                <td class="td_graph text_left pl_0"><div class="graph_total" style="width:100%;"><div class="graph_defect" style="width:'.$row['output_defect_percent'].'%;"></div></div></td>
                             </tr>
                             ';
                         }
@@ -1256,12 +1135,12 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                     (
                                     SELECT 
                                         substring( CAST(itm_date AS CHAR),1,4) AS ymd_year
-                                        , SUM(itm_weight) AS output_total
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight ELSE 0 END ) AS output_good
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight ELSE 0 END ) AS output_defect
-                                        , SUM(itm_weight * itm_price) AS output_total_price
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_good_price
-                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_weight * itm_price ELSE 0 END ) AS output_defect_price
+                                        , SUM(itm_count) AS output_total
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count ELSE 0 END ) AS output_good
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count ELSE 0 END ) AS output_defect
+                                        , SUM(itm_count * itm_price) AS output_total_price
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ok_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_good_price
+                                        , SUM( CASE WHEN itm_status IN ('".implode("','",$g5['set_itm_status_ng_array'])."') THEN itm_count * itm_price ELSE 0 END ) AS output_defect_price
                                     FROM {$g5['item_sum_table']}
                                     WHERE itm_date >= '".$st_date."' AND itm_date <= '".$en_date."'
                                         AND com_idx='".$com_idx."'
@@ -1311,31 +1190,8 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                         }
                         // echo $amount_max.'<br>';
 
-                        // 목표 대비 달성율
-                        $row['rate_total'] = ($row['target']) ? $row['output_total'] / $row['target'] * 100 : 0 ;
-                        $row['rate_total_color'] = '#d1c594';
-                        $row['rate_total_color'] = ($row['rate_total']>=80) ? '#72ddf5' : $row['rate_total_color'];
-                        $row['rate_total_color'] = ($row['rate_total']>=100) ? '#ff9f64' : $row['rate_total_color'];
-                        $row['rate_good'] = ($row['target']) ? $row['output_good'] / $row['target'] * 100 : 0 ;
-                        $row['rate_good_color'] = '#d1c594';
-                        $row['rate_good_color'] = ($row['rate_good']>=80) ? '#72ddf5' : $row['rate_good_color'];
-                        $row['rate_good_color'] = ($row['rate_good']>=100) ? '#ff9f64' : $row['rate_good_color'];
-                        $row['rate_defect'] = ($row['target']) ? $row['output_defect'] / $row['target'] * 100 : 0 ;
-                        $row['rate_defect_color'] = '#ff7029';
-                        $row['rate_defect_color'] = ($row['rate_defect']>=80) ? '#ff2929' : $row['rate_defect_color'];
-                        $row['rate_defect_color'] = ($row['rate_defect']>=100) ? '#ff0d0d' : $row['rate_defect_color'];
-
-                        // 그래프
-                        if($amount_max && $row['output_total']) {
-                            $row['rate_total_percent'] = ($amount_max && $row['target']) ? $row['output_total'] / $amount_max * 100 : 0 ;
-                            $row['graph_total'] = '<img class="graph_output" src="./img/dot.gif" style="width:'.$row['rate_total_percent'].'%;background:'.$row['rate_total_color'].';" height="8px" title="생산: '.number_format($row['rate_total'],1).'%">';
-                            $row['rate_good_percent'] = ($amount_max && $row['target']) ? $row['output_good'] / $amount_max * 100 : 0 ;
-                            $row['graph_good'] = '<img class="graph_good" src="./img/dot.gif" style="width:'.$row['rate_good_percent'].'%;background:'.$row['rate_good_color'].';" height="8px" title="정상: '.number_format($row['rate_good'],1).'%">';
-                            $row['rate_defect_percent'] = ($amount_max && $row['target']) ? $row['output_defect'] / $amount_max * 100 : 0 ;
-                            $row['graph_defect'] = '<img class="graph_defect" src="./img/dot.gif" style="width:'.$row['rate_defect_percent'].'%;background:'.$row['rate_defect_color'].';" height="8px" title="불량: '.number_format($row['rate_defect'],1).'%">';
-                            $row['rate_target'] = ($amount_max) ? $row['target'] / $amount_max * 100 : 0 ;
-                            $row['graph_target'] = '<img class="graph_target" src="./img/dot.gif" style="width:'.$row['rate_target'].'%;background:#bbb;display:block" height="2px" title="목표">';
-                        }
+                        $row['output_defect_percent'] = ($row['output_total_price'])?floor($row['output_defect_price'] / $row['output_total_price'] * 100):0;
+                        $row['output_total_percent'] = ($row['output_total_price'])?100:0;
 
                         // First line total skip, start from second line.
                         if($i>0) {
@@ -1345,7 +1201,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css"
                                 <td class="text_right pr_5">'.number_format($row['output_good_price']).'</td><!-- 정상매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect_price']).'</td><!-- 불량매출 -->
                                 <td class="text_right pr_5">'.number_format($row['output_total_price']).'</td><!-- 전체매출 -->
-                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
+                                <td class="td_graph text_left pl_0"><div class="graph_total" style="width:100%;"><div class="graph_defect" style="width:'.$row['output_defect_percent'].'%;"></div></div></td>
                             </tr>
                             ';
                         }
