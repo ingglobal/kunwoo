@@ -18,8 +18,13 @@ include_once('./_top_menu_data.php');
 include_once('./_head.php');
 echo $g5['container_sub_title'];
 
+$sql_error = " ( SELECT dta_group,dta_code,dta_message FROM {$g5['data_error_table']}
+                GROUP BY dta_code, dta_group
+                HAVING dta_group = 'err' ) ";
 
-$sql_common = " FROM {$g5_table_name} AS ".$pre." "; 
+$sql_common = " FROM {$g5_table_name} dta 
+                    LEFT JOIN {$sql_error} err ON dta.dta_code = err.dta_code
+"; 
 
 $where = array();
 $where[] = " (1) ";   // 디폴트 검색조건
@@ -27,30 +32,30 @@ $where[] = " (1) ";   // 디폴트 검색조건
 if ($stx && $sfl) {
     switch ($sfl) {
 		case ( $sfl == $pre.'_id' || $sfl == $pre.'_idx' || $sfl == 'mms_idx' ) :
-            $where[] = " ({$sfl} = '{$stx}') ";
+            $where[] = " (dta.{$sfl} = '{$stx}') ";
             break;
 		case ($sfl == $pre.'_hp') :
             $where[] = " REGEXP_REPLACE(mb_hp,'-','') LIKE '".preg_replace("/-/","",$stx)."' ";
             break;
         default :
-            $where[] = " ({$sfl} LIKE '%{$stx}%') ";
+            $where[] = " (dta.{$sfl} LIKE '%{$stx}%') ";
             break;
     }
 }
 
-$where[] = " com_idx = '".$_SESSION['ss_com_idx']."' ";
+$where[] = " dta.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 // 기간 검색
 if ($st_date) {
-    $where[] = " dta_date >= '".$st_date."' ";
+    $where[] = " dta.dta_date >= '".$st_date."' ";
 }
 if ($en_date) {
-    $where[] = " dta_date <= '".$en_date."' ";
+    $where[] = " dta.dta_date <= '".$en_date."' ";
 }
 
 // 설비번호 검색
 if ($ser_mms_idx) {
-    $where[] = " mms_idx = '".$ser_mms_idx."' ";
+    $where[] = " dta.mms_idx = '".$ser_mms_idx."' ";
 }
 
 // 최종 WHERE 생성
@@ -59,7 +64,7 @@ if ($where)
 
 
 if (!$sst) {
-    $sst = $pre."_idx";
+    $sst = 'dta.'.$pre."_idx";
     $sod = "DESC";
 }
 $sql_order = " ORDER BY {$sst} {$sod} ";
@@ -68,7 +73,8 @@ $rows = $config['cf_page_rows'];
 if (!$page) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
-$sql = " SELECT SQL_CALC_FOUND_ROWS DISTINCT ".$pre.".*
+$sql = " SELECT SQL_CALC_FOUND_ROWS DISTINCT dta.*
+            ,err.dta_message
 		{$sql_common}
 		{$sql_search}
         {$sql_order}
@@ -88,8 +94,8 @@ $items1 = array(
     ,"mms_idx"=>array("설비번호",0,0,0)
     ,"imp_idx"=>array("IMP",0,0,0)
     ,"dta_code"=>array("CODE",0,0,0)
-    ,"dta_value"=>array("값(db)",0,0,0)
-    ,"dta_value_sum"=>array("합산",0,0,0)
+    ,"dta_message"=>array("의미",0,0,0)
+    ,"dta_value"=>array("발생수",0,0,0)
     ,"dta_date"=>array("날짜",0,0,1)
 );
 /*
@@ -134,14 +140,14 @@ $items1 = array(
 </select>
 <script>$('select[name=ser_mms_idx]').val("<?=$ser_mms_idx?>").attr('selected','selected');</script>
 
-<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:80px;" placeholder="검색시작일">
+<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="날짜검색시작">
 ~
-<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:80px;" placeholder="종료일">
+<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="날짜검색종료">
 
 <select name="sfl" id="sfl">
     <option value="">검색항목</option>
     <?php
-    $skips = array('com_idx','mmg_idx','mms_idx');
+    $skips = array('com_idx','mmg_idx','mms_idx','dta_date');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}
@@ -206,7 +212,6 @@ function sch_submit(f){
             }
         }
         ?>
-		<th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -290,7 +295,7 @@ function sch_submit(f){
                 echo '<td class="td_'.$k1.'" '.$row['colspan'].' '.$row['rowspan'].'>'.$list[$k1].'</td>';
             }
         }
-        if($member['mb_manager_yn']) {
+        if(false){ //($member['mb_manager_yn']) {
             echo '<td class="td_mngsmall">'.$row['s_mod'].'</td>'.PHP_EOL;
         }
         echo '</tr>'.PHP_EOL;	
@@ -321,19 +326,9 @@ function sch_submit(f){
 
 <script>
 $(function(e) {
-    $("input[name$=_date]").datepicker({
-        closeText: "닫기",
-        currentText: "오늘",
-        monthNames: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
-        monthNamesShort: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
-        dayNamesMin:['일','월','화','수','목','금','토'],
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "yy-mm-dd",
-        showButtonPanel: true,
-        yearRange: "c-99:c+99",
-        //maxDate: "+0d"
-    });
+    $("input[name=st_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect: function(selectedDate){$("input[name=en_date]").datepicker('option','minDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
+
+    $("input[name=en_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect:function(selectedDate){$("input[name=st_date]").datepicker('option','maxDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
 
     $(document).on('click','.btn_adjust',function(e){
         var dta_idx = $(this).attr('dta_idx');

@@ -354,7 +354,7 @@ $('.data_blank').on('click',function(e){
             </select>
             <script>
                 $('.cut_mms_<?=$row['oop_idx']?>').val('<?=$row['cut_mms_idx']?>');
-                </script>
+            </script>
         </td>
         <td class="td_forge_mms">
             <select name="forge_mms[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" class="forge_mms_idx forge_mms_<?=$row['oop_idx']?>">
@@ -363,7 +363,7 @@ $('.data_blank').on('click',function(e){
             </select>
             <script>
                 $('.forge_mms_<?=$row['oop_idx']?>').val('<?=(($row['forge_mms_idx'])?$row['forge_mms_idx']:'0')?>');
-                </script>
+            </script>
         </td>
         <td class="td_start_date">
             <input type="text" name="orp_start_date[<?=$row['oop_idx']?>]" oop_idx="<?=$row['oop_idx']?>" value="<?=(($row['orp_start_date'] == '0000-00-00')?'-':$row['orp_start_date'])?>" readonly class="readonly tbl_input" style="width:90px;background:#333 !important;text-align:center;">

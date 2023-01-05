@@ -12,6 +12,7 @@ define('G5_USER_DIR',                       'user');
 define('G5_USER_ADMIN_DIR',                 'v10');
 define('G5_AJAX_DIR',                       'ajax');
 define('G5_HOOK_DIR',                       'hook');
+define('G5_CRON_DIR',                       'cron');
 define('G5_WIDGET_DIR',                     'widget');
 define('G5_DEVICE_DIR',                     'device');
 define('G5_DEFAULT_COUNTRY',                'ko_KR');   //디폴트 국가_언어
@@ -19,6 +20,8 @@ define('G5_DEVICE_PATH',                    G5_PATH.'/'.G5_DEVICE_DIR);
 define('G5_DEVICE_URL',                     G5_URL.'/'.G5_DEVICE_DIR);
 define('G5_USER_PATH',                      G5_PATH.'/'.G5_USER_DIR);
 define('G5_USER_URL',                       G5_URL.'/'.G5_USER_DIR);
+define('G5_USER_CRON_PATH',                 G5_PATH.'/'.G5_USER_DIR.'/'.G5_CRON_DIR);
+define('G5_USER_CRON_URL',                  G5_URL.'/'.G5_USER_DIR.'/'.G5_CRON_DIR);
 define('G5_USER_THEME_PATH',                G5_THEME_PATH.'/'.G5_USER_DIR);
 define('G5_USER_THEME_URL',                 G5_THEME_URL.'/'.G5_USER_DIR);
 define('G5_USER_THEME_CSS_PATH',            G5_THEME_PATH.'/'.G5_USER_DIR.'/'.G5_CSS_DIR);

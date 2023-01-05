@@ -103,7 +103,6 @@ $items1 = array(
     ,"dta_code"=>array("에러코드",0,0,0)
     ,"dta_message"=>array("메시지",0,0,0)
     ,"dta_dt"=>array("에러일시",0,0,0)
-    ,"dta_reg_dt"=>array("등록일",0,0,0)
 );
 /*
 $items1 = array(
@@ -152,16 +151,16 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
 </select>
 <script>$('select[name=ser_mms_idx]').val("<?=$ser_mms_idx?>").attr('selected','selected');</script>
 
-<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:80px;">
+<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:98px;" placeholder="에러일시시작">
 <input type="text" name="st_time" value="<?=$st_time?>" id="st_time" class="frm_input" autocomplete="off" style="width:65px;" placeholder="00:00:00">
 ~
-<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:80px;">
+<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:98px;" placeholder="에러일시종료">
 <input type="text" name="en_time" value="<?=$en_time?>" id="en_time" class="frm_input" autocomplete="off" style="width:65px;" placeholder="00:00:00">
 
 <select name="sfl" id="sfl">
     <option value="">검색항목</option>
     <?php
-    $skips = array('dta_idx','mms_idx','com_idx','mmg_idx');
+    $skips = array('dta_idx','mms_idx','com_idx','mmg_idx','dta_dt');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}
@@ -307,6 +306,10 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
 
 <script>
 $(function(e) {
+    $("input[name=st_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect: function(selectedDate){$("input[name=en_date]").datepicker('option','minDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
+
+    $("input[name=en_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect:function(selectedDate){$("input[name=st_date]").datepicker('option','maxDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
+
     // timepicker 설정
     $("input[name$=_time]").timepicker({
         'timeFormat': 'H:i:s',
@@ -334,20 +337,6 @@ $(function(e) {
         if(prev=='') {
             $('input[name=en_time]').val('23:59:59');
         }
-    });
-
-    $("input[name$=_date]").datepicker({
-        closeText: "닫기",
-        currentText: "오늘",
-        monthNames: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
-        monthNamesShort: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
-        dayNamesMin:['일','월','화','수','목','금','토'],
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "yy-mm-dd",
-        showButtonPanel: true,
-        yearRange: "c-99:c+99",
-        //maxDate: "+0d"
     });
 
     // 마우스 hover 설정

@@ -13,7 +13,7 @@ $req_nick = !isset($member['mb_nick_date']) || (isset($member['mb_nick_date']) &
 <section id="ol_before" class="ol">
     <h2>
         <strong class="sound_only">회원로그인</strong>
-        <img src="<?=G5_THEME_IMG_URL?>/logo_bright4.png">
+        <img src="<?=G5_THEME_IMG_URL?>/logo_bright3.png">
         <p>제조기업예측제어시스템<br>v 1.02</p>
     </h2>
     <form name="foutlogin" action="<?php echo $outlogin_action_url ?>" onsubmit="return fhead_submit(this);" method="post" autocomplete="off">

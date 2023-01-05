@@ -11,7 +11,7 @@ $g5_table_name = $g5[$table_name.'_table'];
 $fields = sql_field_names($g5_table_name);
 $pre = substr($fields[0],0,strpos($fields[0],'_'));
 $fname = preg_replace("/_list/","",$g5['file_name']); // _list을 제외한 파일명
-$qstr .= '&ser_trm_line='.$ser_trm_line.'&st_date='.$st_date.'&en_date='.$en_date; // 추가로 확장해서 넘겨야 할 변수들
+$qstr .= '&ser_mms_idx='.$ser_mms_idx.'&ser_itm_status='.$ser_itm_status.'&st_date='.$st_date.'&en_date='.$en_date; // 추가로 확장해서 넘겨야 할 변수들
 
 
 $g5['title'] = '일별생산합계';
@@ -50,9 +50,13 @@ if ($en_date) {
     $where[] = " itm_date <= '".$en_date."' ";
 }
 
-// 라인번호 검색
-if ($ser_trm_line) {
-    $where[] = " itm.trm_idx_line = '".$ser_trm_line."' ";
+// 설비번호 검색
+if ($ser_mms_idx != '-1' && $ser_mms_idx) {
+    $where[] = " itm.mms_idx = '".$ser_mms_idx."' ";
+}
+// 상태값 검색
+if ($ser_itm_status) {
+    $where[] = " itm.itm_status = '".$ser_itm_status."' ";
 }
 
 // 최종 WHERE 생성
@@ -75,7 +79,7 @@ $sql = " SELECT SQL_CALC_FOUND_ROWS
                     DISTINCT ".$pre.".*
                     , bom.bom_name
                     , bom.bom_std
-                    , COUNT(itm.itm_idx) AS itm_cnt
+                    , SUM(itm.itm_count) AS itm_cnt
 		{$sql_common}
 		{$sql_groupby}
 		{$sql_search}
@@ -97,8 +101,8 @@ $items1 = array(
     ,"bom_name"=>array("품명",0,0,0)
     ,"bom_std"=>array("규격",0,0,0)
     ,"mms_idx"=>array("설비",0,0,0)
-    ,"itm_status"=>array("상태",0,0,0)
-    ,"itm_cnt"=>array("수량",0,0,0)
+    ,"itm_status"=>array("상태",0,0,0)  
+    ,"itm_count_sum"=>array("비교",0,0,0)
     ,"itm_date"=>array("통계일",0,0,1)
 );
 /*
@@ -125,36 +129,24 @@ $items1 = array(
 
 <form id="fsearch" name="fsearch" class="local_sch01 local_sch" onsubmit="return sch_submit(this);" method="get">
 <label for="sfl" class="sound_only">검색대상</label>
-<select name="ser_trm_line" id="ser_trm_line">
-    <option value="">설비라인</option>
-    <?php
-    // 설비라인
-    $sql2 = "SELECT trm_idx, trm_name
-            FROM {$g5['term_table']}
-            WHERE trm_status = 'ok'
-                AND com_idx = '".$_SESSION['ss_com_idx']."'
-                AND trm_taxonomy = 'line'
-            ORDER BY trm_left
-    ";
-    // echo $sql2.'<br>';
-    $result2 = sql_query($sql2,1);
-    for ($i=0; $row2=sql_fetch_array($result2); $i++) {
-        // print_r2($row2);
-        echo '<option value="'.$row2['trm_idx'].'" '.get_selected($ser_trm_line, $row2['trm_idx']).'>'.$row2['trm_name'].'</option>';
-        $line_name[$row2['trm_idx']] = $row2['trm_name'];    // 아래쪽에서 사용하기 위해서 변수 설정
-    }
-    ?>
+<select name="ser_mms_idx" id="ser_mms_idx">
+    <option value="-1">::단조설비선택::</option>
+    <?=$g5['forge_options']?>
 </select>
-<script>$('select[name=ser_trm_line]').val("<?=$ser_trm_line?>").attr('selected','selected');</script>
+<script>$('select[name=ser_mms_idx]').val("<?=(($ser_mms_idx)?$ser_mms_idx:'-1')?>").attr('selected','selected');</script>
 
-<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:80px;" placeholder="검색시작일">
+<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="통계시작일">
 ~
-<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:80px;" placeholder="종료일">
-
+<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="통계종료일">
+<select name="ser_itm_status" id="ser_itm_status">
+    <option value="">::상태선택::</option>
+    <?=$g5['set_itm_status_value_options']?>
+</select>
+<script>$('select[name=ser_itm_status]').val("<?=(($ser_itm_status)?$ser_itm_status:'')?>").attr('selected','selected');</script>
 <select name="sfl" id="sfl">
-    <option value="">검색항목</option>
+    <option value="">::검색항목::</option>
     <?php
-    $skips = array('itm_idx','com_idx','mms_idx','itm_cnt');
+    $skips = array('itm_idx','com_idx','mms_idx','itm_cnt','itm_status','itm_date');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}
@@ -283,8 +275,9 @@ function sch_submit(f){
                     $list[$k1] = number_format($row[$k1]);
                 }
                 else if($k1=='itm_count_sum') {
-                    $row['itm_count_sum_color'] = ($row['itm_count']!=$row[$k1]) ? 'darkorange':'';
-                    $list[$k1] = '<span style="color:'.$row['itm_count_sum_color'].'">'.number_format($row[$k1]).'</span>';
+                    $list[$k1] = number_format($row[$k1]);
+                    // $row['itm_count_sum_color'] = ($row['itm_count']!=$row[$k1]) ? 'darkorange':'';
+                    // $list[$k1] = '<span style="color:'.$row['itm_count_sum_color'].'">'.number_format($row[$k1]).'</span>';
                 }
 
                 $row['colspan'] = ($v1[1]>1) ? ' colspan="'.$v1[1].'"' : '';   // colspan 설정
@@ -292,7 +285,7 @@ function sch_submit(f){
                 echo '<td class="td_'.$k1.'" '.$row['colspan'].' '.$row['rowspan'].'>'.$list[$k1].'</td>';
             }
         }
-        if($member['mb_manager_yn']) {
+        if(false){ //($member['mb_manager_yn']) {
             echo '<td class="td_mngsmall">'.$row['s_mod'].'</td>'.PHP_EOL;
         }
         echo '</tr>'.PHP_EOL;	
@@ -325,19 +318,9 @@ function sch_submit(f){
 
 <script>
 $(function(e) {
-    $("input[name$=_date]").datepicker({
-        closeText: "닫기",
-        currentText: "오늘",
-        monthNames: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
-        monthNamesShort: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
-        dayNamesMin:['일','월','화','수','목','금','토'],
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "yy-mm-dd",
-        showButtonPanel: true,
-        yearRange: "c-99:c+99",
-        //maxDate: "+0d"
-    });
+    $("input[name=st_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect: function(selectedDate){$("input[name=en_date]").datepicker('option','minDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
+
+    $("input[name=en_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect:function(selectedDate){$("input[name=st_date]").datepicker('option','maxDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');  }  } });
 
     $(document).on('click','.btn_adjust',function(e){
         if(confirm('합계값을 조정하시겠습니까?')) {

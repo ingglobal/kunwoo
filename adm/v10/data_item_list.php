@@ -10,7 +10,7 @@ $g5_table_name = $g5[$table_name.'_table'];
 $fields = sql_field_names($g5_table_name);
 $pre = substr($fields[0],0,strpos($fields[0],'_'));
 $fname = preg_replace("/_list/","",$g5['file_name']); // _list을 제외한 파일명
-$qstr1 = "&st_date=$st_date&st_time=$st_time&en_date=$en_date&en_time=$en_time&ser_trm_line=$ser_trm_line";
+$qstr1 = "&st_date=".$st_date."&st_time=".$st_time."&en_date=".$en_date."&en_time=".$en_time."&ser_mms_idx=".$ser_mms_idx."&ser_itm_status=".$ser_itm_status."&st2_date=".$st2_date."&en2_date=".$en2_date;
 $qstr .= $qstr1;
 
 
@@ -39,7 +39,7 @@ if ($stx && $sfl) {
     }
 }
 
-// 기간 검색
+// 등록일시 기간 검색
 if ($st_date) {
     if ($st_time) {
         $where[] = " itm_reg_dt >= '".$st_date.' '.$st_time."' ";
@@ -57,9 +57,21 @@ if ($en_date) {
     }
 }
 
+// 통계일 기간 검색
+if ($st2_date) {
+    $where[] = " itm_date >= '".$st2_date."' ";
+}
+if ($en2_date) {
+    $where[] = " itm_date <= '".$en2_date."' ";
+}
+
 // 설비번호 검색
-if ($ser_trm_line) {
-    $where[] = " oop_idx IN ( SELECT orp_idx FROM {$g5['order_practice_table']} WHERE trm_idx_line = '".$ser_trm_line."' ) ";
+if ($ser_mms_idx != '-1' && $ser_mms_idx) {
+    $where[] = " itm.mms_idx = '".$ser_mms_idx."' ";
+}
+// 상태값 검색
+if ($ser_itm_status) {
+    $where[] = " itm.itm_status = '".$ser_itm_status."' ";
 }
 
 // 운영권한이 없으면 자기 업체만
@@ -98,11 +110,10 @@ $listall = '<a href="'.$_SERVER['SCRIPT_NAME'].'" class="ov_listall">전체목�
 $items1 = array(
     "itm_idx"=>array("번호",0,0,1)
     ,"itm_name"=>array("품명",0,0,0)
+    ,"oop_idx"=>array("실행계획ID",0,0,0)
     ,"bom_part_no"=>array("파트넘버",0,0,0)
-    ,"trm_idx_line"=>array("라인",0,0,0)
-    ,"orp_idx"=>array("실행계획",0,0,0)
+    ,"mms_idx"=>array("단조설비",0,0,0)
     ,"itm_weight"=>array("무게(kg)",0,0,0)
-    ,"itm_barcode"=>array("바코드",0,0,0)
     ,"itm_status"=>array("상태",0,0,0)
     ,"itm_date"=>array("통계일",0,0,0)
     ,"itm_reg_dt"=>array("등록일",0,0,0)
@@ -140,38 +151,29 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
 
 <form id="fsearch" name="fsearch" class="local_sch01 local_sch" method="get">
 <label for="sfl" class="sound_only">검색대상</label>
-<select name="ser_trm_line" id="ser_trm_line">
-    <option value="">설비라인</option>
-    <?php
-    // 설비라인
-    $sql2 = "SELECT trm_idx, trm_name
-            FROM {$g5['term_table']}
-            WHERE trm_status = 'ok'
-                AND com_idx = '".$_SESSION['ss_com_idx']."'
-                AND trm_taxonomy = 'line'
-            ORDER BY trm_left
-    ";
-    // echo $sql2.'<br>';
-    $result2 = sql_query($sql2,1);
-    for ($i=0; $row2=sql_fetch_array($result2); $i++) {
-        // print_r2($row2);
-        echo '<option value="'.$row2['trm_idx'].'" '.get_selected($ser_trm_line, $row2['trm_idx']).'>'.$row2['trm_name'].'</option>';
-        $line_name[$row2['trm_idx']] = $row2['trm_name'];    // 아래쪽에서 사용하기 위해서 변수 설정
-    }
-    ?>
+<select name="ser_mms_idx" id="ser_mms_idx">
+    <option value="-1">::단조설비선택::</option>
+    <?=$g5['forge_options']?>
 </select>
-<script>$('select[name=ser_trm_line]').val("<?=$ser_trm_line?>").attr('selected','selected');</script>
+<script>$('select[name=ser_mms_idx]').val("<?=(($ser_mms_idx)?$ser_mms_idx:'-1')?>").attr('selected','selected');</script>
 
-<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:80px;">
+<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="등록일시작">
 <input type="text" name="st_time" value="<?=$st_time?>" id="st_time" class="frm_input" autocomplete="off" style="width:65px;" placeholder="00:00:00">
 ~
-<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:80px;">
+<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="등록일종료">
 <input type="text" name="en_time" value="<?=$en_time?>" id="en_time" class="frm_input" autocomplete="off" style="width:65px;" placeholder="00:00:00">
-
+<select name="ser_itm_status" id="ser_itm_status">
+    <option value="">::상태선택::</option>
+    <?=$g5['set_itm_status_value_options']?>
+</select>
+<script>$('select[name=ser_itm_status]').val("<?=(($ser_itm_status)?$ser_itm_status:'')?>").attr('selected','selected');</script>
+<input type="text" name="st2_date" value="<?=$st2_date?>" id="st2_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="통계일시작">
+~
+<input type="text" name="en2_date" value="<?=$en2_date?>" id="en2_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="통계일종료">
 <select name="sfl" id="sfl">
-    <option value="">검색항목</option>
+    <option value="">::검색항목::</option>
     <?php
-    $skips = array('itm_idx','trm_idx','bom_part_no','itm_barcode','trm_idx_line');
+    $skips = array('itm_idx','trm_idx','bom_part_no','itm_barcode','trm_idx_line','itm_weight','itm_status','itm_reg_dt','itm_date','mms_idx');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}
@@ -179,8 +181,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
         }
     }
     ?>
-    <option value="bom_part_no"<?php echo get_selected($sfl, "bom_part_no"); ?>>파트넘버</option>
-    <option value="itm_barcode"<?php echo get_selected($sfl, "itm_barcode"); ?>>바코드</option>
+    <option value="bom_part_no"<?php echo get_selected($sfl, "bom_part_no"); ?>>품목코드</option>
 </select>
 <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
 <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
@@ -224,7 +225,6 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
             }
         }
         ?>
-		<th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -263,8 +263,8 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
                     // $list[$k1] = substr($row[$k1],0,10);
                     $list[$k1] = '<span class="font_size_8">'.substr($row[$k1],5,14).'</span>';
                 }
-                else if($k1=='trm_idx_line') {
-                    $list[$k1] = $line_name[$row['orp']['trm_idx_line']];
+                else if($k1=='mms_idx') {
+                    $list[$k1] = $g5['trms']['forge_idx_arr'][$row['mms_idx']];
                 }
                 else if($k1=='orp_idx') {
                     $p = sql_fetch(" SELECT orp_idx FROM {$g5['order_out_practice_table']} WHERE oop_idx = '{$row['oop_idx']}' ");
@@ -278,9 +278,6 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
                 $row['rowspan'] = ($v1[2]>1) ? ' rowspan="'.$v1[2].'"' : '';   // rowspan 설정
                 echo '<td class="td_'.$k1.'" '.$row['colspan'].' '.$row['rowspan'].'>'.$list[$k1].'</td>';
             }
-        }
-        if($member['mb_manager_yn']) {
-            echo '<td class="td_mngsmall">'.$s_mod.'</td>'.PHP_EOL;
         }
         echo '</tr>'.PHP_EOL;	
 	}
@@ -309,6 +306,14 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
 
 <script>
 $(function(e) {
+    $("input[name=st_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect: function(selectedDate){$("input[name=en_date]").datepicker('option','minDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
+
+    $("input[name=en_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect:function(selectedDate){$("input[name=st_date]").datepicker('option','maxDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
+
+    $("input[name=st2_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect: function(selectedDate){$("input[name=en2_date]").datepicker('option','minDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
+
+    $("input[name=en2_date]").datepicker({ changeMonth: true, changeYear: true, dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect:function(selectedDate){$("input[name=st2_date]").datepicker('option','maxDate',selectedDate);},closeText:'취소', onClose: function(){ if($(window.event.srcElement).hasClass('ui-datepicker-close')){ $(this).val('');}} });
+
     // timepicker 설정
     $("input[name$=_time]").timepicker({
         'timeFormat': 'H:i:s',
@@ -336,20 +341,6 @@ $(function(e) {
         if(prev=='') {
             $('input[name=en_time]').val('23:59:59');
         }
-    });
-
-    $("input[name$=_date]").datepicker({
-        closeText: "닫기",
-        currentText: "오늘",
-        monthNames: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
-        monthNamesShort: ["1월","2월","3월","4월","5월","6월", "7월","8월","9월","10월","11월","12월"],
-        dayNamesMin:['일','월','화','수','목','금','토'],
-        changeMonth: true,
-        changeYear: true,
-        dateFormat: "yy-mm-dd",
-        showButtonPanel: true,
-        yearRange: "c-99:c+99",
-        //maxDate: "+0d"
     });
 
     // 마우스 hover 설정
