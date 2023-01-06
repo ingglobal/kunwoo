@@ -475,6 +475,42 @@ function meta_update($meta_array)
 }
 }
 
+//--- 메타 테이블 저장(mta_reg_dt도 갱신되는 버전) ---//
+if(!function_exists('meta_update2')){
+function meta_update2($meta_array)
+{
+	global $g5,$config;
+	
+	if(!$meta_array['mta_key'])
+		return 0;
+
+	$mta_country = ($meta_array['mta_country'])? $meta_array['mta_country']:$g5['setting']['set_default_country'];
+
+	$row1 = sql_fetch("	SELECT * FROM {$g5['meta_table']} 
+							WHERE mta_country = '$mta_country' 
+								AND mta_db_table='{$meta_array['mta_db_table']}' 
+								AND mta_db_id='{$meta_array['mta_db_id']}' 
+								AND mta_key='{$meta_array['mta_key']}' ");
+	if($row1['mta_idx']) {
+		$sql = " UPDATE {$g5['meta_table']} SET 
+					mta_value='{$meta_array['mta_value']}' 
+					,mta_reg_dt='{$meta_array['mta_reg_dt']}' 
+				WHERE mta_idx='".$row1['mta_idx']."' ";
+		sql_query($sql);
+	}
+	else {
+		$sql = " INSERT INTO {$g5['meta_table']} SET 
+					mta_country = '$mta_country', 
+					mta_db_table='{$meta_array['mta_db_table']}', 
+					mta_db_id='{$meta_array['mta_db_id']}', 
+					mta_key='{$meta_array['mta_key']}', 
+					mta_value='{$meta_array['mta_value']}', 
+					mta_reg_dt='".G5_TIME_YMDHIS."' ";
+		sql_query($sql);
+	}
+}
+}
+
 
 //해당 테이블의 필드명과 데이터타입을 배열로 반환
 if(!function_exists('sql_field_names2')){

@@ -67,7 +67,7 @@ $res = $icmms_connect_db_pdo->query($sql, PDO::FETCH_ASSOC);
 if(!$res) return;
 
 $row_cnt = 0;
-$last_idx = 0;
+$last_idx = $tbl_last_idx;
 foreach($res as $row){
     $row_cnt++;
     // print_r2($row);
@@ -105,7 +105,7 @@ foreach($res as $row){
     if ($row_cnt % $maxscreen == 0)
         echo "<script> document.all.cont.innerHTML = ''; </script>\n";
 } //foreach($res as $row)
-meta_update(array("mta_country"=>"ko_KR","mta_db_table"=>"icmms_error","mta_db_id"=>$mms_idx,"mta_key"=>$tbl_error,"mta_value"=>$last_idx));
+meta_update2(array("mta_country"=>"ko_KR","mta_db_table"=>"icmms_error","mta_db_id"=>$mms_idx,"mta_key"=>$tbl_error,"mta_value"=>$last_idx,"mta_reg_dt"=>G5_TIME_YMDHIS));
 
 ?>
 <script>

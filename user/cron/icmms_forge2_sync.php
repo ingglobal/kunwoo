@@ -2,7 +2,7 @@
 include_once('./_common.php');
 
 $demo = 0;  // 데모모드 = 1
-
+// return;
 $g5['title'] = 'ICMMS측정DB동기화';
 include_once('./_head.sub.php');
 include_once('./_head.icmms.php');
@@ -20,6 +20,25 @@ $icsql = " SHOW TABLES LIKE '{$tbl_measures}' ";
 $res1 = $icmms_connect_db_pdo->query($icsql);
 $tbl_measure_list = array();
 $tbl_last_idx = array();
+/* 
+// 각 테이블의 dta_idx의 마지막 숫자를 meta테이블의 다시 저장
+while($row1 = $res1->fetch(PDO::FETCH_NUM)){
+    $tbl_measure = $row1[0];
+    array_push($tbl_measure_list,$tbl_measure);
+    //개별 테이블유무를 확인하고 없으면 생성
+    $measure_exist_sql = " DESC `{$tbl_measure}` ";
+    $measure_chk = @sql_query($measure_exist_sql);
+
+    $sql = " UPDATE `g5_5_meta` mta SET 
+    mta_value = ( SELECT dta_idx FROM {$tbl_measure} ORDER BY dta_idx DESC LIMIT 1 )
+    WHERE mta_db_table = 'icmms_measure'
+        AND mta_db_id = '{$mms_idx}'
+        AND mta_key = '{$tbl_measure}';
+    ";
+    sql_query($sql);
+}
+return;
+*/
 while($row1 = $res1->fetch(PDO::FETCH_NUM)){
     $tbl_measure = $row1[0];
     array_push($tbl_measure_list,$tbl_measure);
@@ -35,6 +54,10 @@ while($row1 = $res1->fetch(PDO::FETCH_NUM)){
                     AND mta_key = '{$tbl_measure}'");
     $tbl_last_idx[$tbl_measure] = $meta_val['mta_value'];
 }
+
+// print_r2($tbl_last_idx);
+// return;
+
 $mms_sql = " SELECT com_idx, imp_idx, mmg_idx FROM {$g5['mms_table']} WHERE mms_idx = '{$mms_idx}' ";
 $mms = sql_fetch($mms_sql);
 if(!$mms) return;
@@ -71,7 +94,7 @@ for($i=0;$i<count($tbl_measure_list);$i++){
 
     $tbl_cnt++;
     $row_cnt = 0;
-    $last_idx = 0;
+    $last_idx = $tbl_last_idx[$tbl_measure_list[$i]];
     foreach($res as $row){
         $row_cnt++;
         $total_cnt = $tbl_cnt * $row_cnt;
@@ -99,7 +122,7 @@ for($i=0;$i<count($tbl_measure_list);$i++){
         if ($total_cnt % $maxscreen == 0)
             echo "<script> document.all.cont.innerHTML = ''; </script>\n";
     }
-    meta_update(array("mta_country"=>"ko_KR","mta_db_table"=>"icmms_measure","mta_db_id"=>$mms_idx,"mta_key"=>$tbl_measure_list[$i],"mta_value"=>$last_idx));
+    meta_update2(array("mta_country"=>"ko_KR","mta_db_table"=>"icmms_measure","mta_db_id"=>$mms_idx,"mta_key"=>$tbl_measure_list[$i],"mta_value"=>$last_idx,"mta_reg_dt"=>G5_TIME_YMDHIS));
 } //for($i=0;$i<count($tbl_measure_list);$i++)
 } //if(count($tbl_measure_list))
 //meta환경변수 셋팅유무를 확인하고 없으면 저장
