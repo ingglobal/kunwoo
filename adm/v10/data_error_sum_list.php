@@ -147,7 +147,7 @@ $items1 = array(
 <select name="sfl" id="sfl">
     <option value="">검색항목</option>
     <?php
-    $skips = array('com_idx','mmg_idx','mms_idx','dta_date');
+    $skips = array('com_idx','mmg_idx','mms_idx','dta_date','dta_value','dta_message');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}

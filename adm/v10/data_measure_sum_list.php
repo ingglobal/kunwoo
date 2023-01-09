@@ -89,8 +89,8 @@ $items1 = array(
     ,"imp_idx"=>array("IMP",0,0,0)
     ,"dta_type"=>array("TYPE",0,0,0)
     ,"dta_no"=>array("측정번호",0,0,0)
-    ,"dta_avg"=>array("값(db)",0,0,0)
-    ,"dta_value_sum"=>array("합산",0,0,0)
+    ,"dta_avg"=>array("합산",0,0,0) //값(db)
+    // ,"dta_value_sum"=>array("합산",0,0,0)
     ,"dta_date"=>array("날짜",0,0,1)
 );
 /*
@@ -136,14 +136,14 @@ $items1 = array(
 </select>
 <script>$('select[name=ser_mms_idx]').val("<?=$ser_mms_idx?>").attr('selected','selected');</script>
 
-<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:80px;" placeholder="검색시작일">
+<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="검색시작일">
 ~
-<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:80px;" placeholder="종료일">
+<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="종료일">
 
 <select name="sfl" id="sfl">
     <option value="">검색항목</option>
     <?php
-    $skips = array('com_idx','mmg_idx','mms_idx');
+    $skips = array('com_idx','mmg_idx','mms_idx','dta_no','dta_avg','dta_date');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}
@@ -208,7 +208,7 @@ function sch_submit(f){
             }
         }
         ?>
-		<th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th>
+		<!-- <th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th> -->
 	</tr>
 	</thead>
 	<tbody>
@@ -295,7 +295,7 @@ function sch_submit(f){
                 echo '<td class="td_'.$k1.'" '.$row['colspan'].' '.$row['rowspan'].'>'.$list[$k1].'</td>';
             }
         }
-        if($member['mb_manager_yn']) {
+        if(false){ //($member['mb_manager_yn']) {
             echo '<td class="td_mngsmall">'.$row['s_mod'].'</td>'.PHP_EOL;
         }
         echo '</tr>'.PHP_EOL;	

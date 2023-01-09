@@ -160,7 +160,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
 <select name="sfl" id="sfl">
     <option value="">검색항목</option>
     <?php
-    $skips = array('dta_idx','mms_idx','com_idx','mmg_idx','dta_dt');
+    $skips = array('dta_idx','mms_idx','com_idx','mmg_idx','dta_group','dta_dt','dta_message');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}
@@ -211,7 +211,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
             }
         }
         ?>
-		<th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th>
+		<!-- <th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th> -->
 	</tr>
 	</thead>
 	<tbody>
@@ -274,7 +274,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
                 echo '<td class="td_'.$k1.'" '.$row['colspan'].' '.$row['rowspan'].'>'.$row[$k1].'</td>';
             }
         }
-        if($member['mb_manager_yn']) {
+        if(false){ //($member['mb_manager_yn']) {
             echo '<td class="td_mngsmall">'.$s_mod.'</td>'.PHP_EOL;
         }
         echo '</tr>'.PHP_EOL;	

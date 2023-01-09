@@ -87,11 +87,11 @@ $items1 = array(
     "dta_idx"=>array("번호",0,0,1)
     ,"mms_idx"=>array("설비번호",0,0,0)
     ,"imp_idx"=>array("IMP",0,0,0)
-    ,"dta_shf_no"=>array("교대",0,0,0)
-    ,"dta_mmi_no"=>array("기종",0,0,0)
+    // ,"dta_shf_no"=>array("교대",0,0,0)
+    // ,"dta_mmi_no"=>array("기종",0,0,0)
     ,"dta_group"=>array("GROUP",0,0,0)
-    ,"dta_value"=>array("값(db)",0,0,0)
-    ,"dta_value_sum"=>array("합산",0,0,0)
+    ,"dta_value"=>array("합계",0,0,0) //값(db)
+    // ,"dta_value_sum"=>array("합산",0,0,0)
     ,"dta_date"=>array("날짜",0,0,1)
 );
 ?>
@@ -130,7 +130,7 @@ $items1 = array(
 <select name="sfl" id="sfl">
     <option value="">검색항목</option>
     <?php
-    $skips = array('com_idx','mmg_idx','mms_idx');
+    $skips = array('com_idx','mmg_idx','mms_idx','dta_group','dta_value','dta_date','dta_shf_no');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}
@@ -195,7 +195,7 @@ function sch_submit(f){
             }
         }
         ?>
-		<th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th>
+		<!-- <th scope="col" id="mb_list_mng" style="display:<?=(!$member['mb_manager_yn'])?'none':''?>;">수정</th> -->
 	</tr>
 	</thead>
 	<tbody>
@@ -284,7 +284,7 @@ function sch_submit(f){
                 echo '<td class="td_'.$k1.'" '.$row['colspan'].' '.$row['rowspan'].'>'.$list[$k1].'</td>';
             }
         }
-        if($member['mb_manager_yn']) {
+        if(false){ //($member['mb_manager_yn']) {
             echo '<td class="td_mngsmall">'.$row['s_mod'].'</td>'.PHP_EOL;
         }
         echo '</tr>'.PHP_EOL;	

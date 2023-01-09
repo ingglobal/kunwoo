@@ -12,7 +12,7 @@ $tab_idx = $tab_idx ?: 0;
 
 // 당월, 당일
 $st_ymd = date("Y-m-01",G5_SERVER_TIME);
-$st_ymd = date("Y-m-d H:i:s",strtotime("-1month",strtotime($st_ymd)));//작업후에 반드시 주석처리해라
+// $st_ymd = date("Y-m-d H:i:s",strtotime("-1month",strtotime($st_ymd)));//작업후에 반드시 주석처리해라
 $ym_days = date("t",G5_SERVER_TIME);
 $en_ymd = date("Y-m-".$ym_days,G5_SERVER_TIME);
 $today = date("Y-m-d",G5_SERVER_TIME);

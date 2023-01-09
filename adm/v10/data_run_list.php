@@ -156,16 +156,16 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
 </select>
 <script>$('select[name=ser_mms_idx]').val("<?=$ser_mms_idx?>").attr('selected','selected');</script>
 
-<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:80px;">
+<input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:98px;" placeholder="일시검색시작">
 <input type="text" name="st_time" value="<?=$st_time?>" id="st_time" class="frm_input" autocomplete="off" style="width:65px;" placeholder="00:00:00">
 ~
-<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:80px;">
+<input type="text" name="en_date" value="<?=$en_date?>" id="en_date" class="frm_input" autocomplete="off" style="width:98px;" placeholder="일시검색종료">
 <input type="text" name="en_time" value="<?=$en_time?>" id="en_time" class="frm_input" autocomplete="off" style="width:65px;" placeholder="00:00:00">
 
 <select name="sfl" id="sfl">
     <option value="">검색항목</option>
     <?php
-    $skips = array('dta_idx','mms_idx','com_idx','mmg_idx');
+    $skips = array('dta_idx','mms_idx','com_idx','mmg_idx','dta_group','dta_dt','dta_reg_dt');
     if(is_array($items1)) {
         foreach($items1 as $k1 => $v1) {
             if(in_array($k1,$skips)) {continue;}

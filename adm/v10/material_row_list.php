@@ -75,6 +75,7 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
 ?>
 <style>
 .tbl_head01 thead tr th{position:sticky;top:128px;z-index:100;}
+#ui-datepicker-div{z-index:100 !important;}
 .td_chk{position:relative;}
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
 #top_form:after{display:block;visibility:hidden;clear:both;content:'';}
