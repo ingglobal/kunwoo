@@ -23,6 +23,9 @@ $sql_common = " FROM {$g5_table_name} AS ".$pre."
                     LEFT JOIN {$g5['bom_table']} AS bom ON itm.bom_idx = bom.bom_idx
 ";
 
+$where1 = array();
+$where1[] = " itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
+
 $where = array();
 $where[] = " (1) ";   // 디폴트 검색조건
 
@@ -40,7 +43,7 @@ if ($stx && $sfl) {
     }
 }
 
-$where[] = " itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
+// $where[] = " itm.com_idx = '".$_SESSION['ss_com_idx']."' ";
 
 // 기간 검색
 if ($st_date) {
@@ -52,12 +55,19 @@ if ($en_date) {
 
 // 설비번호 검색
 if ($ser_mms_idx != '-1' && $ser_mms_idx) {
-    $where[] = " itm.mms_idx = '".$ser_mms_idx."' ";
+    $where1[] = " itm.mms_idx = '".$ser_mms_idx."' ";
 }
 // 상태값 검색
 if ($ser_itm_status) {
-    $where[] = " itm.itm_status = '".$ser_itm_status."' ";
+    if($ser_itm_status == 'error')
+        $where[] = " itm.itm_status LIKE '".$ser_itm_status."_%' ";
+    else
+        $where[] = " itm.itm_status = '".$ser_itm_status."' ";
 }
+
+// 이전 WHERE 생성
+if ($where1)
+    $sql_search1 = ' WHERE '.implode(' AND ', $where1);
 
 // 최종 WHERE 생성
 if ($where)
@@ -81,12 +91,32 @@ $sql = " SELECT SQL_CALC_FOUND_ROWS
                     , bom.bom_std
                     , SUM(itm.itm_count) AS itm_cnt
 		{$sql_common}
+		{$sql_search1}
 		{$sql_groupby}
 		{$sql_search}
         {$sql_order}
 		LIMIT {$from_record}, {$rows} 
 ";
 // echo $sql;
+
+//전체갯수 ===== 시작
+$sql2 = " SELECT SUM(itm.itm_count) AS itm_cnt
+		{$sql_common}
+		{$sql_search1}
+		{$sql_groupby}
+		{$sql_search}
+        {$sql_order}
+		LIMIT {$from_record}, {$rows} 
+";
+
+$sql_total = " SELECT SUM(c.itm_cnt) AS itm_total
+FROM (
+    {$sql2}
+) c ";
+// echo $sql_total;
+$res_total = sql_fetch($sql_total);
+$lst_total = $res_total['itm_total'];
+//전체갯수 ===== 종료
 $result = sql_query($sql,1);
 $count = sql_fetch_array( sql_query(" SELECT FOUND_ROWS() as total ") ); 
 $total_count = $count['total'];
@@ -102,7 +132,7 @@ $items1 = array(
     ,"bom_std"=>array("규격",0,0,0)
     ,"mms_idx"=>array("설비",0,0,0)
     ,"itm_status"=>array("상태",0,0,0)  
-    ,"itm_count_sum"=>array("비교",0,0,0)
+    ,"itm_count_sum"=>array("합계",0,0,0)
     ,"itm_date"=>array("통계일",0,0,1)
 );
 /*
@@ -141,6 +171,7 @@ $items1 = array(
 <select name="ser_itm_status" id="ser_itm_status">
     <option value="">::상태선택::</option>
     <?=$g5['set_itm_status_value_options']?>
+    <option value="error">불량전체</option>
 </select>
 <script>$('select[name=ser_itm_status]').val("<?=(($ser_itm_status)?$ser_itm_status:'')?>").attr('selected','selected');</script>
 <select name="sfl" id="sfl">
@@ -161,6 +192,7 @@ $items1 = array(
 <input type="submit" class="btn_submit" value="검색">
 
 <div class="float_right" style="display:inline-block;">
+    <strong>총합산</strong>:<span style="margin-left:10px;margin-right:20px;"><?=number_format($lst_total)?></span>
     <a href="./<?=preg_replace("/_sum/","",$fname)?>_list.php" class="btn btn_02">상세목록</a>
 </div>
 </form>

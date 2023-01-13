@@ -176,7 +176,7 @@ $('.data_blank').on('click',function(e){
         <th scope="col">BomID</th>
         <th scope="col">파트넘버</th>
         <th scope="col">규격</th>
-        <th scope="col">재고무게(kg)</th>
+        <!-- <th scope="col">재고무게(kg)</th> -->
         <th scope="col">재고갯수</th>
     </tr>
     <tr>
@@ -224,7 +224,7 @@ $('.data_blank').on('click',function(e){
         <td class="td_bom_idx"><?=$row['bom_idx']?></td><!-- BOMidx -->
         <td class="td_itm_part_no"><?=$row['bom_part_no']?></td><!-- 파트넘버 -->
         <td class="td_itm_std"><?=$row['bom_std']?></td><!-- 규격 -->
-        <td class="td_itm_sum_weight"><?=(($row['sum_weight'])?$row['sum_weight']:0)?></td><!-- 생산량 -->
+        <!--td class="td_itm_sum_weight"><?=(($row['sum_weight'])?$row['sum_weight']:0)?></td--><!-- 생산량 -->
         <td class="td_itm_cnt"><?=$row['total']?></td><!-- 재고개수(톤백) -->
     </tr>
     <?php

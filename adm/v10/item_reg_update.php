@@ -56,14 +56,15 @@ $error_search = (preg_match('/^error_/', $_POST['itm_status'][$itm_idx_v])) ? ",
 $delivery_search = ($_POST['itm_status'][$itm_idx_v] == 'delivery') ? ", itm_delivery = '1' " : ", itm_delivery = '0' ";
 
 */
+$itm_delivery = ($to_status == 'delivery') ? 1 : 0;
 $itm_defect = (preg_match('/^error_/', $to_status)) ? 1 : 0;
 $itm_defect_type = (preg_match('/^error_/', $to_status)) ? $g5['set_itm_status_ng2_reverse'][$to_status] : 0;
 
 if($plus_modify == 'plus'){
 
     $sql = " INSERT INTO {$g5['item_table']}
-    (com_idx,mms_idx,bom_idx,oop_idx,bom_part_no,itm_name,itm_weight,itm_heat,itm_defect,itm_defect_type,itm_status,itm_date,itm_reg_dt,itm_update_dt) VALUES ";
-    $vals = " ('{$_SESSION['ss_com_idx']}','{$cut_mms_idx}','{$bom_idx}','{$oop_idx}','{$bom_part_no}','{$bom_name}','{$itm_weight}','{$itm_heat}','{$itm_defect}','{$itm_defect_type}','{$to_status}','".G5_TIME_YMD."','".G5_TIME_YMDHIS."','".G5_TIME_YMDHIS."') ";
+    (com_idx,mms_idx,bom_idx,oop_idx,bom_part_no,itm_name,itm_weight,itm_heat,itm_defect,itm_defect_type,itm_delivery,itm_status,itm_date,itm_reg_dt,itm_update_dt) VALUES ";
+    $vals = " ('{$_SESSION['ss_com_idx']}','{$cut_mms_idx}','{$bom_idx}','{$oop_idx}','{$bom_part_no}','{$bom_name}','{$itm_weight}','{$itm_heat}','{$itm_defect}','{$itm_defect_type}',{$itm_delivery},'{$to_status}','".G5_TIME_YMD."','".G5_TIME_YMDHIS."','".G5_TIME_YMDHIS."') ";
     for($i=0;$i<$count;$i++){
         $sql .= ($i==0)?$vals:','.$vals;
     }
@@ -73,9 +74,9 @@ else if($plus_modify == 'modify'){
                     AND bom_part_no = '{$bom_part_no}'
                     AND bom_idx = '{$bom_idx}'
                     AND itm_status = '{$from_status}' ";
-
-    //변경할 기존 절단재 재고가 있는지 확인
-    $exist = sql_fetch(" SELECT COUNT(*) AS cnt FROM {$g5['item_table']}
+                    
+                    //변경할 기존 절단재 재고가 있는지 확인
+                    $exist = sql_fetch(" SELECT COUNT(*) AS cnt FROM {$g5['item_table']}
             {$condition} ");
 
     if(!$exist['cnt']) 
@@ -83,8 +84,10 @@ else if($plus_modify == 'modify'){
 
     $mod_cnt = ($exist['cnt'] < $count) ? $exist['cnt'] : $count;
 
+
     $sql = " UPDATE {$g5['item_table']} SET itm_defect = '{$itm_defect}'
             , itm_defect_type = '{$itm_defect_type}'
+            , itm_delivery = '{$itm_delivery}'
             , itm_status = '{$to_status}'
         {$condition} 
         LIMIT {$mod_cnt}

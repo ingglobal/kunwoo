@@ -37,11 +37,11 @@ if ($stx != "") {
 
 if($shift){
     $where[] = " itm_shift = '".$shift."' ";
-    $qstr .= $qstr.'&itm_shift='.$shift;
+    $qstr .= $qstr.'&shift='.$shift;
 }
 if($itm_static_date){
     $where[] = " itm_date = '".$itm_static_date."' ";
-    $qstr .= $qstr.'&itm_date='.$itm_static_date;
+    $qstr .= $qstr.'&itm_static_date='.$itm_static_date;
 }
 if($itm2_status){
     $where[] = " itm_status = '".$itm2_status."' ";
@@ -90,6 +90,7 @@ $sql = "SELECT itm_idx
         , itm.itm_heat
         , itm.itm_defect
         , itm.itm_defect_type
+        , itm.itm_delivery
         , itm.itm_status
         , itm.itm_reg_dt
         , itm.itm_update_dt
@@ -231,6 +232,7 @@ $('.data_blank').on('click',function(e){
 <input type="hidden" name="stx" value="<?php echo $stx ?>">
 <input type="hidden" name="forge_mms_idx" value="<?php echo $forge_mms_idx ?>">
 <input type="hidden" name="itm2_status" value="<?php echo $itm2_status ?>">
+<input type="hidden" name="itm_static_date" value="<?php echo $itm_static_date ?>">
 <input type="hidden" name="page" value="<?php echo $page ?>">
 <input type="hidden" name="token" value="">
 

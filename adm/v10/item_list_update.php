@@ -70,6 +70,6 @@ if ($msg)
 
 update_item_sum2(); //item 변경사항을 반영하기 위해 item_sum테이블 업데이트함    
 // exit;
-$qstr .= '&forge_mms_idx='.$forge_mms_idx.'&itm2_status='.$itm2_status; // 추가로 확장해서 넘겨야 할 변수들
+$qstr .= '&forge_mms_idx='.$forge_mms_idx.'&itm2_status='.$itm2_status.'&itm_static_date='.$itm_static_date; // 추가로 확장해서 넘겨야 할 변수들
 goto_url('./item_raw_list.php?'.$qstr);
 ?>
