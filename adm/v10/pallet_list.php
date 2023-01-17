@@ -37,6 +37,11 @@ if ($stx != "") {
     }
 }
 
+if($plt_type){
+    $where[] = " plt_type = '".trim($plt_type)."' ";
+    $qstr .= $qstr.'&plt_type='.$plt_type;
+}
+
 if($plt_status){
     $where[] = " plt_status = '".trim($plt_status)."' ";
     $qstr .= $qstr.'&plt_status='.$plt_status;
@@ -111,6 +116,18 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
     </select>
     <label for="stx" class="sound_only">검색어<strong class="sound_only"> 필수</strong></label>
     <input type="text" name="stx" value="<?php echo $stx ?>" id="stx" class="frm_input">
+    <label for="plt_type" class="sch_label">
+        <span>유형<i class="fa fa-times data_blank" aria-hidden="true"></i></span>
+        <select name="plt_type" id="plt_type">
+            <option value="">::유형선택::</option>
+            <?=$g5['set_plt_type_value_options']?>
+        </select>
+    </label>
+    <script>
+        <?php if($plt_type){ ?>
+        $('#plt_type').val('<?=$plt_type?>');
+        <?php } ?>
+    </script>
     <label for="plt_status" class="sch_label">
         <span>상태<i class="fa fa-times data_blank" aria-hidden="true"></i></span>
         <select name="plt_status" id="plt_status">
@@ -118,9 +135,14 @@ $qstr .= '&sca='.$sca.'&ser_cod_type='.$ser_cod_type; // 추가로 확장해서 
             <?=$g5['set_plt_status_value_options']?>
         </select>
     </label>
+    <script>
+        <?php if($plt_status){ ?>
+        $('#plt_status').val('<?=$plt_status?>');
+        <?php } ?>
+    </script>
     <!-- <label for="orp_start_date" class="sch_label">
         <span>등록일<i class="fa fa-times data_blank" aria-hidden="true"></i></span>
-        <input type="text" name="plt_reg_dt" value="<?php echo $plt_reg_dt ?>" id="plt_reg_dt" readonly class="frm_input readonly" placeholder="등록일" style="width:100px;" autocomplete="off">
+        <input type="text" name="plt_reg_dt" value="<?php ;//echo $plt_reg_dt ?>" id="plt_reg_dt" readonly class="frm_input readonly" placeholder="등록일" style="width:100px;" autocomplete="off">
     </label> -->
     <input type="submit" class="btn_submit" value="검색">
 </form>
@@ -166,6 +188,7 @@ $('.data_blank').on('click',function(e){
         <th scope="col">적재수량</th>
         <th scope="col">등록일시</th>
         <th scope="col">수정일시</th>
+        <th scope="col">유형</th>
         <th scope="col">상태</th>
     </tr>
     <tr>
@@ -204,12 +227,13 @@ $('.data_blank').on('click',function(e){
         <td class="td_plt_count"><?=number_format($row['plt_count'])?></td><!-- 적재수량 -->
         <td class="td_plt_reg_dt"><?=$row['plt_reg_dt']?></td>
         <td class="td_plt_update_dt"><?=$row['plt_update_dt']?></td>
+        <td class="td_plt_type"><?=$g5['set_plt_type_value'][$row['plt_type']]?></td><!-- 유형 -->
         <td class="td_plt_status"><?=$g5['set_plt_status_value'][$row['plt_status']]?></td><!-- 상태 -->
     </tr>
     <?php
     }
     if ($i == 0)
-        echo "<tr><td colspan='9' class=\"empty_table\">자료가 없습니다.</td></tr>";
+        echo "<tr><td colspan='10' class=\"empty_table\">자료가 없습니다.</td></tr>";
     ?>
     </tbody>
     </table>

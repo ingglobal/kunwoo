@@ -219,11 +219,11 @@ include_once('./_top.kpi.php');
                     <thead class="tbl_head">
                     <tr>
                         <th scope="col">구분</th>
-                        <!-- <th scope="col" style="width:12%;">목표</th> -->
+                        <th scope="col" style="width:12%;">목표</th>
                         <th scope="col" style="width:12%;">생산</th>
                         <th scope="col" style="width:12%;">정상</th>
                         <th scope="col" style="width:10%;">불량</th>
-                        <!-- <th scope="col" style="width:120px;">그래프</th> -->
+                        <th scope="col" style="width:120px;">그래프</th>
                     </tr>
                     </thead>
                     <tbody class="tbl_body">
@@ -347,10 +347,12 @@ include_once('./_top.kpi.php');
                             echo '
                             <tr class="'.$row['tr_class'].'">
                                 <td class="text_left">'.$g5['mms'][$row['item_name']]['mms_name'].'</td><!-- cache/mms-setting.php -->
+                                <td class="text_right pr_5">'.number_format($row['target']).'</td><!-- 목표 -->
                                 <td class="text_right pr_5"><a href="javascript:" mms_idx="'.$row['item_name'].'" class="link_mmd_product" st_date="'.$st_date.'" en_date="'.$en_date.'">'
                                     .number_format($row['output_total']).'</a></td><!-- 생산 -->
                                 <td class="text_right pr_5">'.number_format($row['output_good']).'</td><!-- 양호 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect']).'</td><!-- 불량 -->
+                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
                             </tr>
                             ';
                         }
@@ -362,7 +364,7 @@ include_once('./_top.kpi.php');
                         }
                     }
                     if ($i == 0)
-                        echo '<tr class="tr_empty"><td class="td_empty" colspan="4">자료가 없습니다.</td></tr>';
+                        echo '<tr class="tr_empty"><td class="td_empty" colspan="6">자료가 없습니다.</td></tr>';
                     ?>
                 </tbody>
                 </table>
@@ -380,9 +382,9 @@ include_once('./_top.kpi.php');
                 
 
             <!-- ========================================================================================= -->
-            <div class="div_title_02" style="display:none;"><i class="fa fa-check" aria-hidden="true">유형별 생산</i></div>
-            <div id="chart_alternating" style="display:none;"></div>
-            <div class="div_info_body" style="display:none;">
+            <div class="div_title_02"><i class="fa fa-check" aria-hidden="true">유형별 생산</i></div>
+            <div id="chart_alternating"></div>
+            <div class="div_info_body">
                 <table class="table01">
                     <thead class="tbl_head">
                     <tr>
@@ -549,7 +551,7 @@ include_once('./_top.kpi.php');
                             <tr class="'.$row['tr_class'].'">
                                 <td class="text_left"'.$row['mms_title'].'>'.$row['mms_name'].'<span style="color:#3ab4d2;">'.$row['shf_name'].'</span></td><!-- cache/mms-setting.php -->
                                 <td class="text_right pr_5">'.number_format($row['target']).'</td><!-- 목표 -->
-                                <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
+                                <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
                                 <td class="text_right pr_5">'.number_format($row['output_good']).'</td><!-- 양호 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect']).'</td><!-- 불량 -->
                                 <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
@@ -581,11 +583,11 @@ include_once('./_top.kpi.php');
                     <thead class="tbl_head">
                     <tr>
                         <th scope="col">구분</th>
-                        <!-- <th scope="col" style="width:12%;">목표</th> -->
+                        <th scope="col" style="width:12%;">목표</th>
                         <th scope="col" style="width:12%;">생산</th>
                         <th scope="col" style="width:12%;">정상</th>
                         <th scope="col" style="width:10%;">불량</th>
-                        <!-- <th scope="col" style="width:120px;">그래프</th> -->
+                        <th scope="col" style="width:120px;">그래프</th>
                     </tr>
                     </thead>
                     <tbody class="tbl_body">
@@ -711,9 +713,11 @@ include_once('./_top.kpi.php');
                             echo '
                             <tr class="'.$row['tr_class'].'">
                                 <td class="text_left" '.$row['mms_title'].'>'.$row['mms_name'].$row['mmi_no'].$row['mmi_name'].'</td><!-- cache/mms-setting.php -->
+                                <td class="text_right pr_5">'.number_format($row['target']).'</td><!-- 목표 -->
                                 <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
                                 <td class="text_right pr_5">'.number_format($row['output_good']).'</td><!-- 양호 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect']).'</td><!-- 불량 -->
+                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
                             </tr>
                             ';
                         }
@@ -725,7 +729,7 @@ include_once('./_top.kpi.php');
                         }
                     }
                     if ($i == 0)
-                        echo '<tr class="tr_empty"><td class="td_empty" colspan="4">자료가 없습니다.</td></tr>';
+                        echo '<tr class="tr_empty"><td class="td_empty" colspan="6">자료가 없습니다.</td></tr>';
                     ?>
                 </tbody>
                 </table>
@@ -743,11 +747,11 @@ include_once('./_top.kpi.php');
                     <thead class="tbl_head">
                     <tr>
                         <th scope="col" style="width:100px;">구분</th>
-                        <!-- <th scope="col" style="width:15%">목표</th> -->
+                        <th scope="col" style="width:15%">목표</th>
                         <th scope="col" style="width:15%">생산</th>
                         <th scope="col" style="width:15%;">정상</th>
                         <th scope="col" style="width:15%;">불량</th>
-                        <!-- <th scope="col" style="width:150px;">그래프</th> -->
+                        <th scope="col" style="width:150px;">그래프</th>
                     </tr>
                     </thead>
                     <tbody class="tbl_body">
@@ -881,9 +885,11 @@ include_once('./_top.kpi.php');
                             echo '
                             <tr class="'.$row['tr_class'].'">
                                 <td class="text_left">'.$row['item_name'].'</td>
+                                <td class="text_right pr_5">'.number_format($row['target']).'</td><!-- 목표 -->
                                 <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
                                 <td class="text_right pr_5">'.number_format($row['output_good']).'</td><!-- 양호 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect']).'</td><!-- 불량 -->
+                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
                             </tr>
                             ';
                         }
@@ -896,7 +902,7 @@ include_once('./_top.kpi.php');
                     
                     }
                     if ($i == 0)
-                        echo '<tr class="tr_empty"><td class="td_empty" colspan="4">자료가 없습니다.</td></tr>';
+                        echo '<tr class="tr_empty"><td class="td_empty" colspan="6">자료가 없습니다.</td></tr>';
                     ?>
                 </tbody>
                 </table>
@@ -911,11 +917,11 @@ include_once('./_top.kpi.php');
                     <thead class="tbl_head">
                     <tr>
                         <th scope="col" style="width:100px;">구분</th>
-                        <!-- <th scope="col" style="width:15%">목표</th> -->
+                        <th scope="col" style="width:15%">목표</th>
                         <th scope="col" style="width:15%">생산</th>
                         <th scope="col" style="width:15%;">정상</th>
                         <th scope="col" style="width:15%;">불량</th>
-                        <!-- <th scope="col" style="width:150px;">그래프</th> -->
+                        <th scope="col" style="width:150px;">그래프</th>
                     </tr>
                     </thead>
                     <tbody class="tbl_body">
@@ -1060,9 +1066,11 @@ include_once('./_top.kpi.php');
                             echo '
                             <tr class="'.$row['tr_class'].'">
                                 <td class="text_left">'.$row['week_start_date'].'</td>
-                                <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
+                                <td class="text_right pr_5">'.number_format($row['target']).'</td><!-- 목표 -->
+                                <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
                                 <td class="text_right pr_5">'.number_format($row['output_good']).'</td><!-- 양호 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect']).'</td><!-- 불량 -->
+                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
                             </tr>
                             ';
                         }
@@ -1074,7 +1082,7 @@ include_once('./_top.kpi.php');
                         }
                     }
                     if ($i == 0)
-                        echo '<tr class="tr_empty"><td class="td_empty" colspan="4">자료가 없습니다.</td></tr>';
+                        echo '<tr class="tr_empty"><td class="td_empty" colspan="6">자료가 없습니다.</td></tr>';
                     ?>
                 </tbody>
                 </table>
@@ -1089,11 +1097,11 @@ include_once('./_top.kpi.php');
                     <thead class="tbl_head">
                     <tr>
                         <th scope="col" style="width:100px;">구분</th>
-                        <!-- <th scope="col" style="width:15%">목표</th> -->
+                        <th scope="col" style="width:15%">목표</th>
                         <th scope="col" style="width:15%">생산</th>
                         <th scope="col" style="width:15%;">정상</th>
                         <th scope="col" style="width:15%;">불량</th>
-                        <!-- <th scope="col" style="width:150px;">그래프</th> -->
+                        <th scope="col" style="width:150px;">그래프</th>
                     </tr>
                     </thead>
                     <tbody class="tbl_body">
@@ -1211,9 +1219,11 @@ include_once('./_top.kpi.php');
                             echo '
                             <tr class="'.$row['tr_class'].'">
                                 <td class="text_left">'.$row['item_name'].'</td>
-                                <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
+                                <td class="text_right pr_5">'.number_format($row['target']).'</td><!-- 목표 -->
+                                <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
                                 <td class="text_right pr_5">'.number_format($row['output_good']).'</td><!-- 양호 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect']).'</td><!-- 불량 -->
+                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
                             </tr>
                             ';
                         }
@@ -1228,7 +1238,7 @@ include_once('./_top.kpi.php');
                         }
                     }
                     if ($i == 0)
-                        echo '<tr class="tr_empty"><td class="td_empty" colspan="4">자료가 없습니다.</td></tr>';
+                        echo '<tr class="tr_empty"><td class="td_empty" colspan="6">자료가 없습니다.</td></tr>';
                     ?>
                 </tbody>
                 </table>
@@ -1245,11 +1255,11 @@ include_once('./_top.kpi.php');
                     <thead class="tbl_head">
                     <tr>
                         <th scope="col" style="width:100px;">구분</th>
-                        <!-- <th scope="col" style="width:15%">목표</th> -->
+                        <th scope="col" style="width:15%">목표</th>
                         <th scope="col" style="width:15%">생산</th>
                         <th scope="col" style="width:15%;">정상</th>
                         <th scope="col" style="width:15%;">불량</th>
-                        <!-- <th scope="col" style="width:150px;">그래프</th> -->
+                        <th scope="col" style="width:150px;">그래프</th>
                     </tr>
                     </thead>
                     <tbody class="tbl_body">
@@ -1367,9 +1377,11 @@ include_once('./_top.kpi.php');
                             echo '
                             <tr class="'.$row['tr_class'].'">
                                 <td class="text_left">'.$row['item_name'].'</td>
-                                <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
+                                <td class="text_right pr_5">'.number_format($row['target']).'</td><!-- 목표 -->
+                                <td class="text_right pr_5">'.number_format($row['output_total']).'</td><!-- 생산 -->
                                 <td class="text_right pr_5">'.number_format($row['output_good']).'</td><!-- 양호 -->
                                 <td class="text_right pr_5">'.number_format($row['output_defect']).'</td><!-- 불량 -->
+                                <td class="td_graph text_left pl_0">'.$row['graph_good'].$row['graph_defect'].$row['graph_target'].'</td>
                             </tr>
                             ';
                         }
@@ -1384,7 +1396,7 @@ include_once('./_top.kpi.php');
                         }
                     }
                     if ($i == 0)
-                        echo '<tr class="tr_empty"><td class="td_empty" colspan="4">자료가 없습니다.</td></tr>';
+                        echo '<tr class="tr_empty"><td class="td_empty" colspan="6">자료가 없습니다.</td></tr>';
                     ?>
                 </tbody>
                 </table>

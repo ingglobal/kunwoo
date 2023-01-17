@@ -682,6 +682,13 @@ yearly,1,10 = 연도별,1년단위,10년치,sum(합계)'); ?>
 			</td>
 		</tr>
 		<tr>
+			<th scope="row">파렛트유형</th>
+			<td colspan="3">
+				<?php echo help('half=절단재,forge=단조,shooting=숏팅,product=완제품'); ?>
+				<input type="text" name="set_plt_type" value="<?php echo $g5['setting']['set_plt_type']; ?>" class="frm_input" style="width:70%;">
+			</td>
+		</tr>
+		<tr>
 			<th scope="row">파렛트상태</th>
 			<td colspan="3">
 				<?php echo help('pending=적재완료,delivery=출하,trash=삭제'); ?>
