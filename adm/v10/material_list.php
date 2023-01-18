@@ -48,12 +48,12 @@ $sql = " select count(DISTINCT mtr.mtr_heat) as cnt {$sql_common} {$sql_search} 
 $row = sql_fetch($sql);
 $total_count = $row['cnt'];
 
-$rows = 50;//$config['cf_page_rows'];
+$rows = 10;//50;//$config['cf_page_rows'];
 $total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
 if ($page < 1) $page = 1; // 페이지가 없으면 첫 페이지 (1 페이지)
 $from_record = ($page - 1) * $rows; // 시작 열을 구함
 
-
+/*
 $sql = " SELECT mtr_heat
             , ROW_NUMBER() OVER (ORDER BY mtr_heat) AS mtr_num
             , COUNT(mtr_idx) AS cnt
@@ -76,6 +76,14 @@ $sql = " SELECT mtr_heat
                     ) 
                 )
             ) AS mtr_left_weight
+        {$sql_common} {$sql_search} {$sql_group} {$sql_order}
+        LIMIT {$from_record}, {$rows}
+";
+*/
+$sql = " SELECT mtr_heat
+            , ROW_NUMBER() OVER (ORDER BY mtr_heat) AS mtr_num
+            , COUNT(mtr_idx) AS cnt
+            , SUM(mtr_weight) AS mtr_sum_weight
         {$sql_common} {$sql_search} {$sql_group} {$sql_order}
         LIMIT {$from_record}, {$rows}
 ";
@@ -188,6 +196,25 @@ $('.data_blank').on('click',function(e){
     for ($i=0; $row=sql_fetch_array($result); $i++) {
         
         // print_r2($row);
+        /*
+        $sum_wt_sql = " SELECT IF(ROUND(SUM(mtr_weight)) IS NOT NULL,ROUND(SUM(mtr_weight)),0) AS cut_sum_weight
+                            FROM {$g5['material_table']} 
+                                WHERE mtr_type = 'half' 
+                                    AND mtr_status NOT IN ('delete','del','trash','cancel') 
+                                    AND mtr_heat = '{$row['mtr_heat']}' 
+                                ORDER BY mtr_heat ";
+        */
+        $sum_wt_sql = " SELECT IF(ROUND(SUM(mtr_weight)) IS NOT NULL,ROUND(SUM(mtr_weight)),0) AS cut_sum_weight
+                            FROM {$g5['material_table']} 
+                                WHERE mtr_type = 'half' 
+                                    AND mtr_status NOT IN ('delete','del','trash','cancel') 
+                                    AND mtr_heat = '{$row['mtr_heat']}' 
+                                ORDER BY mtr_heat ";
+        // echo $sum_wt_sql."<br>";
+        $sum_wt = sql_fetch($sum_wt_sql);
+        $row['cut_sum_weight'] = $sum_wt['cut_sum_weight'];
+
+        $row['mtr_left_weight'] = $row['mtr_sum_weight'] - $row['cut_sum_weight'];
 
         $s_mod = '<a href="./material_form.php?'.$qstr.'&amp;w=u&amp;mtr_idx='.$row['mtr_idx'].'" class="btn btn_03">수정</a>';
 
