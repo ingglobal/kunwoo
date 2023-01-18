@@ -1,8 +1,8 @@
 <?php
 $sub_menu = "917100";
 include_once('./_common.php');
-
-auth_check($auth[$sub_menu],'w');
+if (!$is_admin)
+	auth_check($auth[$sub_menu],'r');
 
 $html_title = ($w=='')?'추가':'수정'; 
 
@@ -278,10 +278,11 @@ add_javascript(G5_POSTCODE_JS, 0);    //다음 주소 js
 	</tbody>
 	</table>
 </div>
-
 <div class="btn_fixed_top">
-    <a href="./mms_list.php?<?php echo $qstr ?>" class="btn btn_02">목록</a>
-    <input type="submit" value="확인" class="btn_submit btn" accesskey='s'>
+	<a href="./mms_list.php?<?php echo $qstr ?>" class="btn btn_02">목록</a>
+	<?php if($is_admin){ ?>
+	<input type="submit" value="확인" class="btn_submit btn" accesskey='s'>
+	<?php } ?>
 </div>
 </form>
 

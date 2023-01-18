@@ -486,8 +486,8 @@ include_once('./_top.kpi.php');
                     for ($i=0; $row=sql_fetch_array($result); $i++) {
                         // print_r2($row);
                         if($row['item_name'] != 'total') {
-                            $item_max[] = $row['arm_count_sum'];
-                            $item_sum += $row['arm_count_sum'];
+                            $item_max[] = $row['arm_predict_sum'];
+                            $item_sum += $row['arm_predict_sum'];
                         }
                     }
                     // echo max($item_max).'<br>';
@@ -508,15 +508,16 @@ include_once('./_top.kpi.php');
                         // echo $item_sum.'<br>';
 
                         // 비율
-                        $row['rate'] = ($item_sum) ? $row['arm_count_sum'] / $item_sum * 100 : 0 ;
+                        $row['rate'] = ($item_sum) ? $row['arm_predict_sum'] / $item_sum * 100 : 0 ;
+                        // echo $row['arm_predict_sum'].'-----'.$row['rate']."<br>";
                         $row['rate_color'] = '#d1c594';
                         $row['rate_color'] = ($row['rate']>=80) ? '#72ddf5' : $row['rate_color'];
                         $row['rate_color'] = ($row['rate']>=100) ? '#ff9f64' : $row['rate_color'];
 
                         // 그래프
-                        if($item_sum && $row['arm_count_sum']) {
+                        if($item_sum && $row['arm_predict_sum']) {
                             // $row['rate_percent'] = $row['arm_count_sum'] / max($item_max) * 100;
-                            $row['rate_percent'] = $row['arm_count_sum'] / $item_sum * 100;
+                            $row['rate_percent'] = $row['arm_predict_sum'] / $item_sum * 100;
                             $row['graph'] = '<img class="graph_output" src="../img/dot.gif" style="width:'.$row['rate_percent'].'%;background:'.$row['rate_color'].';" height="8px">';
                         }
 
@@ -616,8 +617,8 @@ include_once('./_top.kpi.php');
                     for ($i=0; $row=sql_fetch_array($result); $i++) {
                         // print_r2($row);
                         if($row['item_name'] != 'total') {
-                            $item_max[] = $row['arm_count_sum'];
-                            $item_sum += $row['arm_count_sum'];
+                            $item_max[] = $row['arm_predict_sum'];
+                            $item_sum += $row['arm_predict_sum'];
                         }
                     }
                     // echo max($item_max).'<br>';
@@ -640,15 +641,15 @@ include_once('./_top.kpi.php');
                         // echo $item_sum.'<br>';
 
                         // 비율
-                        $row['rate'] = ($item_sum) ? $row['arm_count_sum'] / $item_sum * 100 : 0 ;
+                        $row['rate'] = ($item_sum) ? $row['arm_predict_sum'] / $item_sum * 100 : 0 ;
                         $row['rate_color'] = '#d1c594';
                         $row['rate_color'] = ($row['rate']>=80) ? '#72ddf5' : $row['rate_color'];
                         $row['rate_color'] = ($row['rate']>=100) ? '#ff9f64' : $row['rate_color'];
 
                         // 그래프
-                        if($item_sum && $row['arm_count_sum']) {
+                        if($item_sum && $row['arm_predict_sum']) {
                             // $row['rate_percent'] = $row['arm_count_sum'] / max($item_max) * 100;
-                            $row['rate_percent'] = $row['arm_count_sum'] / $item_sum * 100;
+                            $row['rate_percent'] = $row['arm_predict_sum'] / $item_sum * 100;
                             $row['graph'] = '<img class="graph_output" src="../img/dot.gif" style="width:'.$row['rate_percent'].'%;background:'.$row['rate_color'].';" height="8px">';
                         }
 
@@ -749,8 +750,8 @@ include_once('./_top.kpi.php');
                     for ($i=0; $row=sql_fetch_array($result); $i++) {
                         // print_r2($row);
                         if($row['item_name'] != 'total') {
-                            $item_max[] = $row['arm_count_sum'];
-                            $item_sum += $row['arm_count_sum'];
+                            $item_max[] = $row['arm_predict_sum'];
+                            $item_sum += $row['arm_predict_sum'];
                         }
                     }
                     // echo max($item_max).'<br>';
@@ -772,15 +773,15 @@ include_once('./_top.kpi.php');
                         // echo $item_sum.'<br>';
 
                         // 비율
-                        $row['rate'] = ($item_sum) ? $row['arm_count_sum'] / $item_sum * 100 : 0 ;
+                        $row['rate'] = ($item_sum) ? $row['arm_predict_sum'] / $item_sum * 100 : 0 ;
                         $row['rate_color'] = '#d1c594';
                         $row['rate_color'] = ($row['rate']>=80) ? '#72ddf5' : $row['rate_color'];
                         $row['rate_color'] = ($row['rate']>=100) ? '#ff9f64' : $row['rate_color'];
 
                         // 그래프
-                        if($item_sum && $row['arm_count_sum']) {
+                        if($item_sum && $row['arm_predict_sum']) {
                             // $row['rate_percent'] = $row['arm_count_sum'] / max($item_max) * 100;
-                            $row['rate_percent'] = $row['arm_count_sum'] / $item_sum * 100;
+                            $row['rate_percent'] = $row['arm_predict_sum'] / $item_sum * 100;
                             $row['graph'] = '<img class="graph_output" src="../img/dot.gif" style="width:'.$row['rate_percent'].'%;background:'.$row['rate_color'].';" height="8px">';
                         }
 

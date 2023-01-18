@@ -574,7 +574,7 @@ include_once('./_top.kpi.php');
             </div><!-- .div_info_body -->
 
             <!-- ========================================================================================= -->
-            <div class="div_title_02"><i class="fa fa-check" aria-hidden="true"> 기종별 생산</i></div>
+            <div class="div_title_02"><i class="fa fa-check" aria-hidden="true">품목별 생산</i></div>
             <div id="chart_mode"></div>
             <div class="div_info_body">
                 <table class="table01">

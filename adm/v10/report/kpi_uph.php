@@ -9,7 +9,10 @@ $qstr .= '&ser_mms_idx='.$ser_mms_idx.'&st_date='.$st_date.'&en_date='.$en_date.
 
 // st_date, en_date
 $st_date = $st_date ?: date("Y-m-01",G5_SERVER_TIME);
-$st_date = date("Y-m-d H:i:s",strtotime("-1month",strtotime($st_date)));//작업후에 반드시 주석처리해라
+// $st_date = date("Y-m-d H:i:s",strtotime("-1month",strtotime($st_date)));//작업후에 반드시 주석처리해라
+$st_date = substr($st_date,0,10);
+
+
 $en_date = $en_date ?: date("Y-m-d");
 $st_time = $st_time ?: '00:00:00';
 $en_time = $en_time ?: '23:59:59';
@@ -80,9 +83,22 @@ for($i=0;$row=sql_fetch_array($rs);$i++) {
 }
 // print_r3($mms_mmi);
 // print_r2($mmi_name);
-
-
-
+/*
+echo $st_timestamp."<br>";
+echo $st_date.' '.$st_time."<br>";
+$st_str = strtotime($st_date);
+echo $st_str."<br>";
+echo date("Y-m-d H:i:s",$st_str)."<br>";
+echo "---------------<br>";
+echo $en_timestamp."<br>";
+echo $en_date.' '.$en_time."<br>";
+$en_str = strtotime($en_date.' '.$en_time);
+echo $en_str."<br>";
+echo date("Y-m-d H:i:s",$en_timestamp)."<br>";
+echo "---------------<br>";
+echo date("Y-m-d H:i:s",1672012564)."<br>";
+echo "---------------<br>";
+*/
 // 공제 get offwork time
 // 전체기간 설정이 있는 경우는 마지막 부분에서 돌면서 없는 날짜 목표를 채워줍니다.
 $sql = "SELECT mms_idx
@@ -104,13 +120,12 @@ $sql = "SELECT mms_idx
             AND mms_idx IN (".$ser_mms_idx.",0)
         ORDER BY mms_idx DESC, off_period_type, off_start_time
 ";
-// echo $sql.'<br>';
+// echo $sql.'<br>';exit;
 $rs = sql_query($sql,1);
 $byunit = 86400;
 $offdaily = array();
 $offsomed = array();
 for($i=0;$row=sql_fetch_array($rs);$i++){
-    // print_r2($row);
     $offwork[$i]['mms_idx'] = $row['mms_idx'];
     $offwork[$i]['off_period_type'] = $row['off_period_type'];
     $offwork[$i]['start'] = date("H:i:s",$row['db_off_start_time']);
@@ -120,12 +135,20 @@ for($i=0;$row=sql_fetch_array($rs);$i++){
         $offwork[$i]['start_day'] = date("Y-m-d",$row['db_off_start_time']); 
         $offwork[$i]['end_day'] = date("Y-m-d",$row['db_off_end_time']); 
         // $offwork[$i]['days'] = date_gapdays_times($offwork[$i]['start_day'],$offwork[$i]['end_day'],$offwork[$i]['start'],$offwork[$i]['end']);       
-        $offsomed = date_gapdays_times($offwork[$i]['start_day'],$offwork[$i]['end_day'],$offwork[$i]['start'],$offwork[$i]['end']);       
+        // print_r2($offwork[$i]);
+        $offsomed_one = date_gapdays_times($offwork[$i]['start_day'],$offwork[$i]['end_day'],$offwork[$i]['start'],$offwork[$i]['end']);
+        if(count($offsomed_one)){
+            foreach($offsomed_one as $off_k => $off_v){
+                $offsomed[$off_k]['start'] = $off_v['start'];
+                $offsomed[$off_k]['end'] = $off_v['end'];
+            }
+        }     
     }
     //매일비가동
     else{
         array_push($offdaily,array('start'=>$offwork[$i]['start'],'end'=>$offwork[$i]['end']));
     }
+    // print_r2($offwork[$i]);
 }
 // print_r2($offsomed);
 // print_r2($offdaily);
@@ -159,7 +182,6 @@ ORDER BY itm_date DESC
 
 // echo $sql;
 $result = sql_query($sql,1);
-
 add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi.css">', 0);
 add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/css/kpi1.css">', 1);
 add_javascript('<script src="'.G5_USER_ADMIN_URL.'/js/function.date.js"></script>', 0);
@@ -228,7 +250,6 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
         $row['worktime'] = strtotime($row['itm_ymdhis_max']) - strtotime($row['itm_ymdhis_min']);
         //작업시간 합계 (분)
         $row['workmin'] = round($row['worktime'] / 60);
-        
         // 공제시간 합계 (초)
         $offtime_seconds = offtime_result($row['itm_ymdhis_min'],$row['itm_ymdhis_max'],$offdaily,($offsomed[$row['itm_date']])?$offsomed[$row['itm_date']]:array());
         //공제시간 합계 (분)
@@ -240,7 +261,7 @@ add_stylesheet('<link rel="stylesheet" href="'.G5_USER_ADMIN_URL.'/js/timepicker
         
         // 링크
         $row['ahref'] = '<a href="?'.$qstr.'&sfl=dta_mmi_no&stx='.$row['dta_mmi_no'].'">';
-
+        // print_r2($row);
         $bg = 'bg'.($i%2);
     ?>
     <tr class="<?php echo $bg; ?> tr_<?=$row['dmn_status']?>">

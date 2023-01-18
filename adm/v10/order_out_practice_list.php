@@ -109,7 +109,7 @@ $listall = '<a href="'.$_SERVER['SCRIPT_NAME'].'" class="ov_listall">전체목�
 $qstr .= '&sca='.$sca.'&order_date='.$order_date; // 추가로 확장해서 넘겨야 할 변수들
 ?>
 <style>
-.tbl_head01 thead tr th{position:sticky;top:100px;z-index:100;}
+.tbl_head01 thead tr th{position:sticky;top:128px;z-index:1;}
 .tbl_head01 thead tr th span{display:none;}
 .td_chk{position:relative;}
 .td_chk .chkdiv_btn{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,255,0,0);}
