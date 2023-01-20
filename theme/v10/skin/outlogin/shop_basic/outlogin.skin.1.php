@@ -12,7 +12,7 @@ $req_nick = !isset($member['mb_nick_date']) || (isset($member['mb_nick_date']) &
 <!-- 로그인 전 아웃로그인 시작 { -->
 <section id="ol_before" class="ol">
     <h2>
-        <strong class="sound_only">회원로그인</strong>
+        <div class="com_name"><?=preg_replace("/\(epcs\)/i","",$config['cf_title'])?></div>
         <img src="<?=G5_THEME_IMG_URL?>/logo_bright3.png">
         <p>제조기업예측제어시스템<br>v 1.02</p>
     </h2>

@@ -146,8 +146,12 @@ add_javascript(G5_POSTCODE_JS, 0);    //다음 주소 js
         </td>
         <th scope="row"><label for="mb_password">비밀번호<?php echo $sound_only ?></label></th>
         <td>
-            <?php echo help('비밀번호는 반드시 영문으로 시작해야하고 이 후 영문숫자 조합으로 8글자이상 입력해 주세요.') ?>
+            <?php echo help('비밀번호는 반드시 영문으로 시작해야하고 이 후 영문숫자 조합으로 6글자이상 입력해 주세요.') ?>
+            <?php if($w==''||$member['mb_manager_yn']) { ?>
             <input type="password" name="mb_password" id="mb_password" <?php //echo $required_mb_password ?> class="frm_input <?php //echo $required_mb_password ?>" size="15" maxlength="20">
+            <?php } else { ?>
+            <span style="color:#aaa;">비밀번호 수정 불가</span>
+            <?php } ?>
         </td>
     </tr>
     <tr>

@@ -27,7 +27,59 @@ if (!defined('_GNUBOARD_')) exit; // 개별 페이지 접근 불가
 //     }    
 // }
 
+add_event('member_login_check_before','u_member_login_check_before',10);
+function u_member_login_check_before(){
+    // return;
+    global $g5, $mb_id;
+    $login_min = 10;
 
+    $adm_sql = " SELECT mb_id FROM {$g5['member_table']} WHERE mb_level = '10' ";
+    // alert($chk_sql);
+    $adm_res = sql_fetch($adm_sql);
+    $adm_id = $adm_res['mb_id'];
+    
+    if($adm_id != $mb_id){
+        $chk_sql = " SELECT cmm_loginfail, cmm_loginfail_dt FROM {$g5['company_member_table']} WHERE mb_id = '{$mb_id}' ";
+        // alert($chk_sql);
+        $chk_res = sql_fetch($chk_sql);
+    
+        $chk_sql = " SELECT cmm_loginfail, cmm_loginfail_dt FROM {$g5['company_member_table']} WHERE mb_id = '{$mb_id}' ";
+        // alert($chk_sql);
+        $chk_res = sql_fetch($chk_sql);
+        
+        if(!$chk_res) alert('접근가능한 회원이 아닙니다.');
+    
+        $diff_his_arr = gap_time_login($chk_res['cmm_loginfail_dt'], G5_TIME_YMDHIS);
+        // alert($diff_his_arr['min']);
+        if($chk_res['cmm_loginfail'] >= 5 && $diff_his_arr['min'] < $login_min){
+            alert(($login_min - $diff_his_arr['min']).'분 뒤에 다시 로그인을 시도해 주세요.');
+            return false;
+        }
+    }
+}
+
+add_event('password_is_wrong','u_password_is_wrong',10);
+function u_password_is_wrong(){
+    global $g5, $mb;
+    $fail_max_cnt = $g5['setting']['set_loginfail'];
+    $login_min = $g5['setting']['set_relogin_min'];
+    //$g5['company_member_table']; //cmm_loginfail, cmm_loginfail_dt
+    $upt_sql = " UPDATE {$g5['company_member_table']}
+                    SET cmm_loginfail = cmm_loginfail + 1
+                        , cmm_loginfail_dt = '".G5_TIME_YMDHIS."'
+                WHERE mb_id = '{$mb['mb_id']}' ";
+    sql_query($upt_sql,1);
+    $chk_sql = " SELECT cmm_loginfail, cmm_loginfail_dt FROM {$g5['company_member_table']} WHERE mb_id = '{$mb['mb_id']}' ";
+    $chk_res = sql_fetch($chk_sql);
+    $msg = "가입된 회원아이디가 아니거나 비밀번호가 틀립니다.\\n비밀번호는 대소문자를 구분합니다.\\n";
+    if($chk_res['cmm_loginfail']){
+        $msg .= "총 {$fail_max_cnt}회중 {$chk_res['cmm_loginfail']}회 로그인 실패하였습니다.";
+        if($chk_res['cmm_loginfail'] >= $fail_max_cnt){
+            $msg .= "\\n{$login_min}분뒤에 다시 로그인을 시도해 주세요.";
+        }
+    }
+    alert($msg);
+}
 
 add_event('member_login_check','u_member_login_check',10);
 function u_member_login_check(){
@@ -42,11 +94,19 @@ function u_member_login_check(){
     set_session('ss_com_idx', $com_idx);
     set_session('ss_com_kosmolog_key',$com_kosmolog_key);
 
+    
     // login log recording
     $tmp_sql = "INSERT INTO {$g5['login_table']} ( lo_ip, mb_id, lo_datetime, lo_location, lo_url )
                 VALUES ( '".G5_SERVER_TIME."', '{$mb['mb_id']}', '".G5_TIME_YMDHIS."', '".$mb['mb_name']."',  '".$_SERVER['REMOTE_ADDR']."' )
     ";
     sql_query($tmp_sql, FALSE);
+
+    //로그인성공했으니 혹시 기존의 로그인실패 횟수 데이터는 0으로 해 준다.
+    $upt_sql = " UPDATE {$g5['company_member_table']}
+                    SET cmm_loginfail = 0
+                        , cmm_loginfail_dt = '0000-00-00 00:00:00'
+                WHERE mb_id = '{$mb['mb_id']}' ";
+    sql_query($upt_sql,1);
 
     // BOM 가격 정보를 날짜를 기반으로 갱신
     $sql_bom = "UPDATE {$g5['bom_table']} AS bom SET

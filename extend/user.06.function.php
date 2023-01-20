@@ -4150,4 +4150,28 @@ function off_result($start_dt,$end_dt,$off_arr){
 }
 }
 */
+if(!function_exists('gap_time_login')){
+function gap_time_login($start_date, $end_date) {
+	
+	$start_time = strtotime($start_date);
+	$end_time = strtotime($end_date);
+
+	$diff = $end_time - $start_time;
+
+	$hours = floor($diff/3600);
+
+	$diff = $diff-($hours*3600);
+
+	$min = floor($diff/60);
+
+	$sec = $diff - ($min*60);
+    
+    $msg = ($hours) ? $hours.'시간 ' : '';
+    $msg .= ($min) ? $min.'분 ' : '';
+    $msg .= ($sec) ? $sec.'초' : '';
+    
+	// return sprintf("%02d:%02d:%02d", $hours, $min, $sec); 
+	return array('hours'=>$hours,'min'=>$min,'sec'=>$sec,'msg'=>$msg); 
+}
+}
 ?>

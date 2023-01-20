@@ -2,9 +2,10 @@
 
 /* 아웃로그인 스킨 */
 .ol {position:relative}
-.ol h2 {margin:0;padding:0;text-align:center;padding-bottom:10px;position:absolute;top:-150px;left:0;width:100%;}
+.ol h2 {margin:0;padding:0;text-align:center;padding-bottom:10px;position:absolute;top:-170px;left:0;width:100%;}
+.ol h2 .com_name{font-size:2em;}
 .ol h2 img{width:276px;height:auto;}
-.ol h2 p{color:#ddd;padding-top:10px;}
+.ol h2 p{color:#ddd;padding-top:10px;font-size:1.1em;}
 .ol a.btn_admin {display:inline-block;padding:0 10px;height:25px;background:#d13f4a;color:#fff;text-decoration:none;line-height:25px;vertical-align:middle} /* 관리자 전용 버튼 */
 .ol a.btn_admin:focus, .ol a.btn_admin:hover {text-decoration:none}
 
