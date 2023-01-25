@@ -26,6 +26,7 @@ $g5['container_sub_title'] = '
 */
 $g5['container_sub_title'] = '
 <h2 id="container_sub_title">
+	<a href="./data_sum_list.php" class="btn_top_menu '.$active_data_sum_list.'">검색별생산합계</a>
 	<a href="./data_item_sum_list.php" class="btn_top_menu '.$active_data_item_sum_list.'">일별생산합계</a>
 	<a href="./data_item_list.php" class="btn_top_menu '.$active_data_item_list.'">상세생산데이터</a>
 	<a href="./data_error_sum_list.php" class="btn_top_menu '.$active_data_error_sum_list.'">일별에러합계</a>
