@@ -158,6 +158,8 @@ $items1 = array(
 </div>
 
 <form id="fsearch" name="fsearch" class="local_sch01 local_sch" onsubmit="return sch_submit(this);" method="get">
+<input type="hidden" name="com_idx_customer" id="com_idx_customer" value="<?=$com_idx_customer?>">
+<input type="text" name="com_idx_name" value="<?=$com_idx_name?>" id="btn_customer" readonly class="frm_input readonly" autocomplete="off" style="width:95px;" placeholder="업체선택" link="./customer_select.php?file_name=<?php echo $g5['file_name']?>">
 <label for="sfl" class="sound_only">검색대상</label>
 <select name="ser_mms_idx" id="ser_mms_idx">
     <option value="-1">::단조설비선택::</option>
@@ -385,6 +387,13 @@ $(function(e) {
         }    
     });
 
+    // 거래처찾기 버튼 클릭
+	$("#btn_customer").click(function(e) {
+		e.preventDefault();
+        var href = $(this).attr('link');
+		winCustomerSelect = window.open(href, "winCustomerSelect", "left=300,top=150,width=550,height=600,scrollbars=1");
+        winCustomerSelect.focus();
+	});
 });
 
 

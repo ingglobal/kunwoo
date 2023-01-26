@@ -186,6 +186,12 @@ $('.btn_select').click(function(e){
         opener.document.location = './<?=$file_name?>.php?com_idx='+com_idx+'&file_name='+file_name;
     <?php
     }
+    else if($file_name=='data_sum_list'){
+    ?>
+        $("input[name=com_idx_customer]", opener.document).val( $(this).closest('td').attr('com_idx') );
+        $("input[name=com_idx_name]", opener.document).val( $(this).closest('td').attr('com_name') );
+    <?php
+    }
     else {
     ?>
         // 폼이 존재하면
