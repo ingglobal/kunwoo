@@ -11,7 +11,7 @@ $g5_table_name = $g5[$table_name.'_table'];
 $fields = sql_field_names($g5_table_name);
 $pre = substr($fields[0],0,strpos($fields[0],'_'));
 $fname = preg_replace("/_list/","",$g5['file_name']); // _list을 제외한 파일명
-$qstr .= '&ser_mms_idx='.$ser_mms_idx.'&ser_itm_status='.$ser_itm_status.'&st_date='.$st_date.'&en_date='.$en_date; // 추가로 확장해서 넘겨야 할 변수들
+$qstr .= '&com_idx_customer='.$com_idx_customer.'&com_idx_name='.$com_idx_name.'&ser_mms_idx='.$ser_mms_idx.'&ser_itm_status='.$ser_itm_status.'&st_date='.$st_date.'&en_date='.$en_date; // 추가로 확장해서 넘겨야 할 변수들
 
 
 $g5['title'] = '검색별생산합계';
@@ -54,6 +54,11 @@ if ($en_date) {
     $where[] = " itm_date <= '".$en_date."' ";
 }
 
+//업체번호
+if($com_idx_customer){
+    $where[] = " bom.com_idx_customer = '".$com_idx_customer."' ";
+}
+
 // 설비번호 검색
 if ($ser_mms_idx != '-1' && $ser_mms_idx) {
     $where[] = " itm.mms_idx = '".$ser_mms_idx."' ";
@@ -93,6 +98,7 @@ $sql = " SELECT ROW_NUMBER() OVER (ORDER BY itm.oop_idx, itm.itm_date) AS num
                 , itm.bom_part_no
                 , itm.mms_idx
                 , bom.bom_idx
+                , bom.bom_press_type
                 , com.com_idx
                 , com.com_name
                 , bom.bom_name
@@ -132,6 +138,8 @@ $items1 = array(
     ,"bom_name"=>array("품명",0,0,0)
     ,"bom_std"=>array("규격",0,0,0)
     ,"mms_idx"=>array("설비",0,0,0) 
+    ,"bom_press_type"=>array("단조유형",0,0,0) 
+    ,"oop_count"=>array("수주량",0,0,0)
     ,"itm_cnt"=>array("합계",0,0,0)
     ,"itm_date"=>array("통계일",0,0,1)
 );
@@ -151,21 +159,28 @@ $items1 = array(
 );
 */
 ?>
-
+<style>
+.sch_label{position:relative;display:inline-block;}
+.sch_label span{position:absolute;top:-23px;left:5px;z-index:2;}
+.sch_label .com_blank{position:absolute;top:-21px;right:0px;z-index:2;font-size:1.1em;cursor:pointer;}
+</style>
 <div class="local_ov01 local_ov">
     <?php echo $listall ?>
     <span class="btn_ov01"><span class="ov_txt">총</span><span class="ov_num"> <?php echo number_format($total_count) ?></span></span>
 </div>
 
 <form id="fsearch" name="fsearch" class="local_sch01 local_sch" onsubmit="return sch_submit(this);" method="get">
-<input type="hidden" name="com_idx_customer" id="com_idx_customer" value="<?=$com_idx_customer?>">
-<input type="text" name="com_idx_name" value="<?=$com_idx_name?>" id="btn_customer" readonly class="frm_input readonly" autocomplete="off" style="width:95px;" placeholder="업체선택" link="./customer_select.php?file_name=<?php echo $g5['file_name']?>">
+<div class="sch_label">
+    <span>고객처</span>
+    <i class="fa fa-times com_blank" aria-hidden="true"></i>
+    <input type="hidden" name="com_idx_customer" id="com_idx_customer" value="<?=$com_idx_customer?>">
+    <input type="text" name="com_idx_name" value="<?=$com_idx_name?>" id="btn_customer" readonly class="frm_input readonly" autocomplete="off" style="width:120px;" placeholder="업체선택" link="./customer_select.php?file_name=<?php echo $g5['file_name']?>">
+</div>
 <label for="sfl" class="sound_only">검색대상</label>
 <select name="ser_mms_idx" id="ser_mms_idx">
     <option value="-1">::단조설비선택::</option>
     <?=$g5['forge_options']?>
 </select>
-<script>$('select[name=ser_mms_idx]').val("<?=(($ser_mms_idx)?$ser_mms_idx:'-1')?>").attr('selected','selected');</script>
 
 <input type="text" name="st_date" value="<?=$st_date?>" id="st_date" class="frm_input" autocomplete="off" style="width:95px;" placeholder="통계시작일">
 ~
@@ -175,7 +190,6 @@ $items1 = array(
     <?=$g5['set_itm_status_value_options']?>
     <option value="error">불량전체</option>
 </select>
-<script>$('select[name=ser_itm_status]').val("<?=(($ser_itm_status)?$ser_itm_status:'')?>").attr('selected','selected');</script>
 <select name="sfl" id="sfl">
     <option value="">::검색항목::</option>
     <?php
@@ -199,6 +213,23 @@ $items1 = array(
 </div>
 </form>
 <script>
+
+$('.com_blank').on('click',function(){
+    $('#btn_customer, #com_idx_customer').val('');
+});
+
+// 거래처찾기 버튼 클릭
+$("#btn_customer").click(function(e) {
+    e.preventDefault();
+    var href = $(this).attr('link');
+    winCustomerSelect = window.open(href, "winCustomerSelect", "left=300,top=150,width=550,height=600,scrollbars=1");
+    winCustomerSelect.focus();
+});
+
+$('select[name=ser_mms_idx]').val("<?=(($ser_mms_idx)?$ser_mms_idx:'-1')?>").attr('selected','selected');
+
+$('select[name=ser_itm_status]').val("<?=(($ser_itm_status)?$ser_itm_status:'')?>").attr('selected','selected');
+
 function sch_submit(f){
     
     if(f.st_date.value && f.en_date.value){
@@ -289,16 +320,24 @@ function sch_submit(f){
                 else if($k1=='mms_idx') {
                     $list[$k1] = $g5['trms']['forge_idx_arr'][$row['mms_idx']];
                 }
+                else if($k1=='bom_press_type'){
+                    $list[$k1] = $g5['set_bom_press_type_value'][$row['bom_press_type']];
+                }
                 else if($k1=='itm_status') {
                     $list[$k1] = $g5['set_itm_mtr_status'][$row['itm_status']];
                 }
-                else if($k1=='itm_count') {
+                else if($k1=='itm_cnt') {
                     $list[$k1] = number_format($row[$k1]);
                 }
                 else if($k1=='itm_count_sum') {
                     $list[$k1] = number_format($row[$k1]);
                     // $row['itm_count_sum_color'] = ($row['itm_count']!=$row[$k1]) ? 'darkorange':'';
                     // $list[$k1] = '<span style="color:'.$row['itm_count_sum_color'].'">'.number_format($row[$k1]).'</span>';
+                }
+                else if($k1=='oop_count'){
+                    $oopcnt = sql_fetch(" SELECT oop_count FROM {$g5['order_out_practice_table']} WHERE oop_idx = '{$row['oop_idx']}' ");
+                    $row['oop_count'] = $oopcnt['oop_count'];
+                    $list[$k1] = number_format($row['oop_count']);
                 }
 
                 $row['colspan'] = ($v1[1]>1) ? ' colspan="'.$v1[1].'"' : '';   // colspan 설정
@@ -369,31 +408,6 @@ $(function(e) {
         }
 
     });
-
-    // 마우스 hover 설정
-    $(".tbl_head01 tbody tr").on({
-        mouseenter: function () {
-            //stuff to do on mouse enter
-            //console.log($(this).attr('od_id')+' mouseenter');
-            //$(this).find('td').css('background','red');
-            $('tr[tr_id='+$(this).attr('tr_id')+']').find('td').css('background','#0b1938');
-            
-        },
-        mouseleave: function () {
-            //stuff to do on mouse leave
-            //console.log($(this).attr('od_id')+' mouseleave');
-            //$(this).find('td').css('background','unset');
-            $('tr[tr_id='+$(this).attr('tr_id')+']').find('td').css('background','unset');
-        }    
-    });
-
-    // 거래처찾기 버튼 클릭
-	$("#btn_customer").click(function(e) {
-		e.preventDefault();
-        var href = $(this).attr('link');
-		winCustomerSelect = window.open(href, "winCustomerSelect", "left=300,top=150,width=550,height=600,scrollbars=1");
-        winCustomerSelect.focus();
-	});
 });
 
 
