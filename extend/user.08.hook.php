@@ -75,7 +75,7 @@ function u_password_is_wrong(){
     if($chk_res['cmm_loginfail']){
         $msg .= "총 {$fail_max_cnt}회중 {$chk_res['cmm_loginfail']}회 로그인 실패하였습니다.";
         if($chk_res['cmm_loginfail'] >= $fail_max_cnt){
-            $msg .= "\\n{$login_min}분뒤에 다시 로그인을 시도해 주세요.";
+            $msg .= "\\n{$login_min}분 뒤에 다시 로그인을 시도해 주세요.";
         }
     }
     alert($msg);

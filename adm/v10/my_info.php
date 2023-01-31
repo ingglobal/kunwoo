@@ -162,7 +162,7 @@ function fmember_submit(f)
     if (f.mb_password.value) {
 
         // if( !f.mb_password.value.match(/((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).{8,20})/) )
-        if( !f.mb_password.value.match(/((?=.*[a-z])(?=.*[ !"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]).{8,20})/) )
+        if( !f.mb_password.value.match(/^(?=.*[0-9]+)[a-zA-Z][a-zA-Z0-9]{7,}$/) )
         {
             alert("비밀번호는 문자, 숫자, 특수문자의 조합으로 8 이상으로 입력해주세요.");
             return false;
