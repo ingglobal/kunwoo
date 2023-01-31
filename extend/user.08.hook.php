@@ -31,7 +31,9 @@ add_event('member_login_check_before','u_member_login_check_before',10);
 function u_member_login_check_before(){
     // return;
     global $g5, $mb_id;
-    $login_min = 10;
+    
+    $fail_max_cnt = $g5['setting']['set_loginfail'];
+    $login_min = $g5['setting']['set_relogin_min'];
 
     $adm_sql = " SELECT mb_id FROM {$g5['member_table']} WHERE mb_level = '10' ";
     // alert($chk_sql);
@@ -51,7 +53,7 @@ function u_member_login_check_before(){
     
         $diff_his_arr = gap_time_login($chk_res['cmm_loginfail_dt'], G5_TIME_YMDHIS);
         // alert($diff_his_arr['min']);
-        if($chk_res['cmm_loginfail'] >= 5 && $diff_his_arr['min'] < $login_min){
+        if($chk_res['cmm_loginfail'] >= $fail_max_cnt && $diff_his_arr['min'] < $login_min){
             alert(($login_min - $diff_his_arr['min']).'분 뒤에 다시 로그인을 시도해 주세요.');
             return false;
         }
@@ -64,6 +66,20 @@ function u_password_is_wrong(){
     $fail_max_cnt = $g5['setting']['set_loginfail'];
     $login_min = $g5['setting']['set_relogin_min'];
     //$g5['company_member_table']; //cmm_loginfail, cmm_loginfail_dt
+
+    $chk = sql_fetch(" SELECT cmm_loginfail, cmm_loginfail_dt FROM {$g5['company_member_table']} WHERE mb_id = '{$mb['mb_id']}' ");
+
+    if($chk['cmm_loginfail_dt']){
+        $mins = dt_diff($chk['cmm_loginfail_dt'],G5_TIME_YMDHIS,'min');
+        if($mins >= $login_min){
+            $rst_sql = " UPDATE {$g5['company_member_table']}
+                    SET cmm_loginfail = 0
+                        , cmm_loginfail_dt = ''
+                WHERE mb_id = '{$mb['mb_id']}' ";
+            sql_query($rst_sql);
+        }
+    }
+
     $upt_sql = " UPDATE {$g5['company_member_table']}
                     SET cmm_loginfail = cmm_loginfail + 1
                         , cmm_loginfail_dt = '".G5_TIME_YMDHIS."'

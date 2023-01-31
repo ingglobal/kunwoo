@@ -31,6 +31,7 @@ add_javascript('<script src="'.G5_USER_URL.'/js/slick-1.8.1/slick/slick.min.js">
 </style>
 
 <div class="mms_list_wrapper">
+
 <!-- IMP List -->
 <div class="mms_icons list_icons">
     <a href="javascript:" class="icon_x8">x8</a>

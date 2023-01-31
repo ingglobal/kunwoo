@@ -2287,6 +2287,30 @@ function svg_icon($n='_default_icon',$c='svg_icon',$w=24,$h=24,$f='#ffffff'){
 }
 }
 
+	if(!function_exists('dt_diff')){
+	function dt_diff($fromDay,$toDay,$type='day'){ //$type:'day'날수,'hour'시간,'mim'분,'sec'초
+		$start_date = strtotime($fromDay);//날짜계산을 위해 string날짜를 time으로 변경
+		$end_date = strtotime($toDay);//날짜계산을 위해 string날짜를 time으로 변경
+		$diffTime = $end_date - $start_date;
+		$diffdays = floor($diffTime/60/60/24);
+		$diffhours = floor($diffTime/60/60);
+		$diffmins = floor($diffTime/60);
+		$diffsecs = $diffTime;
+
+		$time = 0;
+		if($type == 'day')
+			$time = $diffdays;
+		else if($type == 'hour')
+			$time = $diffhours;
+		else if($type == 'min')
+			$time = $diffmins;
+		else if($type == 'sec')
+			$time = $diffsecs;
+		
+		return $time;
+	}
+	}
+
 //
 
 if(!function_exists('tmp_test')){
