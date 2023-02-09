@@ -380,7 +380,7 @@ if (isset($_REQUEST['sfl2']))  {
     $sfl2 = trim($_REQUEST['sfl2']);
     $sfl2 = preg_replace("/[\<\>\'\"\\\'\\\"\%\=\(\)\/\^\*\s]/", "", $sfl2);
     if ($sfl2)
-        $qstr .= '&amp;sfl=' . urlencode($sfl2); // search field (검색 필드)
+        $qstr .= '&amp;sfl2=' . urlencode($sfl2); // search field (검색 필드)
 } else {
     $sfl2 = '';
 }
@@ -389,7 +389,7 @@ if (isset($_REQUEST['sfl2']))  {
 if (isset($_REQUEST['stx2']))  { // search text (검색어)
     $stx2 = get_search_string(trim($_REQUEST['stx2']));
     if ($stx2 || $stx2 === '0')
-        $qstr .= '&amp;stx=' . urlencode(cut_str($stx2, 20, ''));
+        $qstr .= '&amp;stx2=' . urlencode(cut_str($stx2, 20, ''));
 } else {
     $stx2 = '';
 }
