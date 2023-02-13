@@ -144,7 +144,7 @@ add_javascript(G5_POSTCODE_JS, 0);    //다음 주소 js
 		<th scope="row">대표이메일</th>
 		<td colspan="3">
 			<?php echo help("세금계산서, 계약서, 약정서 등 모든 거래 시 소통할 수 있는 이메일 정보를 필수로 등록하세요."); ?>
-			<input type="text" name="com_email" value="<?php echo $com['com_email'] ?>" id="com_email" class="frm_input required" required style="width:30%;" <?=$saler_readonly?>>
+			<input type="text" name="com_email" value="<?php echo $com['com_email'] ?>" id="com_email" class="frm_input" style="width:30%;" <?=$saler_readonly?>>
 			<?=$saler_mark?>
 		</td>
 	</tr>
@@ -335,6 +335,7 @@ $(function() {
 function form01_submit(f) {
 
     // 이메일 검증에 사용할 정규식
+	/*
     var regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
     if (f.com_email.value.match(regExp) != null) {
         //alert('Good!');
@@ -344,7 +345,7 @@ function form01_submit(f) {
         f.com_email.focus();
         return false; 
     }
-
+	*/
     return true;
 }
 

@@ -163,7 +163,7 @@ $qstr .= $qstr.'&ser_trm_idxs='.$ser_trm_idxs.'&ser_com_type='.$ser_com_type.'&s
 		<th scope="col" class="td_left">번호</th>
 		<th scope="col" class="td_left">업체명</th>
 		<th scope="col">대표자명</th>
-		<th scope="col">이메일</th>
+		<!-- <th scope="col">이메일</th> -->
 		<?php if(false){ ?><th scope="col">업체담당자</th><?php } ?>
 		<th scope="col" class="td_left">업종</th>
 		<th scope="col" style="width:120px;">대표전화</th>
@@ -250,9 +250,9 @@ $qstr .= $qstr.'&ser_trm_idxs='.$ser_trm_idxs.'&ser_com_type='.$ser_com_type.'&s
 		<td class="td_com_president"><!-- 대표자명 -->
 			<?php echo get_text($row['com_president']); ?>
 		</td>
-		<td class="td_com_email font_size_8"><!-- 이메일 -->
-			<?php echo cut_str($row['com_email'],21,'..'); ?>
-		</td>
+		<!-- <td class="td_com_email font_size_8">
+			<?php ;//echo cut_str($row['com_email'],21,'..'); ?>
+		</td> -->
         <?php if(false){ ?>
 		<td class="td_com_manager td_left"><!-- 담당자 -->
 			<?php echo $row['com_managers_text']; ?>
