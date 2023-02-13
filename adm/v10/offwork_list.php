@@ -91,7 +91,7 @@ $items1 = array(
     "mms_idx"=>array("설비",0,0,0)
     ,"off_name"=>array("비가동명칭",0,0,0)
     ,"off_period"=>array("적용기간",0,0,0)
-    ,"off_reg_dt"=>array("등록일시",0,0,0)
+    // ,"off_reg_dt"=>array("등록일시",0,0,0)
     ,"off_status"=>array("상태",0,0,1)
 );
 ?>
