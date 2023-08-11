@@ -1,3 +1,25 @@
+adm/v10/config_form.php
+아래와 같은 환경변수 추가
+<tr>
+	<th scope="row">스마트공장<br>사후관리로그 API Key값</th>
+	<td colspan="3">
+		<?php echo help('ex) $5$API$3Ue8EDeh9uh5SBT98qSOmiuz636aFqZyV5aMgFmL4rD') ?>
+		<input type="text" name="set_userlog_crtfckey" value="<?php echo $g5['setting']['set_userlog_crtfckey'] ?>" id="set_userlog_crtfckey" required class="required frm_input" style="width:60%;">
+	</td>
+</tr>
+
+###################################################################################
+user.01.config.php
+
+//path,url 상수추가
+define('G5_USER_ADMIN_SQLS_PATH',   G5_ADMIN_PATH.'/'.G5_USER_ADMIN_DIR.'/'.'sqls');
+define('G5_USER_ADMIN_SQLS_URL',    G5_ADMIN_URL.'/'.G5_USER_ADMIN_DIR.'/'.'sqls');
+
+// 테이블정의 추가
+$g5['user_log_table'] = USER_TABLE_PREFIX.'user_log';
+
+##################################################################################
+
 user.03.default.php
 ----------------------
 adm/v10안에 _kosmolog.php 파일 필요
@@ -5,3 +27,31 @@ u_tail_sub()안에
 // 후킹 추가
 @include_once($g5['hook_file_path'].'/'.$g5['file_name'].'.tail.php'); //밑에 아래소스 추가
 @include_once(G5_USER_ADMIN_PATH.'/_kosmolog.php');
+
+
+
+//제일 하단에 아래 소스를 추가해라
+//사용자 로그 테이블(g5_5_user_log)이 존재하는지 확인하고 없으면 설치
+$user_log_tbl = @sql_query(" DESC ".$g5['user_log_table']." ", false);
+if(!$user_log_tbl){
+	include_once(G5_USER_ADMIN_SQLS_PATH.'/create_user_log.php');
+}
+
+
+###################################################################################
+_top_menu_setting.php
+
+에 아래 메뉴소스를 추가/수정해라
+
+// 최고관리자인 경우만
+if($member['mb_level']>=10) {
+    $sub_title_list = ' <a href="'.G5_ADMIN_URL.'/shop_admin/configform.php" class="btn_top_menu '.$active_term_list.'">쇼핑몰설정</a>
+                        <a href="'.G5_ADMIN_URL.'/shop_admin/bannerlist.php" class="btn_top_menu '.$active_order_list.'">배너관리</a>
+    ';
+    $sub_title_list .= '
+        <a href="./stat_user_log.php" class="btn_top_menu '.$active_stat_user_log.'">사용자로그통계</a>
+    ';
+}
+
+###################################################################################
+stat_user_log.php 파일 생성( ierp  참고 adm / v10 /  )
