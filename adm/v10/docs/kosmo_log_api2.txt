@@ -1,0 +1,374 @@
+adm/v10/config_form.php
+아래와 같은 환경변수 추가
+<tr>
+	<th scope="row">스마트공장<br>사후관리로그 API Key값</th>
+	<td colspan="3">
+		<?php echo help('ex) $5$API$3Ue8EDeh9uh5SBT98qSOmiuz636aFqZyV5aMgFmL4rD') ?>
+		<input type="text" name="set_userlog_crtfckey" value="<?php echo $g5['setting']['set_userlog_crtfckey'] ?>" id="set_userlog_crtfckey" required class="required frm_input" style="width:60%;">
+	</td>
+</tr>
+
+###################################################################################
+user.01.config.php
+
+//path,url 상수추가
+define('G5_USER_ADMIN_SQLS_PATH',   G5_ADMIN_PATH.'/'.G5_USER_ADMIN_DIR.'/'.'sqls');
+define('G5_USER_ADMIN_SQLS_URL',    G5_ADMIN_URL.'/'.G5_USER_ADMIN_DIR.'/'.'sqls');
+
+// 테이블정의 추가
+$g5['user_log_table'] = USER_TABLE_PREFIX.'user_log';
+
+
+###################################################################################
+adm > v10 안에 sqls라는 폴더를 생성한다.
+adm > v10 > sqls 안에 create_user_log.php 파일을 생성하고 아래 소스를 기입한다.
+create_user_log.php
+
+<?php
+if (!defined('_GNUBOARD_')) exit; // 개별 페이지 접근 불가
+
+$user_log_sql = " CREATE TABLE
+`".$g5['user_log_table']."` (
+    `usl_idx`     BIGINT(20) NOT NULL,
+    `mb_id`       VARCHAR(50)  NOT NULL COMMENT '접속자 id',
+    `usl_menu_cd` VARCHAR(50)  NOT NULL COMMENT '접속메뉴코드',
+    `usl_type`    VARCHAR(50)  NOT NULL DEFAULT 'login' COMMENT 'login=접속,logout=종료,register=등록,modify=수정,
+    delete=삭제,search=검색',
+    `usl_reg_dt`  DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '등록일시'
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 ";
+
+sql_query($user_log_sql);
+sql_query(" ALTER TABLE `".$g5['user_log_table']."` ADD PRIMARY KEY (`usl_idx`) ");
+sql_query(" ALTER TABLE `".$g5['user_log_table']."` MODIFY `usl_idx` bigint(20) NOT NULL AUTO_INCREMENT ");
+
+
+###################################################################################
+
+
+user.03.default.php
+
+----------------------
+adm/v10안에 _kosmolog.php 파일 필요
+u_tail_sub()안에
+// 후킹 추가
+@include_once($g5['hook_file_path'].'/'.$g5['file_name'].'.tail.php'); //밑에 아래소스 추가
+@include_once(G5_USER_ADMIN_PATH.'/_kosmolog.php');
+
+
+
+//제일 하단에 아래 소스를 추가해라
+//사용자 로그 테이블(g5_5_user_log)이 존재하는지 확인하고 없으면 설치
+$user_log_tbl = @sql_query(" DESC ".$g5['user_log_table']." ", false);
+if(!$user_log_tbl){
+	include_once(G5_USER_ADMIN_SQLS_PATH.'/create_user_log.php');
+}
+###################################################################################
+adm/v10/_kosmolog.php
+--------------------------
+<?php
+// if(!preg_match('/^iframe/',$g5['file_name']) && !preg_match('/^order_item_list/',$g5['file_name']) && preg_match('/list$/i',$g5['file_name']) || preg_match('/form$/i',$g5['file_name']) || preg_match('/board$/i',$g5['file_name']) || preg_match('/write$/i',$g5['file_name'])){
+if(preg_match('/list$/i',$g5['file_name']) || preg_match('/form$/i',$g5['file_name']) || preg_match('/board$/i',$g5['file_name']) || preg_match('/write$/i',$g5['file_name'])){
+	if($board['bo_1']){
+		$access_menu_cd = $board['bo_1'];
+	} else if($sub_menu){
+		$access_menu_cd = $sub_menu;
+	} else {
+		$access_menu_cd = '960100';
+	}
+	// print_r2($access_menu_cd);
+	if(preg_match('/list$/',$g5['file_name']) || preg_match('/board$/',$g5['file_name'])){
+		if($stx || $sfl || count($_GET)) $user_status = '검색';
+		else $user_status = '검색';
+		// print_r2($user_status."1");
+	}
+	else if(preg_match('/form$/i',$g5['file_name']) || preg_match('/write$/i',$g5['file_name'])){
+		if(!$w || $w == 'c') $user_status = '등록';
+		else if($w == 'u') $user_status = '수정';
+		else $user_status = '수정';
+		// print_r2($user_status."2");
+	}
+
+	// print_r2($user_status);
+	$darr = array(
+		'crtfcKey' => $g5['setting']['set_userlog_crtfckey'],
+		'logDt' => G5_TIME_YMDHIS.'.000',
+		'useSe' => $user_status,
+		'sysUser' => $member['mb_id'],
+		'conectIp' => $member['mb_login_ip'],
+		'dataUsgqty' => ''
+	);
+	// print_r2($darr);
+
+	$sql = " INSERT INTO {$g5['user_log_table']} SET
+			mb_id = '{$member['mb_id']}',
+			usl_menu_cd = '{$access_menu_cd}',
+			usl_type = '{$user_status}',
+			usl_reg_dt = '".G5_TIME_YMDHIS."'
+	";
+	// print_r2($sql);exit;
+	sql_query($sql);
+	if($g5['setting']['set_userlog_crtfckey']){
+	?>
+	<script>
+	var lnk = 'https://log.smart-factory.kr/apisvc/sendLogData.json';
+	var crtfcKey = '<?=$g5['setting']['set_userlog_crtfckey']?>';
+	var logDt = '<?=G5_TIME_YMDHIS?>.000';
+	var useSe = '<?=$user_status?>';
+	var sysUser = '<?=$member['mb_id']?>';
+	var conectIp = '<?=$member['mb_login_ip']?>';
+	var dataUsgqty = '0';
+
+	var param = {
+		'crtfcKey' : crtfcKey,
+		'logDt' : logDt,
+		'useSe' : useSe,
+		'sysUser' : sysUser,
+		'conectIp' : conectIp,
+		'dataUsgqty' : dataUsgqty
+	}
+	// console.log(param);
+	$.ajax({
+		type : "POST",
+		url : lnk,
+		cache : false,
+		timeout : 360000,
+		data : param,
+		dataType : "json",
+		contentType : "application/x-www-form-urlencoded; charset=utf-8",
+		success : function(data, textStatus, jqXHR){
+			var result = data.result;
+			// console.log(result);
+		},
+		error : function(jqXHR, textStatus, errorThrown){
+
+		}
+	});
+	</script>
+<?php
+	}
+}
+?>
+--------------------------
+
+
+###################################################################################
+_top_menu_setting.php
+
+에 아래 메뉴소스를 추가/수정해라
+
+// 최고관리자인 경우만
+if($member['mb_level']>=10) {
+    $sub_title_list = ' <a href="'.G5_ADMIN_URL.'/shop_admin/configform.php" class="btn_top_menu '.$active_term_list.'">쇼핑몰설정</a>
+                        <a href="'.G5_ADMIN_URL.'/shop_admin/bannerlist.php" class="btn_top_menu '.$active_order_list.'">배너관리</a>
+    ';
+    $sub_title_list .= '
+        <a href="./stat_user_log.php" class="btn_top_menu '.$active_stat_user_log.'">사용자로그통계</a>
+    ';
+}
+
+###################################################################################
+stat_user_log.php 파일 생성( ierp  참고 adm / v10 /  )
+--------------------------------------------------------
+<?php
+$sub_menu = "990100";
+include_once('./_common.php');
+
+auth_check($auth[$sub_menu],"r");
+
+// 변수 설정, 필드 구조 및 prefix 추출
+$table_name = 'user_log';
+$g5_table_name = $g5[$table_name.'_table'];
+$fields = sql_field_names($g5_table_name);
+$pre = substr($fields[0],0,strpos($fields[0],'_'));
+$fname = $g5['file_name'];
+
+
+$g5['title'] = '사용자로그통계';
+include_once('./_top_menu_setting.php');
+include_once('./_head.php');
+echo $g5['container_sub_title'];
+
+$menu_arr = array();
+
+foreach($menu as $pmk=>$pmv){
+    foreach($pmv as $mv){
+        $menu_arr[$mv[0]] = $mv[1];
+    }
+}
+
+// print_r3($menu_arr);
+$sql_common = " FROM {$g5['user_log_table']} AS usl
+                    LEFT JOIN {$g5['member_table']} AS mb ON usl.mb_id = mb.mb_id
+";
+
+$f_dt = ($from_dt)?$from_dt.' 00:00:00':date("Y-m-d H:i:s",strtotime("-1 year",strtotime(G5_TIME_YMD)));
+$t_dt = ($to_dt)?$to_dt.' 23:59:59':G5_TIME_YMD.' 23:59:59';
+$where = array();
+$where[] = " usl_reg_dt <= '{$t_dt}' ";   // 디폴트 검색조건
+$where[] = " usl_reg_dt >= '{$f_dt}' ";   // 디폴트 검색조건
+
+// 최종 WHERE 생성
+if ($where)
+    $sql_search = ' WHERE '.implode(' AND ', $where);
+
+
+if (!$sst) {
+    $sst = "usl_menu_cd";
+    $sod = "";
+}
+
+if (!$sst2) {
+    $sst2 = ""; //", mb_name"
+    $sod2 = "";
+}
+
+$sql_group = " GROUP BY usl_menu_cd ";
+
+$sql_order = " ORDER BY {$sst} {$sod} {$sst2} {$sod2} ";
+
+
+$sql = " SELECT * FROM {$g5['user_log_table']}
+            {$sql_search}
+            {$sql_order}
+";
+
+$sql2 = " SELECT 
+            usl_menu_cd
+            ,( SELECT COUNT(*) FROM {$g5['user_log_table']}
+                    WHERE usl_menu_cd = ust.usl_menu_cd
+                        AND usl_type = '검색'
+                        AND usl_reg_dt >='{$f_dt}'
+                        AND usl_reg_dt <='{$t_dt}'
+            ) AS usl_cnt_search      
+            ,( SELECT COUNT(*) FROM {$g5['user_log_table']}
+                    WHERE usl_menu_cd = ust.usl_menu_cd
+                        AND usl_type = '등록'
+                        AND usl_reg_dt >='{$f_dt}'
+                        AND usl_reg_dt <='{$t_dt}'
+            ) AS usl_cnt_register      
+            ,( SELECT COUNT(*) FROM {$g5['user_log_table']}
+                    WHERE usl_menu_cd = ust.usl_menu_cd
+                        AND usl_type = '수정'
+                        AND usl_reg_dt >='{$f_dt}'
+                        AND usl_reg_dt <='{$t_dt}'
+            ) AS usl_cnt_modify
+        FROM (
+            {$sql}
+        ) AS ust
+        LEFT JOIN {$g5['member_table']} AS mb ON ust.mb_id = mb.mb_id
+        {$sql_group}
+";
+// echo $sql2;
+$result = sql_query($sql2,1);
+
+$rows = 100;
+$count = sql_fetch_array( sql_query(" SELECT FOUND_ROWS() as total ") );
+$total_count = $count['total'];
+$total_page  = ceil($total_count / $rows);  // 전체 페이지 계산
+
+$colspan = 7;
+?>
+<style>
+#container{min-width:1800px !important;}
+
+#tot_box{position:absolute;display:none;top:10px;right:10px;font-size:1.3em;}
+#tot_box:after{display:block;visibility:hidden;clear:both;content:'';}
+#tot_box strong{color:#555;float:left;font-weight:500;}
+#tot_box #tot_price{float:left;margin-left:10px;font-weight:700;color:darkblue;font-size:1.2em;}
+
+.td_usl_menu{width:90px;}
+.td_usl_type{width:170px;}
+.td_usl_type1{width:170px;}
+.td_usl_type2{width:170px;}
+.td_usl_type3{width:170px;}
+.td_usl_type4{width:170px;}
+.tr_even{background:#efefef !important;}
+</style>
+<script type = "text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+<script type = "text/javascript" src = "https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<form id="fsearch" name="fsearch" class="local_sch01 local_sch" method="get">
+<input type="text" name="from_dt" placeholder="통계시작일" value="<?php echo $from_dt ?>" id="from_dt" readonly class="frm_input readonly" style="width:130px;">
+<input type="text" name="to_dt" placeholder="통계종료일" value="<?php echo $to_dt ?>" id="to_dt" readonly class="frm_input readonly" style="width:130px;">
+<input type="submit" class="btn_submit" value="검색">
+</form>
+<div id="usl_box">
+    <p style="padding:10px;font-size:2em;"><?=substr($f_dt,0,10)?> ~ <?=substr($t_dt,0,10)?></p>
+    <div class="tbl_head01 tbl_wrap">
+        <table class="table table-bordered table-condensed">
+        <caption><?php echo $g5['title']; ?> 목록</caption>
+        <thead>
+        <tr>
+            <th scope="col">번호</th>
+            <th scope="col" style="width:150px;">메뉴</th>
+            <th scope="col">등록</th>
+            <th scope="col">검색</th>
+            <th scope="col">수정</th>
+        </tr>
+        </thead>
+        <tbody>
+        <?php
+        $no = 0;
+        // print_r2($rows);
+        for($i=0;$row=sql_fetch_array($result);$i++){
+            $tr_bg = ($no % 2 == 0)?'tr_even':'';
+            // print_r2($row);
+            // $list_num = $total_count - ($page - 1) * $rows;
+            $row['num'] = $i+1;
+        ?>
+        <tr class="<?=$tr_bg?>">
+            <td class="td_no"><?=$row['num']?></td>
+            <td class="td_usl_menu">
+                <?=$menu_arr[$row['usl_menu_cd']]?>
+            </td>
+            <td class="td_usl_cnt_register">
+                <?=(($row['usl_cnt_register'])?$row['usl_cnt_register']:'')?>
+            </td>
+            <td class="td_usl_cnt_search">
+                <?=(($row['usl_cnt_search'])?$row['usl_cnt_search']:'')?>
+            </td>
+            <td class="td_usl_cnt_modify">
+                <?=(($row['usl_cnt_modify'])?$row['usl_cnt_modify']:'')?>
+            </td>
+        </tr>
+        <?php }
+        if ($i == 0)
+        echo '<tr><td colspan="'.$colspan.'" class="empty_table">자료가 없습니다.</td></tr>';
+        ?>
+        </tbody>
+        </table>
+    </div><!--//.tbl_head01-->
+</div><!--//#usl_box-->
+<div class="btn_fixed_top">
+    <a href="javascript:" class="btn btn_02 pdf_btn">PDF다운로드</a>
+</div>
+<script>
+$(function(e){
+    $("#from_dt").datepicker({ changeMonth: true, changeYear: true, closeText:'취소', dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect: function(selectedDate){$("#to_dt").datepicker('option','minDate',selectedDate);}, onClose: function(){if($(window.event.srcElement).hasClass('ui-datepicker-close')){$(this).val('');}} });
+
+    $("#to_dt").datepicker({ changeMonth: true, changeYear: true, closeText:'취소', dateFormat: "yy-mm-dd", showButtonPanel: true, yearRange: "c-99:c+99", onSelect:function(selectedDate){$("#form_dt").datepicker('option','maxDate',selectedDate);}, onClose: function(){if($(window.event.srcElement).hasClass('ui-datepicker-close')){$(this).val('');}}});
+});
+//pdf다운로드 버튼을 클릭하면
+$('.pdf_btn').on('click',function(){
+    //pdf_wrap을 canvas객체로 변환
+    html2canvas($('#usl_box')[0]).then(function(canvas) {
+        var doc = new jsPDF('p', 'mm', 'a4'); //jspdf객체 생성
+        var imgData = canvas.toDataURL('image/png'); //캔버스를 이미지로 변환
+        var imgWidth = 200;//pageHeight * 3; // 이미지 가로 210길이(mm) A4 기준
+        var pageHeight = imgWidth * 1.414;//imgWidth * 1.414;  // 출력 페이지 세로 길이 계산 A4 기준
+        var imgHeight = canvas.height * imgWidth / canvas.width;
+        var heightLeft = imgHeight;
+        var pos_x = 5;
+        var pos_y = 5;
+
+        doc.addImage(imgData, 'PNG', pos_x, pos_y, imgWidth, imgHeight); //이미지를 기반으로 pdf생성
+
+        doc.save('<?php echo get_text($g5['title'].'_'.G5_TIME_YMD) ?>.pdf'); //pdf저장
+    });
+});
+</script>
+
+<?php
+include_once ('./_tail.php');
+?>
+--------------------------------------------------------
